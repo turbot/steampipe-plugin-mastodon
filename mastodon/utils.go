@@ -99,7 +99,7 @@ func listToots(timeline string, ctx context.Context, d *plugin.QueryData, h *plu
 		for _, toot := range toots {
 			d.StreamListItem(ctx, toot)
 			count++
-			plugin.Logger(ctx).Warn("listToots", "count", count, "max", max, "timeline", timeline)
+			//plugin.Logger(ctx).Warn("listToots", "count", count, "max", max, "timeline", timeline)
 			if count >= max {
 				break
 			}
