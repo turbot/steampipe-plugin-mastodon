@@ -15,9 +15,9 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		},
 		DefaultTransform: transform.FromGo(),
 		TableMap: map[string]*plugin.Table{
-			"mastodon_home_toot":        tableMastodonHomeToot(),
-			"mastodon_local_toot":        tableMastodonLocalToot(),
-			"mastodon_federated_toot":        tableMastodonFederatedToot(),
+			"mastodon_home_toot":      tableMastodonHomeToot(),
+			"mastodon_local_toot":     tableMastodonLocalToot(),
+			"mastodon_federated_toot": tableMastodonFederatedToot(),
 		},
 	}
 

@@ -14,10 +14,10 @@ func connect(_ context.Context, d *plugin.QueryData) (*mastodon.Client, error) {
 	config := GetConfig(d.Connection)
 
 	client := mastodon.NewClient(&mastodon.Config{
-		Server:       *config.Server,       
-		ClientID:     *config.ClientId,     
-		ClientSecret: *config.ClientSecret, 
-		AccessToken:  *config.AccessToken,  
+		Server:       *config.Server,
+		ClientID:     *config.ClientId,
+		ClientSecret: *config.ClientSecret,
+		AccessToken:  *config.AccessToken,
 	})
 
 	return client, nil
@@ -36,17 +36,17 @@ func tootColumns() []*plugin.Column {
 			Description: "URL for the toot.",
 		},
 		{
-			Name:	"display_name",
-			Type: proto.ColumnType_STRING,
-			Description: "Display name for toot author.",	
-			Hydrate: displayName,
+			Name:        "display_name",
+			Type:        proto.ColumnType_STRING,
+			Description: "Display name for toot author.",
+			Hydrate:     displayName,
 			Transform:   transform.FromValue(),
 		},
 		{
-			Name:	"user_name",
-			Type: proto.ColumnType_STRING,
-			Description: "Username for toot author.",	
-			Hydrate: userName,
+			Name:        "user_name",
+			Type:        proto.ColumnType_STRING,
+			Description: "Username for toot author.",
+			Hydrate:     userName,
 			Transform:   transform.FromValue(),
 		},
 		{
@@ -58,20 +58,18 @@ func tootColumns() []*plugin.Column {
 			Name:        "followers",
 			Type:        proto.ColumnType_JSON,
 			Description: "Follower count for toot author.",
-			Hydrate: followers,
+			Hydrate:     followers,
 			Transform:   transform.FromValue(),
 		},
 		{
 			Name:        "following",
 			Type:        proto.ColumnType_JSON,
 			Description: "Following count for toot author.",
-			Hydrate: following,
+			Hydrate:     following,
 			Transform:   transform.FromValue(),
 		},
-
 	}
 }
-
 
 func listToots(timeline string, ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	client, err := connect(ctx, d)
@@ -79,7 +77,7 @@ func listToots(timeline string, ctx context.Context, d *plugin.QueryData, h *plu
 		return nil, fmt.Errorf("unable to establish a connection: %v", err)
 	}
 
-	max := d.QueryContext.GetLimit() 
+	max := d.QueryContext.GetLimit()
 	plugin.Logger(ctx).Warn("listToots", "timeline", timeline, "max", max)
 	pg := mastodon.Pagination{}
 
@@ -118,7 +116,6 @@ func listToots(timeline string, ctx context.Context, d *plugin.QueryData, h *plu
 
 }
 
-
 func userName(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	return h.Item.(*mastodon.Status).Account.Username, nil
 }
@@ -134,5 +131,3 @@ func followers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 func following(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	return h.Item.(*mastodon.Status).Account.FollowingCount, nil
 }
-
-

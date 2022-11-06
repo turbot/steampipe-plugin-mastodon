@@ -19,4 +19,3 @@ func tableMastodonLocalToot() *plugin.Table {
 func listLocalToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	return listToots("local", ctx, d, h)
 }
-

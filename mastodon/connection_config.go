@@ -6,10 +6,10 @@ import (
 )
 
 type PluginConfig struct {
-	Server *string `cty:"server"`
-	ClientId *string `cty:"client_id"`
+	Server       *string `cty:"server"`
+	ClientId     *string `cty:"client_id"`
 	ClientSecret *string `cty:"client_secret"`
-	AccessToken *string `cty:"access_token"`
+	AccessToken  *string `cty:"access_token"`
 }
 
 var ConfigSchema = map[string]*schema.Attribute{

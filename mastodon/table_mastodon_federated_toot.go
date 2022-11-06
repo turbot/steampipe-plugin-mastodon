@@ -16,7 +16,6 @@ func tableMastodonFederatedToot() *plugin.Table {
 	}
 }
 
-
-func listFederatedToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error)  {
+func listFederatedToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	return listToots("federated", ctx, d, h)
 }
