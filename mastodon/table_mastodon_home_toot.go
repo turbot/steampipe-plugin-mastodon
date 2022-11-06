@@ -17,5 +17,5 @@ func tableMastodonHomeToot() *plugin.Table {
 }
 
 func listHomeToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	return listToots("home", ctx, d, h)
+	return listToots("home", "", ctx, d, h)
 }

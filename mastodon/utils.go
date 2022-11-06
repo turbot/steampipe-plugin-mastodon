@@ -68,17 +68,29 @@ func tootColumns() []*plugin.Column {
 			Hydrate:     following,
 			Transform:   transform.FromValue(),
 		},
+		{
+			Name:        "query",
+			Type:        proto.ColumnType_STRING,
+			Description: "Query string to find toots.",
+			Transform:   transform.FromQual("query"),
+		},
 	}
 }
 
-func listToots(timeline string, ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listToots(timeline string, query string, ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	client, err := connect(ctx, d)
 	if err != nil {
 		return nil, fmt.Errorf("unable to establish a connection: %v", err)
 	}
 
 	max := d.QueryContext.GetLimit()
-	plugin.Logger(ctx).Warn("listToots", "timeline", timeline, "max", max)
+	if max == -1 {
+		max = 40
+	}
+	if timeline == "search" {
+		max = 6
+	}
+
 	pg := mastodon.Pagination{}
 
 	count := int64(0)
@@ -93,13 +105,15 @@ func listToots(timeline string, ctx context.Context, d *plugin.QueryData, h *plu
 		} else if timeline == "federated" {
 			list, _ := client.GetTimelinePublic(context.Background(), false, &pg)
 			toots = list
+		} else if timeline == "search" {
+			results, _ := client.Search(context.Background(), query, false)
+			toots = results.Statuses
 		} else {
 			plugin.Logger(ctx).Warn("listToots", "unknown timeline", timeline)
 		}
 		for _, toot := range toots {
 			d.StreamListItem(ctx, toot)
 			count++
-			//plugin.Logger(ctx).Warn("listToots", "count", count, "max", max, "timeline", timeline)
 			if count >= max {
 				break
 			}
@@ -107,7 +121,6 @@ func listToots(timeline string, ctx context.Context, d *plugin.QueryData, h *plu
 		if count >= max {
 			break
 		}
-		pg.MaxID = pg.MaxID
 		pg.MinID = ""
 
 	}
