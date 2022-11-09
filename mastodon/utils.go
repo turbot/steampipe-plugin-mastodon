@@ -15,8 +15,6 @@ func connect(_ context.Context, d *plugin.QueryData) (*mastodon.Client, error) {
 
 	client := mastodon.NewClient(&mastodon.Config{
 		Server:       *config.Server,
-		ClientID:     *config.ClientId,
-		ClientSecret: *config.ClientSecret,
 		AccessToken:  *config.AccessToken,
 	})
 
@@ -114,6 +112,7 @@ func listToots(timeline string, query string, ctx context.Context, d *plugin.Que
 		for _, toot := range toots {
 			d.StreamListItem(ctx, toot)
 			count++
+			plugin.Logger(ctx).Warn("listToots", "count", count)
 			if count >= max {
 				break
 			}

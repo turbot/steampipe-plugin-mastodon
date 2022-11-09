@@ -15,5 +15,5 @@ select
 from
     mastodon_search
 where
-    query = "twitter"
+    query = 'twitter'
 ```

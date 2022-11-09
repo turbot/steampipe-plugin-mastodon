@@ -7,19 +7,11 @@ import (
 
 type PluginConfig struct {
 	Server       *string `cty:"server"`
-	ClientId     *string `cty:"client_id"`
-	ClientSecret *string `cty:"client_secret"`
 	AccessToken  *string `cty:"access_token"`
 }
 
 var ConfigSchema = map[string]*schema.Attribute{
 	"server": {
-		Type: schema.TypeString,
-	},
-	"client_id": {
-		Type: schema.TypeString,
-	},
-	"client_secret": {
 		Type: schema.TypeString,
 	},
 	"access_token": {
