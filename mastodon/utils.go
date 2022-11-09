@@ -24,6 +24,11 @@ func connect(_ context.Context, d *plugin.QueryData) (*mastodon.Client, error) {
 func tootColumns() []*plugin.Column {
 	return []*plugin.Column{
 		{
+			Name:        "id",
+			Type:        proto.ColumnType_STRING,
+			Description: "ID of the toot.",
+		},
+		{
 			Name:        "created_at",
 			Type:        proto.ColumnType_TIMESTAMP,
 			Description: "Timestamp when the toot was created.",
@@ -67,6 +72,11 @@ func tootColumns() []*plugin.Column {
 			Transform:   transform.FromValue(),
 		},
 		{
+			Name:        "replies_count",
+			Type:        proto.ColumnType_INT,
+			Description: "Reply count for toot.",
+		},
+		{
 			Name:        "query",
 			Type:        proto.ColumnType_STRING,
 			Description: "Query string to find toots.",
@@ -90,6 +100,7 @@ func listToots(timeline string, query string, ctx context.Context, d *plugin.Que
 
 	count := int64(0)
 	for {
+		//plugin.Logger(ctx).Warn("listToots", "count", count, "pg", pg)
 		toots := []*mastodon.Status{}
 		if timeline == "home" {
 			list, _ := client.GetTimelineHome(context.Background(), &pg)
@@ -109,7 +120,7 @@ func listToots(timeline string, query string, ctx context.Context, d *plugin.Que
 		for _, toot := range toots {
 			d.StreamListItem(ctx, toot)
 			count++
-			plugin.Logger(ctx).Warn("listToots", "count", count)
+			//plugin.Logger(ctx).Warn("listToots", "count", count, "pg", pg)
 			if count >= max {
 				break
 			}
@@ -118,7 +129,6 @@ func listToots(timeline string, query string, ctx context.Context, d *plugin.Que
 			break
 		}
 		pg.MinID = ""
-
 	}
 
 	return nil, nil
