@@ -13,7 +13,7 @@ Prerequisites:
 Clone:
 
 ```sh
-git clone https://github.com/judell/steampipe-plugin-mastodon
+git clone https://github.com/turbot/steampipe-plugin-mastodon
 cd steampipe-plugin-mastodon
 ```
 
