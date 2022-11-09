@@ -85,9 +85,6 @@ func listToots(timeline string, query string, ctx context.Context, d *plugin.Que
 	if max == -1 {
 		max = 40
 	}
-	if timeline == "search" {
-		max = 6
-	}
 
 	pg := mastodon.Pagination{}
 

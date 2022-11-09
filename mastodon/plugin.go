@@ -18,7 +18,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"mastodon_home_toot":      tableMastodonHomeToot(),
 			"mastodon_local_toot":     tableMastodonLocalToot(),
 			"mastodon_federated_toot": tableMastodonFederatedToot(),
-			"mastodon_search":         tableMastodonSearch(),
+			//"mastodon_search":         tableMastodonSearch(),
 		},
 	}
 
