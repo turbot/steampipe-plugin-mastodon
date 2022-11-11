@@ -6,8 +6,8 @@ import (
 )
 
 type PluginConfig struct {
-	Server       *string `cty:"server"`
-	AccessToken  *string `cty:"access_token"`
+	Server      *string `cty:"server"`
+	AccessToken *string `cty:"access_token"`
 }
 
 var ConfigSchema = map[string]*schema.Attribute{
