@@ -4,7 +4,7 @@ List weekly activity stats for a Mastodon instance
 
 ## Examples
 
-### Get newest 10 toots
+### Activity for recent weeks
 
 ```sql
 select
