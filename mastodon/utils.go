@@ -101,7 +101,7 @@ func listToots(timeline string, query string, ctx context.Context, d *plugin.Que
 
 	limit := d.QueryContext.GetLimit()
 	if limit == -1 {
-		limit = 100
+		limit = 40
 	}
 
 	apiLimit := int64(20)
@@ -134,7 +134,7 @@ func listToots(timeline string, query string, ctx context.Context, d *plugin.Que
 		}
 		for _, toot := range toots {
 			count++
-			// plugin.Logger(ctx).Warn("toot", "toot", count, count, "pg", pg)
+			//plugin.Logger(ctx).Warn("toot", "toot", count, count, "pg", pg)
 			d.StreamListItem(ctx, toot)
 			if count >= limit {
 				break
@@ -190,6 +190,51 @@ func listWeeklyActivity(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 	}
 
 	return nil, nil
+}
+
+func searchHashtag(query string, ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	client, err := connect(ctx, d)
+	if err != nil {
+		return nil, fmt.Errorf("unable to establish a connection: %v", err)
+	}
+
+	results, _ := client.Search(context.Background(), query, false)
+	hashtags := results.Hashtags
+	for _, activity := range hashtags {
+		d.StreamListItem(ctx, activity)
+	}
+
+	return nil, nil
+}
+
+func hashtagColumns() []*plugin.Column {
+	return []*plugin.Column{
+		{
+			Name:        "name",
+			Type:        proto.ColumnType_STRING,
+			Description: "Name of the hashtag.",
+			Transform:   transform.FromField("Name"),
+		},
+		{
+			Name:        "url",
+			Type:        proto.ColumnType_STRING,
+			Description: "Url for the hashtag.",
+			Transform:   transform.FromField("URL"),
+		},
+		{
+			Name:        "history",
+			Type:        proto.ColumnType_JSON,
+			Description: "Recent uses by day.",
+			Transform:   transform.FromField("History"),
+		},
+		{
+			Name:        "query",
+			Type:        proto.ColumnType_STRING,
+			Description: "Query used to search hashtags.",
+			Transform:   transform.FromQual("query"),
+		},
+
+	}
 }
 
 func week(ctx context.Context, input *transform.TransformData) (interface{}, error) {

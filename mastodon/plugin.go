@@ -17,6 +17,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"mastodon_local_toot":      tableMastodonLocalToot(),
 			"mastodon_federated_toot":  tableMastodonFederatedToot(),
 			"mastodon_search_status":   tableMastodonSearchStatus(),
+			"mastodon_search_hashtag": tableMastodonSearchHashtag(),
 			"mastodon_weekly_activity": tableMastodonWeeklyActivity(),
 		},
 	}

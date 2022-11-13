@@ -1,6 +1,6 @@
 # Mastodon plugin for Steampipe
 
-Use SQL to instantly query Mastodon timelines and more. Open source CLI. No DB required.
+Use SQL to instantly query Mastodon timelines and more. Open source CLI. No DB  required.
 
 ## Quick start
 
