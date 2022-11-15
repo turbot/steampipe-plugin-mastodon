@@ -84,12 +84,12 @@ func tootColumns() []*plugin.Column {
 			Transform:   transform.FromGo(),
 		},
 		{
-			Name: 		"in_reply_to_account_id",
+			Name:        "in_reply_to_account_id",
 			Type:        proto.ColumnType_STRING,
 			Description: "If the toot is a reply, the ID of the replied-to toot's account.",
 		},
 		{
-			Name: 		"reblog",
+			Name:        "reblog",
 			Type:        proto.ColumnType_JSON,
 			Description: "Reblogs of the toot.",
 		},
@@ -157,4 +157,3 @@ func listToots(timeline string, query string, ctx context.Context, d *plugin.Que
 
 	return nil, nil
 }
-

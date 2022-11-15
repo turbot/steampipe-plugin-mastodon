@@ -20,7 +20,6 @@ func tableMastodonSearchHashtag() *plugin.Table {
 	}
 }
 
-
 func hashtagColumns() []*plugin.Column {
 	return []*plugin.Column{
 		{
@@ -44,7 +43,6 @@ func hashtagColumns() []*plugin.Column {
 			Description: "Query used to search hashtags.",
 			Transform:   transform.FromQual("query"),
 		},
-
 	}
 }
 
@@ -62,7 +60,6 @@ func searchHashtag(query string, ctx context.Context, d *plugin.QueryData, h *pl
 
 	return nil, nil
 }
-
 
 func listHashtag(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	quals := d.KeyColumnQuals

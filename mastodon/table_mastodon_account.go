@@ -14,7 +14,7 @@ func tableMastodonAccount() *plugin.Table {
 	return &plugin.Table{
 		Name: "mastodon_account",
 		List: &plugin.ListConfig{
-			Hydrate: listAccount,
+			Hydrate:    listAccount,
 			KeyColumns: plugin.SingleColumn("id"),
 		},
 		Columns: accountColumns(),
@@ -81,5 +81,3 @@ func listAccount(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData
 
 	return nil, nil
 }
-
-
