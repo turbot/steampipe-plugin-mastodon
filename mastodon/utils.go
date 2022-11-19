@@ -2,6 +2,7 @@ package mastodon
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/mattn/go-mastodon"
@@ -108,52 +109,85 @@ func listToots(timeline string, query string, ctx context.Context, d *plugin.Que
 		return nil, fmt.Errorf("unable to establish a connection: %v", err)
 	}
 
-	limit := d.QueryContext.GetLimit()
-	if limit == -1 {
-		limit = 40
-	}
-
-	apiLimit := int64(20)
-	pg := mastodon.Pagination{Limit: apiLimit}
+	postgresLimit := d.QueryContext.GetLimit()
+	plugin.Logger(ctx).Debug("toots", "limit", postgresLimit)
 
 	page := 0
+	apiMaxPerPage := 20
 	count := int64(0)
+	pg := mastodon.Pagination{}
+
 	for {
 		page++
-		//plugin.Logger(ctx).Warn("listToots", "count", count, "pg", pg, "page", page)
+		plugin.Logger(ctx).Debug("toot", "page", page )
 		toots := []*mastodon.Status{}
 		if timeline == "home" {
-			list, _ := client.GetTimelineHome(context.Background(), &pg)
+			list, err := client.GetTimelineHome(context.Background(), &pg)
+			plugin.Logger(ctx).Debug("listToots: home", "pg", fmt.Sprintf("%+v", pg))
+			if err != nil {
+				return handleError(ctx, err)
+			}
+			toots = list
+		} else
+		if timeline == "direct" {
+			list, err := client.GetTimelineDirect(context.Background(), &pg)
+			plugin.Logger(ctx).Debug("listToots: direct", "pg", fmt.Sprintf("%+v", pg))
+			if err != nil {
+				return handleError(ctx, err)
+			}
 			toots = list
 		} else if timeline == "local" {
-			list, _ := client.GetTimelinePublic(context.Background(), true, &pg)
+			list, err := client.GetTimelinePublic(context.Background(), true, &pg)
+			if err != nil {
+				return handleError(ctx, err)
+			}
 			toots = list
 		} else if timeline == "federated" {
-			list, _ := client.GetTimelinePublic(context.Background(), false, &pg)
-			toots = list
-		} else if timeline == "search_status" {
-			results, _ := client.Search(context.Background(), query, false)
-			toots = results.Statuses
-			tootCount := int64(len(toots))
-			if tootCount <= apiLimit {
-				limit = tootCount
+			list, err := client.GetTimelinePublic(context.Background(), false, &pg)
+			if err != nil {
+				return handleError(ctx, err)
 			}
-		} else {
-			plugin.Logger(ctx).Warn("listToots", "unknown timeline", timeline)
+			toots = list
+			} else if timeline == "search_status" {
+				results, err := client.Search(context.Background(), query, false)
+				plugin.Logger(ctx).Debug("listToots: search_status", "pg", fmt.Sprintf("%+v", pg))
+				if err != nil {
+					return handleError(ctx, err)
+				}
+				toots = results.Statuses
+			} else {
+			return handleError(ctx, errors.New("listToots: unknown timeline " + timeline))
 		}
+
+		tootsThisPage := int64(len(toots))
+		plugin.Logger(ctx).Debug("toots", "tootsThisPage", tootsThisPage)
+		if page == 1 && tootsThisPage < int64(apiMaxPerPage) {
+			postgresLimit = tootsThisPage
+			plugin.Logger(ctx).Debug("toots", "new limit (page == 1 && tootsThisPage < apiMaxPerPage)", postgresLimit)
+		}
+
 		for _, toot := range toots {
 			count++
-			//plugin.Logger(ctx).Warn("toot", "toot", count, count, "pg", pg)
+			plugin.Logger(ctx).Debug("toot", "count", count, )
 			d.StreamListItem(ctx, toot)
-			if count >= limit {
+			plugin.Logger(ctx).Debug("toots inner break?", "count", count, "limit", postgresLimit)
+			if postgresLimit != -1 && count >= postgresLimit {
+				plugin.Logger(ctx).Debug("toots inner break", "postgresLimit", postgresLimit)
 				break
 			}
 		}
-		if count >= limit {
+		plugin.Logger(ctx).Debug("toots outer break?", "count", count, "limit", postgresLimit)
+		if postgresLimit != -1 && count >= postgresLimit {
+			plugin.Logger(ctx).Debug("toots outer break", "postgresLimit", postgresLimit)
 			break
 		}
 		pg.MinID = ""
 	}
 
 	return nil, nil
+}
+
+func handleError(ctx context.Context, err error) (interface{}, error) {
+	plugin.Logger(ctx).Debug("listToots", "error", )
+	return nil, fmt.Errorf("listToots error: %v", err)
 }

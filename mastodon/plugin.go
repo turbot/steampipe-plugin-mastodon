@@ -18,6 +18,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		TableMap: map[string]*plugin.Table{
 			"mastodon_account":         tableMastodonAccount(),
 			"mastodon_home_toot":       tableMastodonHomeToot(),
+			"mastodon_direct_toot":     tableMastodonDirectToot(),
 			"mastodon_local_toot":      tableMastodonLocalToot(),
 			"mastodon_federated_toot":  tableMastodonFederatedToot(),
 			"mastodon_search_status":   tableMastodonSearchStatus(),
@@ -28,3 +29,4 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 
 	return p
 }
+
