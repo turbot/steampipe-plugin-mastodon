@@ -9,21 +9,19 @@ Search Mastodon hashtags
 ```sql
 with data as (
   select 
-    name, 
+    name,
+    url,
     ( jsonb_array_elements(history) ->> 'uses' )::int as uses 
   from 
     mastodon_search_hashtag 
   where 
     query = 'science'
-  ),
+  )
   select 
-    u.name,
-    sum(uses) 
+    d.name,
+    sum(d.uses) 
   from 
     data d
-  join
-    rss_item r
-  on r.feed_link = d.url || '.rss'
   group 
     by name 
   order by sum desc

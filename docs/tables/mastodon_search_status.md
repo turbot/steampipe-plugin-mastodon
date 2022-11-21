@@ -13,7 +13,8 @@ select
   url,
   content
 from
-  mastodon_search_status
+  mastodon_toot
 where
-  query = 'twitter'
+  timeline = 'search_status'
+  and query = 'twitter'
 ```
