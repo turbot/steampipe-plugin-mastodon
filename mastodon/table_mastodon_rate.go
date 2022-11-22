@@ -12,7 +12,7 @@ import (
 
 type mastodonRate struct {
 	Remaining int64     `json:"remaining"`
-	Limit     int64     `json:"limit"`
+	Max       int64     `json:"max"`
 	Reset     time.Time `json:"reset"`
 }
 
@@ -34,7 +34,7 @@ func rateColumns() []*plugin.Column {
 			Description: "Number of API calls remaining until next reset.",
 		},
 		{
-			Name:        "limit",
+			Name:        "max",
 			Type:        proto.ColumnType_INT,
 			Description: "Limit of API calls per 5-minute interval. ",
 		},
@@ -56,14 +56,14 @@ func listRateLimit(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 	res, _ := client.Do(req)
 	header := res.Header
 	remaining, _ := strconv.ParseInt(header["X-Ratelimit-Remaining"][0], 10, 64)
-	limit, _ := strconv.ParseInt(header["X-Ratelimit-Limit"][0], 10, 64)
+	max, _ := strconv.ParseInt(header["X-Ratelimit-Limit"][0], 10, 64)
 	resetStr := header["X-Ratelimit-Reset"][0]
 	plugin.Logger(ctx).Warn("reset", "reset", resetStr, "truncated", resetStr[0:10])
 	resetTimestamp, _ := time.Parse(time.RFC3339, resetStr)
 
 	rate := mastodonRate{
 		Remaining: remaining,
-		Limit:     limit,
+		Max:       max,
 		Reset:     resetTimestamp,
 	}
 

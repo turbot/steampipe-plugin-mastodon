@@ -1,6 +1,6 @@
 # Table: mastodon_rate
 
-List Mastodon rate limit, calls remaining, and next reset time
+List Mastodon rate-limit info
 
 ## Examples
 
@@ -8,6 +8,7 @@ List Mastodon rate limit, calls remaining, and next reset time
 
 ```sql
 select
+  max,
   remaining,
   reset
 from
