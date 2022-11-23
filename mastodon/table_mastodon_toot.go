@@ -138,33 +138,33 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 		plugin.Logger(ctx).Debug("toot", "page", page)
 		toots := []*mastodon.Status{}
 		if timeline == "home" {
-			list, err := client.GetTimelineHome(context.Background(), &pg)
+			list, err := client.GetTimelineHome(ctx, &pg)
 			toots = list
 			plugin.Logger(ctx).Debug("listToots: home", "pg", fmt.Sprintf("%+v", pg), "list", len(toots))
 			if err != nil {
 				return handleError(ctx, err)
 			}
 		} else if timeline == "direct" {
-			list, err := client.GetTimelineDirect(context.Background(), &pg)
+			list, err := client.GetTimelineDirect(ctx, &pg)
 			toots = list
 			if err != nil {
 				return handleError(ctx, err)
 			}
 		} else if timeline == "local" {
-			list, err := client.GetTimelinePublic(context.Background(), true, &pg)
+			list, err := client.GetTimelinePublic(ctx, true, &pg)
 			toots = list
 			if err != nil {
 				return handleError(ctx, err)
 			}
 		} else if timeline == "remote" {
-			list, err := client.GetTimelinePublic(context.Background(), false, &pg)
+			list, err := client.GetTimelinePublic(ctx, false, &pg)
 			toots = list
 			if err != nil {
 				return handleError(ctx, err)
 			}
 		} else if timeline == "search_status" {
 			plugin.Logger(ctx).Debug("listToots: search_status", "query", query, "pg", fmt.Sprintf("%+v", pg))
-			results, err := client.Search(context.Background(), query, false)
+			results, err := client.Search(ctx, query, false)
 			plugin.Logger(ctx).Debug("listToots: search_status", "pg", fmt.Sprintf("%+v", pg))
 			if err != nil {
 				return handleError(ctx, err)

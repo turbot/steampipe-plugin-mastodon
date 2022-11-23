@@ -52,7 +52,7 @@ func searchHashtag(query string, ctx context.Context, d *plugin.QueryData, h *pl
 		return nil, fmt.Errorf("unable to establish a connection: %v", err)
 	}
 
-	results, err := client.Search(context.Background(), query, false)
+	results, err := client.Search(ctx, query, false)
 	if err != nil {
 		return nil, err
 	}

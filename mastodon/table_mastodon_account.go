@@ -76,7 +76,7 @@ func listAccount(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData
 	quals := d.KeyColumnQuals
 	id := quals["id"].GetStringValue()
 
-	account, err := client.GetAccount(context.Background(), mastodon.ID(id))
+	account, err := client.GetAccount(ctx, mastodon.ID(id))
 	if err != nil {
 		return nil, err
 	}
