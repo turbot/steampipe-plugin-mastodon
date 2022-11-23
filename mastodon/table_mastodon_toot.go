@@ -3,6 +3,7 @@ package mastodon
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
@@ -69,6 +70,7 @@ func tootColumns() []*plugin.Column {
 			Name:        "content",
 			Type:        proto.ColumnType_STRING,
 			Description: "Content of the toot.",
+			Transform:   transform.FromValue().Transform(sanitizeContent),
 		},
 		{
 			Name:        "followers",
@@ -106,7 +108,13 @@ func tootColumns() []*plugin.Column {
 		{
 			Name:        "reblog",
 			Type:        proto.ColumnType_JSON,
-			Description: "Reblogs of the toot.",
+			Description: "Reblog (boost) of the toot.",
+		},
+		{
+			Name:        "reblog_content",
+			Type:        proto.ColumnType_STRING,
+			Description: "Content of reblog (boost) of the toot.",
+			Transform:   transform.FromValue().Transform(sanitizeReblogContent),
 		},
 		{
 			Name:        "query",
@@ -205,6 +213,29 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 	return nil, nil
 
 }
+
+func sanitize(str string) string {
+	str = sanitizer.Sanitize(str)
+	str = strings.ReplaceAll(str, "&amp;", "&")
+	str = strings.ReplaceAll(str, "&#39;", "'")
+	str = strings.ReplaceAll(str, "&#34;", "\"")
+	return str
+}
+
+func sanitizeContent(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	status := input.Value.(*mastodon.Status)
+	return sanitize(status.Content), nil
+}
+
+func sanitizeReblogContent(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	status := input.Value.(*mastodon.Status)
+	reblog := status.Reblog
+	if reblog == nil {
+		return nil, nil
+	}
+	return sanitize(reblog.Content), nil
+}
+
 
 func handleError(ctx context.Context, err error) (interface{}, error) {
 	plugin.Logger(ctx).Debug("listToots", "error")

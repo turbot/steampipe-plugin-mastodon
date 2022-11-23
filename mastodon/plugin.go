@@ -3,6 +3,7 @@ package mastodon
 import (
 	"context"
 
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
 )
@@ -27,3 +28,5 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 
 	return p
 }
+
+var sanitizer = bluemonday.StrictPolicy().AddSpaceWhenStrippingTag(true)
