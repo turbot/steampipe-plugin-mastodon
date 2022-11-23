@@ -43,7 +43,7 @@ func notificationColumns() []*plugin.Column {
 			Name:        "url",
 			Type:        proto.ColumnType_STRING,
 			Description: "Account of notification sender.",
-			Transform:   transform.FromField("Status").Transform(url),
+			Transform:   transform.FromValue().Transform(url),
 		},
 	}
 }
@@ -77,10 +77,12 @@ func category(ctx context.Context, input *transform.TransformData) (interface{},
 }
 
 func url(ctx context.Context, input *transform.TransformData) (interface{}, error) {
-	status := input.Value.(*mastodon.Status)
+	notification := input.Value.(*mastodon.Notification)
 	url := ""
-	if status != nil {
-		url = status.URL
+	if notification.Status != nil {
+		url = notification.Status.URL
+	} else {
+		url = notification.Account.URL
 	}
 	return url, nil
 }
