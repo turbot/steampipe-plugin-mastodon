@@ -236,7 +236,6 @@ func sanitizeReblogContent(ctx context.Context, input *transform.TransformData) 
 	return sanitize(reblog.Content), nil
 }
 
-
 func handleError(ctx context.Context, err error) (interface{}, error) {
 	plugin.Logger(ctx).Debug("listToots", "error")
 	return nil, fmt.Errorf("listToots error: %v", err)
