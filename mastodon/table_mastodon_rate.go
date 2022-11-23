@@ -51,7 +51,10 @@ func listRateLimit(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 	token := *config.AccessToken
 	url := "https://mastodon.social/api/v1/notifications"
 	client := &http.Client{}
-	req, _ := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
 	req.Header.Set("Authorization", "Bearer "+token)
 	res, _ := client.Do(req)
 	header := res.Header

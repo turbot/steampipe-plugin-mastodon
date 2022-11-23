@@ -52,7 +52,11 @@ func searchHashtag(query string, ctx context.Context, d *plugin.QueryData, h *pl
 		return nil, fmt.Errorf("unable to establish a connection: %v", err)
 	}
 
-	results, _ := client.Search(context.Background(), query, false)
+	results, err := client.Search(context.Background(), query, false)
+	if err != nil {
+		return nil, err
+	}
+
 	hashtags := results.Hashtags
 	for _, activity := range hashtags {
 		d.StreamListItem(ctx, activity)

@@ -53,7 +53,11 @@ func listWeeklyActivity(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 		return nil, fmt.Errorf("unable to establish a connection: %v", err)
 	}
 
-	instanceActivity, _ := client.GetInstanceActivity(ctx)
+	instanceActivity, err := client.GetInstanceActivity(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	for _, activity := range instanceActivity {
 		d.StreamListItem(ctx, activity)
 	}
