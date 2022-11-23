@@ -61,7 +61,7 @@ func listRateLimit(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 	remaining, _ := strconv.ParseInt(header["X-Ratelimit-Remaining"][0], 10, 64)
 	max, _ := strconv.ParseInt(header["X-Ratelimit-Limit"][0], 10, 64)
 	resetStr := header["X-Ratelimit-Reset"][0]
-	plugin.Logger(ctx).Warn("reset", "reset", resetStr, "truncated", resetStr[0:10])
+	plugin.Logger(ctx).Debug("reset", "reset", resetStr, "truncated", resetStr[0:10])
 	resetTimestamp, _ := time.Parse(time.RFC3339, resetStr)
 
 	rate := mastodonRate{
