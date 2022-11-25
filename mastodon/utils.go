@@ -26,12 +26,16 @@ func accountColumns() []*plugin.Column {
 			Name:        "id",
 			Type:        proto.ColumnType_STRING,
 			Description: "ID of the account.",
-//			Transform:   transform.FromQual("id"),
 		},
 		{
 			Name:        "acct",
 			Type:        proto.ColumnType_STRING,
 			Description: "username@server for the account.",
+		},
+		{
+			Name:        "url",
+			Type:        proto.ColumnType_STRING,
+			Description: "URL for the account.",
 		},
 		{
 			Name:        "username",
@@ -62,6 +66,7 @@ func accountColumns() []*plugin.Column {
 			Name:        "note",
 			Type:        proto.ColumnType_STRING,
 			Description: "Description of the account.",
+			Transform:   transform.FromValue().Transform(sanitizeNote),
 		},
 		{
 			Name:        "query",
@@ -70,4 +75,9 @@ func accountColumns() []*plugin.Column {
 			Transform:   transform.FromQual("query"),
 		},
 	}
+}
+
+func sanitizeNote(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	account := input.Value.(*mastodon.Account)
+	return sanitize(account.Note), nil
 }
