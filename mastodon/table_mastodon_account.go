@@ -19,7 +19,6 @@ func tableMastodonAccount() *plugin.Table {
 	}
 }
 
-
 func listAccount(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	client, err := connect(ctx, d)
 	if err != nil {

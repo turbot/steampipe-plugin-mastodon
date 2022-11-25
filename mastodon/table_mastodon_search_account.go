@@ -18,7 +18,6 @@ func tableMastodonSearchAccount() *plugin.Table {
 					Require: plugin.Required,
 				},
 			},
-
 		},
 		Columns: accountColumns(),
 	}
@@ -48,4 +47,3 @@ func listSearchAccount(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	query := quals["query"].GetStringValue()
 	return searchAccount(query, ctx, d, h)
 }
-
