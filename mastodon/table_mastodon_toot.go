@@ -101,6 +101,12 @@ func tootColumns() []*plugin.Column {
 			Transform:   transform.FromGo(),
 		},
 		{
+			Name:        "account_url",
+			Type:        proto.ColumnType_STRING,
+			Description: "Account URL for toot author.",
+			Transform:   transform.FromValue().Transform(account_url),
+		},
+		{
 			Name:        "in_reply_to_account_id",
 			Type:        proto.ColumnType_STRING,
 			Description: "If the toot is a reply, the ID of the replied-to toot's account.",
@@ -212,6 +218,11 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 
 	return nil, nil
 
+}
+
+func account_url(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	status := input.Value.(*mastodon.Status)
+	return status.Account.URL, nil
 }
 
 func sanitize(str string) string {
