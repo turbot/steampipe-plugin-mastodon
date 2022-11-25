@@ -226,14 +226,11 @@ func account_url(ctx context.Context, input *transform.TransformData) (interface
 }
 
 func sanitize(str string) string {
-	return str
-	/*
 	str = sanitizer.Sanitize(str)
 	str = strings.ReplaceAll(str, "&amp;", "&")
 	str = strings.ReplaceAll(str, "&#39;", "'")
 	str = strings.ReplaceAll(str, "&#34;", "\"")
 	return str
-	*/
 }
 
 func sanitizeContent(ctx context.Context, input *transform.TransformData) (interface{}, error) {
