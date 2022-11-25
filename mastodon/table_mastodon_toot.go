@@ -226,11 +226,14 @@ func account_url(ctx context.Context, input *transform.TransformData) (interface
 }
 
 func sanitize(str string) string {
+	return str
+	/*
 	str = sanitizer.Sanitize(str)
 	str = strings.ReplaceAll(str, "&amp;", "&")
 	str = strings.ReplaceAll(str, "&#39;", "'")
 	str = strings.ReplaceAll(str, "&#34;", "\"")
 	return str
+	*/
 }
 
 func sanitizeContent(ctx context.Context, input *transform.TransformData) (interface{}, error) {
@@ -246,7 +249,6 @@ func sanitizeReblogContent(ctx context.Context, input *transform.TransformData) 
 	}
 	return sanitize(reblog.Content), nil
 }
-
 
 func handleError(ctx context.Context, err error) (interface{}, error) {
 	plugin.Logger(ctx).Debug("listToots", "error")
