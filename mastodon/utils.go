@@ -2,8 +2,12 @@ package mastodon
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+	"net/http"
 
 	"github.com/mattn/go-mastodon"
+	"github.com/tomnomnom/linkheader"
 	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
@@ -75,6 +79,70 @@ func accountColumns() []*plugin.Column {
 			Transform:   transform.FromQual("query"),
 		},
 	}
+}
+
+// This is a workaround for the upstream SDK's doGet() method which intends to handle link-based pagination but seems to fail for:
+//
+// https://pkg.go.dev/github.com/mattn/go-mastodon#Client.GetAccountFollowers
+// https://pkg.go.dev/github.com/mattn/go-mastodon#Client.GetAccountFollowing
+//
+// The workaround sacrifices the exponential backoff provided by the SDK's doGet().
+
+func listFollows(ctx context.Context, category string, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	client, err := connect(ctx, d)
+	if err != nil {
+		return nil, err
+	}
+	config := GetConfig(d.Connection)
+	token := *config.AccessToken
+
+	accountCurrentUser, err := client.GetAccountCurrentUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	url := fmt.Sprintf("https://mastodon.social/api/v1/accounts/%s/%s", accountCurrentUser.ID, category)
+	plugin.Logger(ctx).Debug("follow", "category", category, "initial url", url)
+	httpClient := &http.Client{}
+	for {
+		pageAccounts := []*mastodon.Account{}
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			fmt.Println(err)
+		}
+		req.Header.Set("Authorization", "Bearer "+token)
+		res, err := httpClient.Do(req)
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer res.Body.Close()
+		decoder := json.NewDecoder(res.Body)
+		err = decoder.Decode(&pageAccounts)
+		if err != nil {
+			fmt.Println(err)
+		}
+		plugin.Logger(ctx).Debug("follows", "category", category, "pageAccounts", len(pageAccounts))
+		for i, account := range pageAccounts {
+			plugin.Logger(ctx).Debug("followers", "i", i, "account", account)
+			d.StreamListItem(ctx, account)
+		}
+		header := res.Header
+		newUrl := ""
+		for _, link := range linkheader.Parse(header.Get("Link")) {
+			if link.Rel == "next" {
+				newUrl = link.URL
+			}
+		}
+		plugin.Logger(ctx).Debug("followers", "newUrl", newUrl)
+		if newUrl == "" {
+			break
+		} else {
+			url = newUrl
+		}
+
+	}
+
+	return nil, nil
 }
 
 func sanitizeNote(ctx context.Context, input *transform.TransformData) (interface{}, error) {
