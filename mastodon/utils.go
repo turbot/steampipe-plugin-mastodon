@@ -37,6 +37,11 @@ func accountColumns() []*plugin.Column {
 			Description: "username@server for the account.",
 		},
 		{
+			Name:        "created_at",
+			Type:        proto.ColumnType_TIMESTAMP,
+			Description: "Timestamp when the account was created.",
+		},
+		{
 			Name:        "url",
 			Type:        proto.ColumnType_STRING,
 			Description: "URL for the account.",
