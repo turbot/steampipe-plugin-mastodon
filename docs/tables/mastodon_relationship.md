@@ -9,24 +9,23 @@ List relationship details for Mastodon accounts
 ```sql
 with following as (
   select
-    jsonb_agg(id) as ids
+    *
   from
     mastodon_following
+  where
+    created_at < date('2017-01-01')
 )
-select 
-  m.id,
-  m.following,
-  m.followed_by,
-  m.showing_reblogs,
-  m.blocking,
-  m.muting_notifications,
-  m.requested,
-  m.domain_blocking,
-  m.endorsed
+select
+  f.url,
+  f.created_at,
+  f.display_name,
+  m.followed_by
 from
   following f
 join
   mastodon_relationship m
 on
-  f.ids = m.ids
+  f.id = m.id
+order by
+  created_at
 ```

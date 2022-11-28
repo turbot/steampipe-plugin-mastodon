@@ -9,7 +9,6 @@ import (
 	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
 )
 
 func tableMastodonRelationship() *plugin.Table {
@@ -17,7 +16,7 @@ func tableMastodonRelationship() *plugin.Table {
 		Name: "mastodon_relationship",
 		List: &plugin.ListConfig{
 			Hydrate:    listRelationships,
-			KeyColumns: plugin.SingleColumn("ids"),
+			KeyColumns: plugin.SingleColumn("id"),
 		},
 		Columns: relationshipColumns(),
 	}
@@ -34,12 +33,6 @@ func relationshipColumns() []*plugin.Column {
 			Name:        "following",
 			Type:        proto.ColumnType_BOOL,
 			Description: "Are you following this person?",
-		},
-		{
-			Name:        "ids",
-			Type:        proto.ColumnType_JSON,
-			Description: "Target accounts to query for relationships.",
-			Transform:   transform.FromQual("ids"),
 		},
 		{
 			Name:        "followed_by",
@@ -89,20 +82,10 @@ func listRelationships(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	token := *config.AccessToken
 
 
-	quals := d.KeyColumnQualString("ids")
-	plugin.Logger(ctx).Debug("relationships", "quals", quals)
+	id := d.KeyColumnQuals["id"].GetStringValue()
+	plugin.Logger(ctx).Debug("relationships", "id", id)
 
-	ids := []string{}
-	json.Unmarshal([]byte(quals), &ids)
-
-	plugin.Logger(ctx).Debug("relationships", "ids", ids)
-
-	params := ""
-	for _, id := range ids {
-		params += "id[]=" + id + "&"
-	}
-
-	url := fmt.Sprintf("https://mastodon.social/api/v1/accounts/relationships?%s", params)
+	url := fmt.Sprintf("https://mastodon.social/api/v1/accounts/relationships?id[]=%s", id)
 	plugin.Logger(ctx).Debug("relationships", "url", url)
 	httpClient := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
@@ -121,11 +104,8 @@ func listRelationships(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	if err != nil {
 		fmt.Println(err)
 	}
-	plugin.Logger(ctx).Debug("relationships", "ids", ids, "relationships", relationships)
-	for i, relationship := range relationships {
-		plugin.Logger(ctx).Debug("relationships", "i", i, "relationship", fmt.Sprintf("%+v", relationship))
-		d.StreamListItem(ctx, relationship)
-	}
+	plugin.Logger(ctx).Debug("relationships", "id", id, "relationship", relationships[0])
+	d.StreamListItem(ctx, relationships[0])
 
 	return nil, nil
 }
