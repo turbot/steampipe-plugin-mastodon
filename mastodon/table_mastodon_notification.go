@@ -35,16 +35,28 @@ func notificationColumns() []*plugin.Column {
 		},
 		{
 			Name:        "account",
-			Type:        proto.ColumnType_STRING,
+			Type:        proto.ColumnType_JSON,
 			Description: "Account of notification sender.",
-			Transform:   transform.FromJSONTag().Transform(account),
 		},
 		{
-			Name:        "url",
+			Name:        "display_name",
 			Type:        proto.ColumnType_STRING,
-			Description: "Account of notification sender.",
-			Transform:   transform.FromValue().Transform(url),
+			Description: "Display name of notification sender.",
+			Transform:   transform.FromValue().Transform(notification_display_name),
 		},
+		{
+			Name:        "account_url",
+			Type:        proto.ColumnType_STRING,
+			Description: "Account URL of notification sender.",
+			Transform:   transform.FromValue().Transform(notification_account_url),
+		},
+		{
+			Name:        "status_url",
+			Type:        proto.ColumnType_STRING,
+			Description: "Status URL of the notification (if any).",
+			Transform:   transform.FromValue().Transform(notification_status_url),
+		},
+
 	}
 }
 
@@ -66,23 +78,26 @@ func listNotifications(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 
 }
 
-func account(ctx context.Context, input *transform.TransformData) (interface{}, error) {
-	account := input.Value.(mastodon.Account)
-	return account.Acct, nil
-}
-
 func category(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	notification := input.Value.(*mastodon.Notification)
 	return notification.Type, nil
 }
 
-func url(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+func notification_display_name(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	notification := input.Value.(*mastodon.Notification)
+		return notification.Account.DisplayName, nil
+}
+
+func notification_account_url(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	notification := input.Value.(*mastodon.Notification)
+		return notification.Account.URL, nil
+}
+
+func notification_status_url(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	notification := input.Value.(*mastodon.Notification)
 	url := ""
 	if notification.Status != nil {
 		url = notification.Status.URL
-	} else {
-		url = notification.Account.URL
 	}
 	return url, nil
 }
