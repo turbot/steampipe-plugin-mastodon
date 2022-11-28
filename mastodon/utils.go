@@ -150,6 +150,7 @@ func listFollows(ctx context.Context, category string, d *plugin.QueryData, h *p
 	return nil, nil
 }
 
+
 func sanitizeNote(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	account := input.Value.(*mastodon.Account)
 	return sanitize(account.Note), nil
