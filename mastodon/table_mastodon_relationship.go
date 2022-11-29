@@ -77,6 +77,12 @@ func relationshipColumns() []*plugin.Column {
 	}
 }
 
+// This is a workaround for the upstream SDK's https://pkg.go.dev/github.com/mattn/go-mastodon#Client.GetAccountRelationships
+//
+//  It seems that although the URL for multiple IDS is correctly formed as `id[]=1&id[]=2` only the first item
+//  is returned. For my purposes, I only need one at at time so I could use the SDK function, but this is here because
+//  I originally had a version that takes and returns multiple and might need it again.
+
 func listRelationships(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	config := GetConfig(d.Connection)
 	token := *config.AccessToken
