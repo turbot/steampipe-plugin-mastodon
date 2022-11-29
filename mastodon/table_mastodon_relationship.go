@@ -87,7 +87,6 @@ func listRelationships(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	config := GetConfig(d.Connection)
 	token := *config.AccessToken
 
-
 	id := d.KeyColumnQuals["id"].GetStringValue()
 	plugin.Logger(ctx).Debug("relationships", "id", id)
 
@@ -98,7 +97,7 @@ func listRelationships(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	if err != nil {
 		fmt.Println(err)
 	}
-	req.Header.Set("Authorization", "Bearer " + token)
+	req.Header.Set("Authorization", "Bearer "+token)
 	res, err := httpClient.Do(req)
 	if err != nil {
 		fmt.Println(err)
@@ -115,4 +114,3 @@ func listRelationships(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 
 	return nil, nil
 }
-

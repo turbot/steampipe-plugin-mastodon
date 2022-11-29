@@ -56,7 +56,6 @@ func notificationColumns() []*plugin.Column {
 			Description: "Status URL of the notification (if any).",
 			Transform:   transform.FromValue().Transform(notification_status_url),
 		},
-
 	}
 }
 
@@ -85,12 +84,12 @@ func category(ctx context.Context, input *transform.TransformData) (interface{},
 
 func notification_display_name(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	notification := input.Value.(*mastodon.Notification)
-		return notification.Account.DisplayName, nil
+	return notification.Account.DisplayName, nil
 }
 
 func notification_account_url(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	notification := input.Value.(*mastodon.Notification)
-		return notification.Account.URL, nil
+	return notification.Account.URL, nil
 }
 
 func notification_status_url(ctx context.Context, input *transform.TransformData) (interface{}, error) {
