@@ -229,6 +229,8 @@ func sanitize(str string) string {
 	str = sanitizer.Sanitize(str)
 	str = strings.ReplaceAll(str, "&amp;", "&")
 	str = strings.ReplaceAll(str, "&#39;", "'")
+	str = strings.ReplaceAll(str, "&gt;", ">")
+	str = strings.ReplaceAll(str, "&lt;", "<")
 	str = strings.ReplaceAll(str, "&#34;", "\"")
 	return str
 }
