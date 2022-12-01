@@ -109,8 +109,10 @@ func listRelationships(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	if err != nil {
 		fmt.Println(err)
 	}
-	plugin.Logger(ctx).Debug("relationships", "id", id, "relationship", relationships[0])
-	d.StreamListItem(ctx, relationships[0])
+	plugin.Logger(ctx).Debug("relationships", "id", id, "relationship", relationships)
+	if len(relationships) > 0 {
+		d.StreamListItem(ctx, relationships[0])
+	}
 
 	return nil, nil
 }
