@@ -34,6 +34,11 @@ func notificationColumns() []*plugin.Column {
 			Description: "Timestamp when notification occurred.",
 		},
 		{
+			Name:        "id",
+			Type:        proto.ColumnType_STRING,
+			Description: "Account ID of notification sender.",
+		},
+		{
 			Name:        "account",
 			Type:        proto.ColumnType_JSON,
 			Description: "Account of notification sender.",
@@ -67,6 +72,7 @@ func listNotifications(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 
 	pg := mastodon.Pagination{Limit: 30}
 	notifications, err := client.GetNotifications(ctx, &pg)
+	plugin.Logger(ctx).Debug("listNotifications", "notifications", notifications)
 	if err != nil {
 		return nil, err
 	}
