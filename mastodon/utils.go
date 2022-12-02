@@ -86,6 +86,106 @@ func accountColumns() []*plugin.Column {
 	}
 }
 
+func tootColumns() []*plugin.Column {
+	return []*plugin.Column{
+		{
+			Name:        "timeline",
+			Type:        proto.ColumnType_STRING,
+			Description: "Timeline of the toot: home|direct|local|remote",
+			Transform:   transform.FromQual("timeline"),
+		},
+		{
+			Name:        "id",
+			Type:        proto.ColumnType_STRING,
+			Description: "ID of the toot.",
+		},
+		{
+			Name:        "created_at",
+			Type:        proto.ColumnType_TIMESTAMP,
+			Description: "Timestamp when the toot was created.",
+		},
+		{
+			Name:        "url",
+			Type:        proto.ColumnType_STRING,
+			Description: "URL for the toot.",
+		},
+		{
+			Name:        "display_name",
+			Type:        proto.ColumnType_STRING,
+			Description: "Display name for toot author.",
+			Transform:   transform.FromField("Account.DisplayName"),
+		},
+		{
+			Name:        "user_name",
+			Type:        proto.ColumnType_STRING,
+			Description: "Username for toot author.",
+			Transform:   transform.FromField("Account.Username"),
+		},
+		{
+			Name:        "content",
+			Type:        proto.ColumnType_STRING,
+			Description: "Content of the toot.",
+			Transform:   transform.FromValue().Transform(sanitizeContent),
+		},
+		{
+			Name:        "followers",
+			Type:        proto.ColumnType_JSON,
+			Description: "Follower count for toot author.",
+			Transform:   transform.FromField("Account.FollowersCount"),
+		},
+		{
+			Name:        "following",
+			Type:        proto.ColumnType_JSON,
+			Description: "Following count for toot author.",
+			Transform:   transform.FromField("Account.FollowingCount"),
+		},
+		{
+			Name:        "replies_count",
+			Type:        proto.ColumnType_INT,
+			Description: "Reply count for toot.",
+		},
+		{
+			Name:        "reblogs_count",
+			Type:        proto.ColumnType_INT,
+			Description: "Boost count for toot.",
+		},
+		{
+			Name:        "account",
+			Type:        proto.ColumnType_JSON,
+			Description: "Account for toot author.",
+			Transform:   transform.FromGo(),
+		},
+		{
+			Name:        "account_url",
+			Type:        proto.ColumnType_STRING,
+			Description: "Account URL for toot author.",
+			Transform:   transform.FromValue().Transform(account_url),
+		},
+		{
+			Name:        "in_reply_to_account_id",
+			Type:        proto.ColumnType_STRING,
+			Description: "If the toot is a reply, the ID of the replied-to toot's account.",
+		},
+		{
+			Name:        "reblog",
+			Type:        proto.ColumnType_JSON,
+			Description: "Reblog (boost) of the toot.",
+		},
+		{
+			Name:        "reblog_content",
+			Type:        proto.ColumnType_STRING,
+			Description: "Content of reblog (boost) of the toot.",
+			Transform:   transform.FromValue().Transform(sanitizeReblogContent),
+		},
+		{
+			Name:        "query",
+			Type:        proto.ColumnType_STRING,
+			Description: "Query string to find toots.",
+			Transform:   transform.FromQual("query"),
+		},
+	}
+}
+
 // This is a workaround for the upstream SDK's doGet() method which intends to handle link-based pagination but seems to fail for:
 //
 // https://pkg.go.dev/github.com/mattn/go-mastodon#Client.GetAccountFollowers
@@ -148,6 +248,11 @@ func listFollows(ctx context.Context, category string, d *plugin.QueryData, h *p
 	}
 
 	return nil, nil
+}
+
+func handleError(ctx context.Context, from string, err error) (interface{}, error) {
+	plugin.Logger(ctx).Debug(from, "error")
+	return nil, fmt.Errorf("%s error: %v", from, err)
 }
 
 func sanitizeNote(ctx context.Context, input *transform.TransformData) (interface{}, error) {
