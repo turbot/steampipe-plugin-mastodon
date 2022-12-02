@@ -34,11 +34,6 @@ func notificationColumns() []*plugin.Column {
 			Description: "Timestamp when notification occurred.",
 		},
 		{
-			Name:        "id",
-			Type:        proto.ColumnType_STRING,
-			Description: "Account ID of notification sender.",
-		},
-		{
 			Name:        "account",
 			Type:        proto.ColumnType_JSON,
 			Description: "Account of notification sender.",
@@ -54,6 +49,12 @@ func notificationColumns() []*plugin.Column {
 			Type:        proto.ColumnType_STRING,
 			Description: "Account URL of notification sender.",
 			Transform:   transform.FromValue().Transform(notification_account_url),
+		},
+		{
+			Name:        "account_id",
+			Type:        proto.ColumnType_STRING,
+			Description: "Account ID of notification sender.",
+			Transform:   transform.FromValue().Transform(notification_account_id),
 		},
 		{
 			Name:        "status",
@@ -101,6 +102,11 @@ func notification_display_name(ctx context.Context, input *transform.TransformDa
 func notification_account_url(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	notification := input.Value.(*mastodon.Notification)
 	return notification.Account.URL, nil
+}
+
+func notification_account_id(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	notification := input.Value.(*mastodon.Notification)
+	return notification.Account.ID, nil
 }
 
 func notification_status_url(ctx context.Context, input *transform.TransformData) (interface{}, error) {
