@@ -56,6 +56,11 @@ func notificationColumns() []*plugin.Column {
 			Transform:   transform.FromValue().Transform(notification_account_url),
 		},
 		{
+			Name:        "status",
+			Type:        proto.ColumnType_JSON,
+			Description: "Status (toot) associated with notification (if any).",
+		},
+		{
 			Name:        "status_url",
 			Type:        proto.ColumnType_STRING,
 			Description: "Status URL of the notification (if any).",
