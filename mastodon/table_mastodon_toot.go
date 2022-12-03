@@ -45,11 +45,15 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 	apiMaxPerPage := 40
 	total := int64(0)
 	pg := mastodon.Pagination{Limit: int64(apiMaxPerPage)}
+	prevMaxID := pg.MaxID
 
 	for {
 		page++
 		count := 0
-		plugin.Logger(ctx).Debug("listToots", "page", page, "pg", pg)
+		plugin.Logger(ctx).Debug("listToots", "page", page, "pg", pg, "minID", pg.MinID, "maxID", pg.MaxID, "prevMaxID", prevMaxID, "sinceID", pg.SinceID)
+		if pg.MaxID == prevMaxID {
+			plugin.Logger(ctx).Debug("listToots: pg.MaxID == prevMaxID: rate limited? if so, the sdk is doing exponential backoff, keep waiting if you want to")
+		}
 		toots := []*mastodon.Status{}
 		if timeline == "home" {
 			list, err := client.GetTimelineHome(ctx, &pg)
@@ -99,18 +103,15 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 				break
 			}
 		}
-		if postgresLimit != -1 && count < apiMaxPerPage {
-			plugin.Logger(ctx).Debug("listToots", "new postgresLimit", postgresLimit)
-			postgresLimit = total
-		}
 		plugin.Logger(ctx).Debug("toots break?", "count", count, "total", total, "limit", postgresLimit)
-		if count < apiMaxPerPage || postgresLimit != -1 && total >= postgresLimit {
-			plugin.Logger(ctx).Debug("toots break: count < apiMaxPerPage || total >= postgresLimit")
+		if pg.MaxID == "" {
+			plugin.Logger(ctx).Debug("break: pg.MaxID is empty")
 			break
 		}
+
 		pg.MinID = ""
 		pg.Limit = int64(apiMaxPerPage)
-
+		prevMaxID = pg.MaxID
 	}
 
 	return nil, nil
