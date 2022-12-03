@@ -52,7 +52,7 @@ func listFavorites(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 		}
 		plugin.Logger(ctx).Debug("favorites break?", "count", count, "total", total, "limit", postgresLimit)
 		if postgresLimit != -1 && total >= postgresLimit {
-			plugin.Logger(ctx).Debug("favorites break: total >= postgres")
+			plugin.Logger(ctx).Debug("favorites break: total >= postgresLimit")
 			break
 		}
 		pg.MinID = ""

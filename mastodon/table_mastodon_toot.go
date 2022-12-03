@@ -43,12 +43,13 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 
 	page := 0
 	apiMaxPerPage := 20
-	count := int64(0)
-	pg := mastodon.Pagination{}
+	total := int64(0)
+	pg := mastodon.Pagination{Limit: int64(apiMaxPerPage)}
 
 	for {
 		page++
-		plugin.Logger(ctx).Debug("toot", "page", page)
+		count := 0
+		plugin.Logger(ctx).Debug("listToots", "page", page)
 		toots := []*mastodon.Status{}
 		if timeline == "home" {
 			list, err := client.GetTimelineHome(ctx, &pg)
@@ -88,27 +89,19 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 			return nil, nil
 		}
 
-		tootsThisPage := int64(len(toots))
-		plugin.Logger(ctx).Debug("toots", "tootsThisPage", tootsThisPage)
-		if page == 1 && tootsThisPage < int64(apiMaxPerPage) {
-			postgresLimit = tootsThisPage
-			plugin.Logger(ctx).Debug("toots", "new limit (page == 1 && tootsThisPage < apiMaxPerPage)", postgresLimit)
-		}
-
 		for _, toot := range toots {
+			total++
 			count++
-			plugin.Logger(ctx).Debug("toot", "count", count)
+			plugin.Logger(ctx).Debug("listToots", "count", count, "total", total)
 			d.StreamListItem(ctx, toot)
-			plugin.Logger(ctx).Debug("toots inner break?", "count", count, "limit", postgresLimit)
-			if postgresLimit != -1 && count >= postgresLimit {
-				plugin.Logger(ctx).Debug("toots inner break", "postgresLimit", postgresLimit)
-				break
-			}
 		}
-
-		plugin.Logger(ctx).Debug("toots outer break?", "count", count, "limit", postgresLimit)
-		if postgresLimit != -1 && count >= postgresLimit {
-			plugin.Logger(ctx).Debug("toots outer break", "postgresLimit", postgresLimit)
+		if count < apiMaxPerPage {
+			plugin.Logger(ctx).Debug("listToots", "new postgresLimit", postgresLimit)
+			postgresLimit = total
+		}
+		plugin.Logger(ctx).Debug("toots break?", "count", count, "total", total, "limit", postgresLimit)
+		if postgresLimit != -1 && total >= postgresLimit {
+			plugin.Logger(ctx).Debug("toots break: total >=  postgresLimit")
 			break
 		}
 		pg.MinID = ""
