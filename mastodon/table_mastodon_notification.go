@@ -73,7 +73,6 @@ func notificationColumns() []*plugin.Column {
 			Description: "Status content of the notification (if any).",
 			Transform:   transform.FromValue().Transform(notification_status_content),
 		},
-
 	}
 }
 
@@ -132,4 +131,3 @@ func notification_status_content(ctx context.Context, input *transform.Transform
 	}
 	return "", nil
 }
-
