@@ -94,12 +94,12 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 			count++
 			plugin.Logger(ctx).Debug("listToots", "count", count, "total", total)
 			d.StreamListItem(ctx, toot)
-			if total >= postgresLimit {
+			if postgresLimit != -1 && total >= postgresLimit {
 				plugin.Logger(ctx).Debug("listToots: inner loop reached postgres limit")
 				break
 			}
 		}
-		if count < apiMaxPerPage {
+		if postgresLimit != -1 && count < apiMaxPerPage {
 			plugin.Logger(ctx).Debug("listToots", "new postgresLimit", postgresLimit)
 			postgresLimit = total
 		}
