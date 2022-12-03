@@ -42,14 +42,14 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 	plugin.Logger(ctx).Debug("toots", "timeline", timeline, "limit", postgresLimit)
 
 	page := 0
-	apiMaxPerPage := 20
+	apiMaxPerPage := 40
 	total := int64(0)
 	pg := mastodon.Pagination{Limit: int64(apiMaxPerPage)}
 
 	for {
 		page++
 		count := 0
-		plugin.Logger(ctx).Debug("listToots", "page", page)
+		plugin.Logger(ctx).Debug("listToots", "page", page, "pg", pg)
 		toots := []*mastodon.Status{}
 		if timeline == "home" {
 			list, err := client.GetTimelineHome(ctx, &pg)
@@ -94,6 +94,10 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 			count++
 			plugin.Logger(ctx).Debug("listToots", "count", count, "total", total)
 			d.StreamListItem(ctx, toot)
+			if total >= postgresLimit {
+				plugin.Logger(ctx).Debug("listToots: inner loop reached postgres limit")
+				break
+			}
 		}
 		if count < apiMaxPerPage {
 			plugin.Logger(ctx).Debug("listToots", "new postgresLimit", postgresLimit)
@@ -105,6 +109,7 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 			break
 		}
 		pg.MinID = ""
+		pg.Limit = int64(apiMaxPerPage)
 
 	}
 
