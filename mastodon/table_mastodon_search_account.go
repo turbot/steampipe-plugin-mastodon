@@ -45,5 +45,6 @@ func searchAccount(query string, ctx context.Context, d *plugin.QueryData, h *pl
 func listSearchAccount(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	quals := d.KeyColumnQuals
 	query := quals["query"].GetStringValue()
+	plugin.Logger(ctx).Debug("searchAccount", "quals", d.Quals, "query", query)
 	return searchAccount(query, ctx, d, h)
 }
