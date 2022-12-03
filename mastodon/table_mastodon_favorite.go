@@ -51,7 +51,7 @@ func listFavorites(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 			postgresLimit = total
 		}
 		plugin.Logger(ctx).Debug("favorites break?", "count", count, "total", total, "limit", postgresLimit)
-		if total >= postgresLimit {
+		if postgresLimit != -1 && total >= postgresLimit {
 			plugin.Logger(ctx).Debug("favorites break: total >= postgres")
 			break
 		}
