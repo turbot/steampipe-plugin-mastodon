@@ -28,7 +28,7 @@ func listFavorites(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 	plugin.Logger(ctx).Debug("listFavorites", "limit", postgresLimit)
 
 	page := 0
-	apiMaxPerPage := 20
+	apiMaxPerPage := 40
 	total := int64(0)
 	pg := mastodon.Pagination{Limit: int64(apiMaxPerPage)}
 
@@ -45,18 +45,23 @@ func listFavorites(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 			count++
 			plugin.Logger(ctx).Debug("listFavorites", "count", count, "total", total)
 			d.StreamListItem(ctx, favorite)
+			if postgresLimit != -1 && total >= postgresLimit {
+				plugin.Logger(ctx).Debug("listFavorites: inner loop reached postgres limit")
+				break
+			}
+
 		}
-		if count < apiMaxPerPage {
+		if postgresLimit != -1 && count < apiMaxPerPage {
 			plugin.Logger(ctx).Debug("listFavorites", "new postgresLimit", postgresLimit)
 			postgresLimit = total
 		}
 		plugin.Logger(ctx).Debug("favorites break?", "count", count, "total", total, "limit", postgresLimit)
-		if postgresLimit != -1 && total >= postgresLimit {
-			plugin.Logger(ctx).Debug("favorites break: total >= postgresLimit")
+		if count < apiMaxPerPage || postgresLimit != -1 && total >= postgresLimit {
+			plugin.Logger(ctx).Debug("favorites break: count < apiMaxPerPage || total >= postgresLimit")
 			break
 		}
 		pg.MinID = ""
-
+		pg.Limit = int64(apiMaxPerPage)
 	}
 
 	return nil, nil
