@@ -67,6 +67,13 @@ func notificationColumns() []*plugin.Column {
 			Description: "Status URL of the notification (if any).",
 			Transform:   transform.FromValue().Transform(notification_status_url),
 		},
+		{
+			Name:        "status_content",
+			Type:        proto.ColumnType_STRING,
+			Description: "Status content of the notification (if any).",
+			Transform:   transform.FromValue().Transform(notification_status_content),
+		},
+
 	}
 }
 
@@ -117,3 +124,12 @@ func notification_status_url(ctx context.Context, input *transform.TransformData
 	}
 	return url, nil
 }
+
+func notification_status_content(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	notification := input.Value.(*mastodon.Notification)
+	if notification.Status != nil {
+		return sanitize(notification.Status.Content), nil
+	}
+	return "", nil
+}
+
