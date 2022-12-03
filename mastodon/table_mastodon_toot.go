@@ -104,8 +104,8 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 			postgresLimit = total
 		}
 		plugin.Logger(ctx).Debug("toots break?", "count", count, "total", total, "limit", postgresLimit)
-		if postgresLimit != -1 && total >= postgresLimit {
-			plugin.Logger(ctx).Debug("toots break: total >=  postgresLimit")
+		if count < apiMaxPerPage || postgresLimit != -1 && total >= postgresLimit {
+			plugin.Logger(ctx).Debug("toots break: count < apiMaxPerPage || total >= postgresLimit")
 			break
 		}
 		pg.MinID = ""
