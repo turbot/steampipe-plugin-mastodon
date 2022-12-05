@@ -83,6 +83,12 @@ func accountColumns() []*plugin.Column {
 			Description: "Query used to search hashtags.",
 			Transform:   transform.FromQual("query"),
 		},
+		{
+			Name:        "list_id",
+			Type:        proto.ColumnType_STRING,
+			Description: "List ID for account.",
+			Transform:   transform.FromQual("list_id"),
+		},
 	}
 }
 
