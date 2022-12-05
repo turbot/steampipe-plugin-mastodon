@@ -198,6 +198,72 @@ func tootColumns() []*plugin.Column {
 	}
 }
 
+func listMyToots(ctx context.Context, postgresLimit int64, d *plugin.QueryData) ([]*mastodon.Status, error) {
+	client, err := connect(ctx, d)
+	if err != nil {
+		return nil, err
+	}
+	config := GetConfig(d.Connection)
+	token := *config.AccessToken
+
+	accountCurrentUser, err := client.GetAccountCurrentUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	plugin.Logger(ctx).Debug("listMyToots", "postgresLimit", postgresLimit)
+	httpClient := &http.Client{}
+
+	allToots := []*mastodon.Status{}
+	maxID := ""
+	page := 0
+	count := int64(0)
+	for {
+		page++
+		url := fmt.Sprintf("https://mastodon.social/api/v1/accounts/%s/statuses?limit=40&exclude_replies=true&max_id=%s", accountCurrentUser.ID, maxID)
+		plugin.Logger(ctx).Debug("listMyToots", "page", page, "url", url)
+
+		toots := []*mastodon.Status{}
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			fmt.Println(err)
+		}
+		req.Header.Set("Authorization", "Bearer "+token)
+		res, err := httpClient.Do(req)
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer res.Body.Close()
+		decoder := json.NewDecoder(res.Body)
+		err = decoder.Decode(&toots)
+		if err != nil {
+			fmt.Println(err)
+		}
+		plugin.Logger(ctx).Debug("listMyToots", "toots", len(toots))
+		for i, toot := range toots {
+			count++
+			plugin.Logger(ctx).Debug("toot", "i", i, "count", count, "toot", toot.CreatedAt)
+			allToots = append(allToots, toot)
+			if postgresLimit != -1 && count >= postgresLimit {
+				plugin.Logger(ctx).Debug("at postgres limit, return allToots")
+				return allToots, nil
+			}
+		}
+		maxID = string(toots[0].ID)
+		if page == 10 {
+			plugin.Logger(ctx).Debug("page is 50, return allToots")
+			return allToots, nil
+		}
+		if maxID == "" {
+			plugin.Logger(ctx).Debug("maxID is empty, return allToots")
+			return allToots, nil
+		}
+
+	}
+
+}
+
+
 // This is a workaround for the upstream SDK's doGet() method which intends to handle link-based pagination but seems to fail for:
 //
 // https://pkg.go.dev/github.com/mattn/go-mastodon#Client.GetAccountFollowers

@@ -58,7 +58,14 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 		count := 0
 		plugin.Logger(ctx).Debug("listToots", "page", page, "pg", pg, "minID", pg.MinID, "maxID", pg.MaxID, "prevMaxID", prevMaxID)
 		toots := []*mastodon.Status{}
-		if timeline == "home" {
+		if timeline == "me" {
+			list, err := listMyToots(ctx, postgresLimit, d)
+			toots = list
+			plugin.Logger(ctx).Debug("listToots: me", "toots", len(toots))
+			if err != nil {
+				return handleError(ctx, "listToots: home", err)
+			}
+		} else if timeline == "home" {
 			list, err := client.GetTimelineHome(ctx, &pg)
 			toots = list
 			plugin.Logger(ctx).Debug("listToots: home", "pg", fmt.Sprintf("%+v", pg), "list", len(toots))
