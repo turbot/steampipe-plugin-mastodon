@@ -83,6 +83,12 @@ func accountColumns() []*plugin.Column {
 			Description: "Query used to search hashtags.",
 			Transform:   transform.FromQual("query"),
 		},
+		{
+			Name:        "list_id",
+			Type:        proto.ColumnType_STRING,
+			Description: "List ID for account.",
+			Transform:   transform.FromQual("list_id"),
+		},
 	}
 }
 
@@ -183,6 +189,12 @@ func tootColumns() []*plugin.Column {
 			Description: "Query string to find toots.",
 			Transform:   transform.FromQual("query"),
 		},
+		{
+			Name:        "list_id",
+			Type:        proto.ColumnType_STRING,
+			Description: "Id for a list that gathers toots.",
+			Transform:   transform.FromQual("list_id"),
+		},
 	}
 }
 
@@ -251,7 +263,6 @@ func listFollows(ctx context.Context, category string, d *plugin.QueryData, h *p
 }
 
 func handleError(ctx context.Context, from string, err error) (interface{}, error) {
-	plugin.Logger(ctx).Debug(from, "error")
 	return nil, fmt.Errorf("%s error: %v", from, err)
 }
 

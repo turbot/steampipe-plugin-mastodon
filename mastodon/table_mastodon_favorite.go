@@ -37,9 +37,6 @@ func listFavorites(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 		page++
 		count := 0
 		plugin.Logger(ctx).Debug("listFavorites", "page", page, "pg", pg, "minID", pg.MinID, "maxID", pg.MaxID, "prevMaxID", prevMaxID, "sinceID", pg.SinceID)
-		if pg.MaxID == prevMaxID {
-			plugin.Logger(ctx).Debug("listFavorites: pg.MaxID == prevMaxID: rate limited? if so, the sdk is doing exponential backoff, keep waiting if you want to")
-		}
 		favorites, err := client.GetFavourites(ctx, &pg)
 		if err != nil {
 			return nil, err
@@ -58,6 +55,10 @@ func listFavorites(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 		if pg.MaxID == "" {
 			plugin.Logger(ctx).Debug("break: pg.MaxID is empty")
 			break
+		}
+		if pg.MaxID == prevMaxID && page > 1 {
+			plugin.Logger(ctx).Debug("break: pg.MaxID == prevMaxID && page > 1")
+			return nil, nil
 		}
 		pg.MinID = ""
 		pg.Limit = int64(apiMaxPerPage)
