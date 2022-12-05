@@ -215,12 +215,11 @@ func listMyToots(ctx context.Context, postgresLimit int64, d *plugin.QueryData) 
 	httpClient := &http.Client{}
 
 	allToots := []*mastodon.Status{}
-	maxID := ""
 	page := 0
 	count := int64(0)
+	url := fmt.Sprintf("https://mastodon.social/api/v1/accounts/%s/statuses?limit=40", accountCurrentUser.ID)
 	for {
 		page++
-		url := fmt.Sprintf("https://mastodon.social/api/v1/accounts/%s/statuses?limit=40&exclude_replies=true&max_id=%s", accountCurrentUser.ID, maxID)
 		plugin.Logger(ctx).Debug("listMyToots", "page", page, "url", url)
 
 		toots := []*mastodon.Status{}
@@ -249,15 +248,21 @@ func listMyToots(ctx context.Context, postgresLimit int64, d *plugin.QueryData) 
 				return allToots, nil
 			}
 		}
-		maxID = string(toots[0].ID)
-		if page == 10 {
-			plugin.Logger(ctx).Debug("page is 50, return allToots")
-			return allToots, nil
+		header := res.Header
+		newUrl := ""
+		for _, link := range linkheader.Parse(header.Get("Link")) {
+			if link.Rel == "next" {
+				newUrl = link.URL
+			}
 		}
-		if maxID == "" {
-			plugin.Logger(ctx).Debug("maxID is empty, return allToots")
+		plugin.Logger(ctx).Debug("followers", "newUrl", newUrl)
+		if newUrl == "" {
 			return allToots, nil
+		} else {
+			url = newUrl
 		}
+
+
 
 	}
 
