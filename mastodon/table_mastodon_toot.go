@@ -28,7 +28,6 @@ func tableMastodonToot() *plugin.Table {
 					Name:    "list_id",
 					Require: plugin.Optional,
 				},
-
 			},
 		},
 		Columns: tootColumns(),

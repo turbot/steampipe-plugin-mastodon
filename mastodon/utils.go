@@ -262,12 +262,9 @@ func listMyToots(ctx context.Context, postgresLimit int64, d *plugin.QueryData) 
 			url = newUrl
 		}
 
-
-
 	}
 
 }
-
 
 // This is a workaround for the upstream SDK's doGet() method which intends to handle link-based pagination but seems to fail for:
 //
