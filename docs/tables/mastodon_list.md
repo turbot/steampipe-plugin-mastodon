@@ -8,7 +8,7 @@ List Mastodon lists
 
 ```sql
 select
-  id
+  id,
   title
 from
   mastodon_list
