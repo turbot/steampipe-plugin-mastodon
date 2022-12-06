@@ -28,7 +28,8 @@ func listListAccount(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 		return nil, fmt.Errorf("unable to establish a connection: %v", err)
 	}
 
-	list_id := d.KeyColumnQuals["list_id"].GetStringValue()
+	quals := d.Table.Get.KeyColumns
+	list_id := quals.Find("id").String()
 
 	accounts, err := client.GetListAccounts(ctx, mastodon.ID(list_id))
 	if err != nil {
