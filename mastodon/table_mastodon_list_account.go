@@ -2,9 +2,7 @@ package mastodon
 
 import (
 	"context"
-	//"encoding/json"
 	"fmt"
-	//"net/http"
 
 	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
@@ -15,7 +13,7 @@ func tableMastodonListAccount() *plugin.Table {
 		Name: "mastodon_list_account",
 		List: &plugin.ListConfig{
 			Hydrate:    listListAccount,
-			KeyColumns: plugin.SingleColumn("list_id"),
+			KeyColumns: plugin.OptionalColumns([]string{"list_id"}),
 		},
 		Columns: accountColumns(),
 	}
@@ -28,7 +26,17 @@ func listListAccount(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 		return nil, fmt.Errorf("unable to establish a connection: %v", err)
 	}
 
-	list_id := d.KeyColumnQuals["list_id"].GetStringValue()
+	plugin.Logger(ctx).Debug("listListAccount", "keycols", d.Quals)
+
+	quals := d.Table.Get.KeyColumns
+	list_id := quals.Find("list_id").String()
+
+	if list_id == "" {
+		plugin.Logger(ctx).Debug("listListAccount: list_id is empty")
+		account := mastodon.Account{ID: "`list_id` is required, please provide it in a `where` or `join on` clause"}
+		d.StreamListItem(ctx, &account)
+		return nil, nil
+	}
 
 	accounts, err := client.GetListAccounts(ctx, mastodon.ID(list_id))
 	if err != nil {
