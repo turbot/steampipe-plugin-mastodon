@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/mattn/go-mastodon"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
 
 func tableMastodonAccount() *plugin.Table {
@@ -25,8 +25,8 @@ func listAccount(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData
 		return nil, fmt.Errorf("unable to establish a connection: %v", err)
 	}
 
-	quals := d.KeyColumnQuals
-	id := quals["id"].GetStringValue()
+	quals := d.Table.Get.KeyColumns
+	id := quals.Find("id").String()
 
 	account, err := client.GetAccount(ctx, mastodon.ID(id))
 	if err != nil {

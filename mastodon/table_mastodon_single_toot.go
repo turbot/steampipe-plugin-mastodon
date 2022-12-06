@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/mattn/go-mastodon"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
 
 func tableMastodonSingleToot() *plugin.Table {
@@ -25,7 +25,8 @@ func listSingleToot(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateD
 		return nil, fmt.Errorf("unable to establish a connection: %v", err)
 	}
 
-	id := d.KeyColumnQuals["id"].GetStringValue()
+	quals := d.Table.Get.KeyColumns
+	id := quals.Find("query").String()
 	mastodonId := mastodon.ID(id)
 	plugin.Logger(ctx).Debug("single_toot", "id", mastodonId)
 

@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/mattn/go-mastodon"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 func tableMastodonToot() *plugin.Table {
@@ -40,9 +40,10 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 		return nil, fmt.Errorf("unable to establish a connection: %v", err)
 	}
 
-	timeline := d.KeyColumnQuals["timeline"].GetStringValue()
-	query := d.KeyColumnQuals["query"].GetStringValue()
-	list_id := d.KeyColumnQuals["list_id"].GetStringValue()
+	quals := d.Table.Get.KeyColumns
+	timeline := quals.Find("timeline").String()
+	query := quals.Find("query").String()
+    list_id := quals.Find("list_id").String()
 	postgresLimit := d.QueryContext.GetLimit()
 	plugin.Logger(ctx).Debug("toots", "timeline", timeline, "limit", postgresLimit)
 

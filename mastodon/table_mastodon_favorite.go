@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/mattn/go-mastodon"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
 
 func tableMastodonFavorite() *plugin.Table {

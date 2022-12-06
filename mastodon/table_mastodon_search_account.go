@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
 
 func tableMastodonSearchAccount() *plugin.Table {
@@ -43,8 +43,8 @@ func searchAccount(query string, ctx context.Context, d *plugin.QueryData, h *pl
 }
 
 func listSearchAccount(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	quals := d.KeyColumnQuals
-	query := quals["query"].GetStringValue()
+	quals := d.Table.Get.KeyColumns
+	query := quals.Find("id").String()
 	plugin.Logger(ctx).Debug("searchAccount", "quals", d.Quals, "query", query)
 	return searchAccount(query, ctx, d, h)
 }
