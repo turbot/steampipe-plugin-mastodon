@@ -2,9 +2,7 @@ package mastodon
 
 import (
 	"context"
-	//"encoding/json"
 	"fmt"
-	//"net/http"
 
 	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
