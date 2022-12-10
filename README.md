@@ -8,7 +8,7 @@ Prerequisites:
 
 - [Steampipe](https://steampipe.io/downloads)
 - [Golang](https://golang.org/doc/install)
-- [Credentials](https://mastodon.social/settings/applications)
+- A [Mastodon app](https://mastodon.social/settings/applications)
 
 Clone:
 
@@ -27,8 +27,16 @@ Configure the plugin:
 
 ```
 cp config/* ~/.steampipe/config
-vi ~/.steampipe/config/mastodon.spc
 ```
+
+Then edit `~/.steampipe/config/mastodon.spc`, add your server's URL and the access token from the Mastodon app you created.
+
+connection "mastodon_social" {
+    plugin = "mastodon"
+    server = "https://mastodon.social"
+    access_token = "S_xe...pLVE"
+}
+
 
 Try it!
 
