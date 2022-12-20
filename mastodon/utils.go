@@ -337,9 +337,11 @@ func handleError(ctx context.Context, from string, err error) (interface{}, erro
 
 func sanitize(str string) string {
 	str = strings.ReplaceAll(str, "<p>", " </p>")
+	str = strings.ReplaceAll(str, "#", " #")
 	str = sanitizer.Sanitize(str)
 	str = strings.ReplaceAll(str, "&amp;", "&")
 	str = strings.ReplaceAll(str, "&#39;", "'")
+	str = strings.ReplaceAll(str, "& #39;", "'")
 	str = strings.ReplaceAll(str, "&gt;", ">")
 	str = strings.ReplaceAll(str, "&lt;", "<")
 	str = strings.ReplaceAll(str, "&#34;", "\"")
