@@ -126,8 +126,12 @@ func notification_status_url(ctx context.Context, input *transform.TransformData
 
 func notification_status_content(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	notification := input.Value.(*mastodon.Notification)
-	if notification.Status != nil {
-		return sanitize(notification.Status.Content), nil
+	if notification.Status == nil {
+		return "", nil
 	}
-	return "", nil
+	content := notification.Status.Content
+	plugin.Logger(ctx).Debug("notification_status_content", "before transform", content)
+	content = sanitize(notification.Status.Content)
+	plugin.Logger(ctx).Debug("notification_status_content", "after transform", content)
+	return content, nil
 }
