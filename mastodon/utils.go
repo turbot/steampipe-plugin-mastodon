@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/mattn/go-mastodon"
 	"github.com/tomnomnom/linkheader"
@@ -334,7 +335,32 @@ func handleError(ctx context.Context, from string, err error) (interface{}, erro
 	return nil, fmt.Errorf("%s error: %v", from, err)
 }
 
+func sanitize(str string) string {
+	str = sanitizer.Sanitize(str)
+	str = strings.ReplaceAll(str, "&amp;", "&")
+	str = strings.ReplaceAll(str, "&#39;", "'")
+	str = strings.ReplaceAll(str, "&gt;", ">")
+	str = strings.ReplaceAll(str, "&lt;", "<")
+	str = strings.ReplaceAll(str, "&#34;", "\"")
+	str = strings.ReplaceAll(str, "https://", " https://")
+	return str
+}
+
+func sanitizeReblogContent(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	status := input.Value.(*mastodon.Status)
+	reblog := status.Reblog
+	if reblog == nil {
+		return nil, nil
+	}
+	return sanitize(reblog.Content), nil
+}
+
 func sanitizeNote(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	account := input.Value.(*mastodon.Account)
 	return sanitize(account.Note), nil
+}
+
+func sanitizeContent(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	status := input.Value.(*mastodon.Status)
+	return sanitize(status.Content), nil
 }

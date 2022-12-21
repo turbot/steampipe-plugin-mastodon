@@ -38,4 +38,4 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 	return p
 }
 
-var sanitizer = bluemonday.StrictPolicy().AddSpaceWhenStrippingTag(true)
+var sanitizer = bluemonday.StrictPolicy()

@@ -3,7 +3,6 @@ package mastodon
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
@@ -140,26 +139,3 @@ func account_url(ctx context.Context, input *transform.TransformData) (interface
 	return status.Account.URL, nil
 }
 
-func sanitize(str string) string {
-	str = sanitizer.Sanitize(str)
-	str = strings.ReplaceAll(str, "&amp;", "&")
-	str = strings.ReplaceAll(str, "&#39;", "'")
-	str = strings.ReplaceAll(str, "&gt;", ">")
-	str = strings.ReplaceAll(str, "&lt;", "<")
-	str = strings.ReplaceAll(str, "&#34;", "\"")
-	return str
-}
-
-func sanitizeContent(ctx context.Context, input *transform.TransformData) (interface{}, error) {
-	status := input.Value.(*mastodon.Status)
-	return sanitize(status.Content), nil
-}
-
-func sanitizeReblogContent(ctx context.Context, input *transform.TransformData) (interface{}, error) {
-	status := input.Value.(*mastodon.Status)
-	reblog := status.Reblog
-	if reblog == nil {
-		return nil, nil
-	}
-	return sanitize(reblog.Content), nil
-}
