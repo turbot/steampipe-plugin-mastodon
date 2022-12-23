@@ -179,10 +179,28 @@ func tootColumns() []*plugin.Column {
 			Description: "Reblog (boost) of the toot.",
 		},
 		{
+			Name:        "reblog_username",
+			Type:        proto.ColumnType_STRING,
+			Description: "Username of the boosted account.",
+			Transform:   transform.FromValue().Transform(reblog_username),
+		},
+		{
+			Name:        "reblog_server",
+			Type:        proto.ColumnType_STRING,
+			Description: "Server of the boosted account.",
+			Transform:   transform.FromValue().Transform(reblog_server),
+		},
+		{
 			Name:        "reblog_content",
 			Type:        proto.ColumnType_STRING,
 			Description: "Content of reblog (boost) of the toot.",
 			Transform:   transform.FromValue().Transform(sanitizeReblogContent),
+		},
+		{
+			Name:        "status",
+			Type:        proto.ColumnType_JSON,
+			Description: "Raw status",
+			Transform:   transform.FromValue(),
 		},
 		{
 			Name:        "query",
@@ -370,3 +388,4 @@ func sanitizeContent(ctx context.Context, input *transform.TransformData) (inter
 	status := input.Value.(*mastodon.Status)
 	return sanitize(status.Content), nil
 }
+
