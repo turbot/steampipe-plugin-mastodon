@@ -53,6 +53,12 @@ func accountColumns() []*plugin.Column {
 			Description: "Username for the account.",
 		},
 		{
+			Name:        "server",
+			Type:        proto.ColumnType_STRING,
+			Description: "Server for the account.",
+			Transform:   transform.FromValue().Transform(account_server_from_account),
+		},
+		{
 			Name:        "display_name",
 			Type:        proto.ColumnType_STRING,
 			Description: "Display name for the account.",
@@ -132,7 +138,7 @@ func tootColumns() []*plugin.Column {
 			Name:        "server",
 			Type:        proto.ColumnType_STRING,
 			Description: "Server of toot author.",
-			Transform:   transform.FromValue().Transform(account_server),
+			Transform:   transform.FromValue().Transform(account_server_from_status),
 		},
 		{
 			Name:        "content",

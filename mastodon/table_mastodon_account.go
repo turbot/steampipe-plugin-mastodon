@@ -3,9 +3,11 @@ package mastodon
 import (
 	"context"
 	"fmt"
+	"regexp"
 
 	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
 )
 
 func tableMastodonAccount() *plugin.Table {
@@ -35,4 +37,11 @@ func listAccount(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData
 	d.StreamListItem(ctx, account)
 
 	return nil, nil
+}
+
+func account_server_from_account(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	account := input.Value.(*mastodon.Account)
+	re := regexp.MustCompile(`https://(.+)/`)
+	matches := re.FindStringSubmatch(account.URL)
+	return matches[1], nil
 }
