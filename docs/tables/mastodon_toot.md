@@ -9,7 +9,7 @@ Mastodon toots on the home, direct, local, or federated timelines
 ```sql
 select
     created_at,
-    user_name,
+    username,
     url,
     content
 from
@@ -29,7 +29,7 @@ Alternatively: `timeline = 'local'` for the local server, `timeline = 'remote '`
 ```sql
 select
     created_at,
-    user_name,
+    username,
     url,
     content
 from
@@ -45,7 +45,7 @@ limit
 ```sql
 select
   created_at,
-  user_name,
+  username,
   url,
   content
 from

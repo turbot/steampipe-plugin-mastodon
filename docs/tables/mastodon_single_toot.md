@@ -9,7 +9,7 @@ List details for a single Mastodon toot
 ```sql
 select
     created_at,
-    user_name,
+    username,
     url,
     content
 from

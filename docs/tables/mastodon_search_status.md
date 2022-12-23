@@ -9,7 +9,7 @@ Search Mastodon statuses on the local timeline
 ```sql
 select
   created_at,
-  user_name,
+  username,
   url,
   content
 from
