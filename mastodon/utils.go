@@ -123,7 +123,7 @@ func tootColumns() []*plugin.Column {
 			Transform:   transform.FromField("Account.DisplayName"),
 		},
 		{
-			Name:        "user_name",
+			Name:        "username",
 			Type:        proto.ColumnType_STRING,
 			Description: "Username for toot author.",
 			Transform:   transform.FromField("Account.Username"),
