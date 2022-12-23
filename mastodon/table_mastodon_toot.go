@@ -138,4 +138,3 @@ func account_url(ctx context.Context, input *transform.TransformData) (interface
 	status := input.Value.(*mastodon.Status)
 	return status.Account.URL, nil
 }
-
