@@ -3,6 +3,7 @@ package mastodon
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
@@ -44,8 +45,9 @@ func ruleColumns() []*plugin.Column {
 func listRule(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	config := GetConfig(d.Connection)
 	token := *config.AccessToken
+	server := *config.Server
 	client := &http.Client{}
-	url := "https://mastodon.social/api/v1/instance/rules"
+	url := fmt.Sprintf("%s/api/v1/instance/rules", server)
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set("Authorization", "Bearer "+token)
 	res, _ := client.Do(req)
