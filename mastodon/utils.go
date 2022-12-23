@@ -206,6 +206,7 @@ func listMyToots(ctx context.Context, postgresLimit int64, d *plugin.QueryData) 
 	}
 	config := GetConfig(d.Connection)
 	token := *config.AccessToken
+	server := *config.Server
 
 	accountCurrentUser, err := client.GetAccountCurrentUser(ctx)
 	if err != nil {
@@ -218,7 +219,8 @@ func listMyToots(ctx context.Context, postgresLimit int64, d *plugin.QueryData) 
 	allToots := []*mastodon.Status{}
 	page := 0
 	count := int64(0)
-	url := fmt.Sprintf("https://mastodon.social/api/v1/accounts/%s/statuses?limit=40", accountCurrentUser.ID)
+
+	url := fmt.Sprintf("%s/api/v1/accounts/%s/statuses?limit=40", server, accountCurrentUser.ID)
 	for {
 		page++
 		plugin.Logger(ctx).Debug("listMyToots", "page", page, "url", url)
@@ -281,13 +283,14 @@ func listFollows(ctx context.Context, category string, d *plugin.QueryData, h *p
 	}
 	config := GetConfig(d.Connection)
 	token := *config.AccessToken
+	server := *config.Server
 
 	accountCurrentUser, err := client.GetAccountCurrentUser(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	url := fmt.Sprintf("https://mastodon.social/api/v1/accounts/%s/%s", accountCurrentUser.ID, category)
+	url := fmt.Sprintf("%s/api/v1/accounts/%s/%s", server, accountCurrentUser.ID, category)
 	plugin.Logger(ctx).Debug("follow", "category", category, "initial url", url)
 	httpClient := &http.Client{}
 	for {
