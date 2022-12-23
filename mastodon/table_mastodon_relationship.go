@@ -86,11 +86,12 @@ func relationshipColumns() []*plugin.Column {
 func listRelationships(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	config := GetConfig(d.Connection)
 	token := *config.AccessToken
+	server := *config.Server
 
 	id := d.KeyColumnQuals["id"].GetStringValue()
 	plugin.Logger(ctx).Debug("relationships", "id", id)
 
-	url := fmt.Sprintf("https://mastodon.social/api/v1/accounts/relationships?id[]=%s", id)
+	url := fmt.Sprintf("%s/api/v1/accounts/relationships?id[]=%s", server, id)
 	plugin.Logger(ctx).Debug("relationships", "url", url)
 	httpClient := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
