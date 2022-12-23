@@ -129,6 +129,12 @@ func tootColumns() []*plugin.Column {
 			Transform:   transform.FromField("Account.Username"),
 		},
 		{
+			Name:        "server",
+			Type:        proto.ColumnType_STRING,
+			Description: "Server of toot author.",
+			Transform:   transform.FromValue().Transform(account_server),
+		},
+		{
 			Name:        "content",
 			Type:        proto.ColumnType_STRING,
 			Description: "Content of the toot.",

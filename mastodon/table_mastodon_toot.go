@@ -140,6 +140,14 @@ func account_url(ctx context.Context, input *transform.TransformData) (interface
 	return status.Account.URL, nil
 }
 
+func account_server(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	status := input.Value.(*mastodon.Status)
+	re := regexp.MustCompile(`https://(.+)/`)
+	matches := re.FindStringSubmatch(status.Account.URL)
+	return matches[1], nil
+}
+
+
 func reblog_username(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	status := input.Value.(*mastodon.Status)
 	if status.Reblog == nil {
