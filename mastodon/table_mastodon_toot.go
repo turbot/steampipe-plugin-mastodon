@@ -3,6 +3,7 @@ package mastodon
 import (
 	"context"
 	"fmt"
+	"regexp"
 
 	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
@@ -138,3 +139,23 @@ func account_url(ctx context.Context, input *transform.TransformData) (interface
 	status := input.Value.(*mastodon.Status)
 	return status.Account.URL, nil
 }
+
+func reblog_username(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	status := input.Value.(*mastodon.Status)
+	if status.Reblog == nil {
+		return nil, nil
+	}
+	return status.Reblog.Account.Username, nil
+}
+
+func reblog_server(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	status := input.Value.(*mastodon.Status)
+	if status.Reblog == nil {
+		return nil, nil
+	}
+	re := regexp.MustCompile(`https://(.+)/`)
+	matches := re.FindStringSubmatch(status.Reblog.Account.URL)
+	return matches[1], nil
+}
+
+
