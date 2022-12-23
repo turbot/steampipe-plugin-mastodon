@@ -2,6 +2,7 @@ package mastodon
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -49,7 +50,8 @@ func rateColumns() []*plugin.Column {
 func listRateLimit(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	config := GetConfig(d.Connection)
 	token := *config.AccessToken
-	url := "https://mastodon.social/api/v1/notifications"
+	server := *config.Server
+	url := fmt.Sprintf("%s/api/v1/notifications", server)
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
