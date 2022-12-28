@@ -258,18 +258,18 @@ func listMyToots(ctx context.Context, postgresLimit int64, d *plugin.QueryData) 
 		toots := []*mastodon.Status{}
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
-			fmt.Println(err)
+			plugin.Logger(ctx).Debug("listMyToots", "err", err)
 		}
 		req.Header.Set("Authorization", "Bearer "+token)
 		res, err := httpClient.Do(req)
 		if err != nil {
-			fmt.Println(err)
+			plugin.Logger(ctx).Debug("listMyToots", "err", err)
 		}
 		defer res.Body.Close()
 		decoder := json.NewDecoder(res.Body)
 		err = decoder.Decode(&toots)
 		if err != nil {
-			fmt.Println(err)
+			plugin.Logger(ctx).Debug("listMyToots", "err", err)
 		}
 		plugin.Logger(ctx).Debug("listMyToots", "toots", len(toots))
 		for i, toot := range toots {
