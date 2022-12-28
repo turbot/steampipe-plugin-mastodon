@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/mattn/go-mastodon v0.0.5
 	github.com/microcosm-cc/bluemonday v1.0.21
+	github.com/tomnomnom/linkheader v0.0.0-20180905144013-02ca5825eb80
 	github.com/turbot/steampipe-plugin-sdk/v4 v4.1.7
 )
 
@@ -62,7 +63,6 @@ require (
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/stevenle/topsort v0.0.0-20130922064739-8130c1d7596b // indirect
 	github.com/tkrajina/go-reflector v0.5.4 // indirect
-	github.com/tomnomnom/linkheader v0.0.0-20180905144013-02ca5825eb80 // indirect
 	github.com/turbot/go-kit v0.4.0 // indirect
 	github.com/zclconf/go-cty v1.10.0 // indirect
 	go.opentelemetry.io/otel v1.7.0 // indirect
