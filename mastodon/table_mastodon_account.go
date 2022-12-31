@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
@@ -57,6 +58,9 @@ func instance_qualified_url_from_url(ctx context.Context, input *transform.Trans
 	person := matches[1]
 	server := matches[2]
 	url := fmt.Sprintf("%s/@%s@%s", homeServer, server, person)
+	plugin.Logger(ctx).Debug("instance_qualified_url_from_url", "url", url)
+	schemelessHomeServer := strings.ReplaceAll(homeServer, "https://", "")
+	url = strings.ReplaceAll(url, "@" + schemelessHomeServer, "")
 	plugin.Logger(ctx).Debug("instance_qualified_url_from_url", "url", url)
 	return url, nil
 }
