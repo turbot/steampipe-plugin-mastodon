@@ -45,3 +45,18 @@ func account_server_from_account(ctx context.Context, input *transform.Transform
 	matches := re.FindStringSubmatch(account.URL)
 	return matches[1], nil
 }
+
+func instance_qualified_url_from_url(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	account_url := input.Value.(*mastodon.Account).URL
+	plugin.Logger(ctx).Debug("instance_qualified_url_from_url", "server", homeServer, "account", account_url)
+	re := regexp.MustCompile(`https://([^/]+)/@(.+)`)
+	matches := re.FindStringSubmatch(account_url)
+	if len(matches) == 0 {
+		return account_url, nil
+	}
+	person := matches[1]
+	server := matches[2]
+	url := fmt.Sprintf("%s/@%s@%s", homeServer, server, person)
+	plugin.Logger(ctx).Debug("instance_qualified_url_from_url", "url", url)
+	return url, nil
+}
