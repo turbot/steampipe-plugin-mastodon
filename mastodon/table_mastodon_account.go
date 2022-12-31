@@ -47,9 +47,9 @@ func account_server_from_account(ctx context.Context, input *transform.Transform
 	return matches[1], nil
 }
 
-func instance_qualified_url_from_url(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+func instance_qualified_account_url_from_account_url(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	account_url := input.Value.(*mastodon.Account).URL
-	plugin.Logger(ctx).Debug("instance_qualified_url_from_url", "server", homeServer, "account", account_url)
+	plugin.Logger(ctx).Debug("instance_qualified_account_url_from_account_url", "server", homeServer, "account", account_url)
 	re := regexp.MustCompile(`https://([^/]+)/@(.+)`)
 	matches := re.FindStringSubmatch(account_url)
 	if len(matches) == 0 {
@@ -58,9 +58,9 @@ func instance_qualified_url_from_url(ctx context.Context, input *transform.Trans
 	person := matches[1]
 	server := matches[2]
 	url := fmt.Sprintf("%s/@%s@%s", homeServer, server, person)
-	plugin.Logger(ctx).Debug("instance_qualified_url_from_url", "url", url)
+	plugin.Logger(ctx).Debug("instance_qualified_account_url_from_account_url", "url", url)
 	schemelessHomeServer := strings.ReplaceAll(homeServer, "https://", "")
 	url = strings.ReplaceAll(url, "@" + schemelessHomeServer, "")
-	plugin.Logger(ctx).Debug("instance_qualified_url_from_url", "url", url)
+	plugin.Logger(ctx).Debug("instance_qualified_account_url_from_account_url", "url", url)
 	return url, nil
 }
