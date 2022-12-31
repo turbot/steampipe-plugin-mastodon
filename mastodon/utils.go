@@ -184,7 +184,7 @@ func tootColumns() []*plugin.Column {
 			Name:        "account_url",
 			Type:        proto.ColumnType_STRING,
 			Description: "Account URL for toot author.",
-			Transform:   transform.FromValue().Transform(accountUrl),
+			Transform:   transform.FromField("Account.URL"),
 		},
 		{
 			Name:        "instance_qualified_account_url",

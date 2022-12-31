@@ -135,11 +135,6 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 
 }
 
-func accountUrl(ctx context.Context, input *transform.TransformData) (interface{}, error) {
-	status := input.Value.(*mastodon.Status)
-	return status.Account.URL, nil
-}
-
 func accountServerFromStatus(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	status := input.Value.(*mastodon.Status)
 	re := regexp.MustCompile(`https://(.+)/`)
