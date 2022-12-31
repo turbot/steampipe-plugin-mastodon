@@ -135,19 +135,19 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 
 }
 
-func account_url(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+func accountUrl(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	status := input.Value.(*mastodon.Status)
 	return status.Account.URL, nil
 }
 
-func account_server_from_status(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+func accountServerFromStatus(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	status := input.Value.(*mastodon.Status)
 	re := regexp.MustCompile(`https://(.+)/`)
 	matches := re.FindStringSubmatch(status.Account.URL)
 	return matches[1], nil
 }
 
-func reblog_username(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+func reblogUsername(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	status := input.Value.(*mastodon.Status)
 	if status.Reblog == nil {
 		return nil, nil
@@ -155,7 +155,7 @@ func reblog_username(ctx context.Context, input *transform.TransformData) (inter
 	return status.Reblog.Account.Username, nil
 }
 
-func reblog_server(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+func reblogServer(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	status := input.Value.(*mastodon.Status)
 	if status.Reblog == nil {
 		return nil, nil

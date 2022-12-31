@@ -42,19 +42,19 @@ func notificationColumns() []*plugin.Column {
 			Name:        "display_name",
 			Type:        proto.ColumnType_STRING,
 			Description: "Display name of notification sender.",
-			Transform:   transform.FromValue().Transform(notification_display_name),
+			Transform:   transform.FromValue().Transform(notificationDisplayName),
 		},
 		{
 			Name:        "account_url",
 			Type:        proto.ColumnType_STRING,
 			Description: "Account URL of notification sender.",
-			Transform:   transform.FromValue().Transform(notification_account_url),
+			Transform:   transform.FromValue().Transform(notificationAccountUrl),
 		},
 		{
 			Name:        "account_id",
 			Type:        proto.ColumnType_STRING,
 			Description: "Account ID of notification sender.",
-			Transform:   transform.FromValue().Transform(notification_account_id),
+			Transform:   transform.FromValue().Transform(notificationAccountId),
 		},
 		{
 			Name:        "status",
@@ -65,13 +65,13 @@ func notificationColumns() []*plugin.Column {
 			Name:        "status_url",
 			Type:        proto.ColumnType_STRING,
 			Description: "Status URL of the notification (if any).",
-			Transform:   transform.FromValue().Transform(notification_status_url),
+			Transform:   transform.FromValue().Transform(notificationStatusUrl),
 		},
 		{
 			Name:        "status_content",
 			Type:        proto.ColumnType_STRING,
 			Description: "Status content of the notification (if any).",
-			Transform:   transform.FromValue().Transform(notification_status_content),
+			Transform:   transform.FromValue().Transform(notificationStatusContent),
 		},
 	}
 }
@@ -100,22 +100,22 @@ func category(ctx context.Context, input *transform.TransformData) (interface{},
 	return notification.Type, nil
 }
 
-func notification_display_name(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+func notificationDisplayName(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	notification := input.Value.(*mastodon.Notification)
 	return notification.Account.DisplayName, nil
 }
 
-func notification_account_url(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+func notificationAccountUrl(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	notification := input.Value.(*mastodon.Notification)
 	return notification.Account.URL, nil
 }
 
-func notification_account_id(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+func notificationAccountId(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	notification := input.Value.(*mastodon.Notification)
 	return notification.Account.ID, nil
 }
 
-func notification_status_url(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+func notificationStatusUrl(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	notification := input.Value.(*mastodon.Notification)
 	url := ""
 	if notification.Status != nil {
@@ -124,14 +124,14 @@ func notification_status_url(ctx context.Context, input *transform.TransformData
 	return url, nil
 }
 
-func notification_status_content(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+func notificationStatusContent(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	notification := input.Value.(*mastodon.Notification)
 	if notification.Status == nil {
 		return "", nil
 	}
 	content := notification.Status.Content
-	plugin.Logger(ctx).Debug("notification_status_content", "before transform", content)
+	plugin.Logger(ctx).Debug("notificationStatusContent", "before transform", content)
 	content = sanitize(notification.Status.Content)
-	plugin.Logger(ctx).Debug("notification_status_content", "after transform", content)
+	plugin.Logger(ctx).Debug("notificationStatusContent", "after transform", content)
 	return content, nil
 }

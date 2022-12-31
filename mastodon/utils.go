@@ -48,10 +48,10 @@ func accountColumns() []*plugin.Column {
 			Description: "URL for the account.",
 		},
 		{
-			Name: 		 "instance_qualified_url",
+			Name: 		 "instance_qualified_account_url",
 			Type: 		 proto.ColumnType_STRING,
 			Description: "Account URL prefixed with my instance",
-			Transform:   transform.FromValue().Transform(instance_qualified_url_from_url),
+			Transform:   transform.FromValue().Transform(instanceQualifiedAccountUrlFromAccountUrl),
 		},
 		{
 			Name:        "username",
@@ -62,7 +62,7 @@ func accountColumns() []*plugin.Column {
 			Name:        "server",
 			Type:        proto.ColumnType_STRING,
 			Description: "Server for the account.",
-			Transform:   transform.FromValue().Transform(account_server_from_account),
+			Transform:   transform.FromValue().Transform(accountServerFromAccount),
 		},
 		{
 			Name:        "display_name",
@@ -144,7 +144,7 @@ func tootColumns() []*plugin.Column {
 			Name:        "server",
 			Type:        proto.ColumnType_STRING,
 			Description: "Server of toot author.",
-			Transform:   transform.FromValue().Transform(account_server_from_status),
+			Transform:   transform.FromValue().Transform(accountServerFromStatus),
 		},
 		{
 			Name:        "content",
@@ -184,7 +184,7 @@ func tootColumns() []*plugin.Column {
 			Name:        "account_url",
 			Type:        proto.ColumnType_STRING,
 			Description: "Account URL for toot author.",
-			Transform:   transform.FromValue().Transform(account_url),
+			Transform:   transform.FromValue().Transform(accountUrl),
 		},
 		{
 			Name:        "in_reply_to_account_id",
@@ -200,13 +200,13 @@ func tootColumns() []*plugin.Column {
 			Name:        "reblog_username",
 			Type:        proto.ColumnType_STRING,
 			Description: "Username of the boosted account.",
-			Transform:   transform.FromValue().Transform(reblog_username),
+			Transform:   transform.FromValue().Transform(reblogUsername),
 		},
 		{
 			Name:        "reblog_server",
 			Type:        proto.ColumnType_STRING,
 			Description: "Server of the boosted account.",
-			Transform:   transform.FromValue().Transform(reblog_server),
+			Transform:   transform.FromValue().Transform(reblogServer),
 		},
 		{
 			Name:        "reblog_content",
