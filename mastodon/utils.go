@@ -50,7 +50,7 @@ func accountColumns() []*plugin.Column {
 		{
 			Name:        "instance_qualified_account_url",
 			Type:        proto.ColumnType_STRING,
-			Description: "Account URL prefixed with my instance",
+			Description: "Account URL prefixed with my instance.",
 			Transform:   transform.FromValue().Transform(instanceQualifiedAccountUrl),
 		},
 		{
