@@ -48,10 +48,10 @@ func accountColumns() []*plugin.Column {
 			Description: "URL for the account.",
 		},
 		{
-			Name: 		 "instance_qualified_account_url",
-			Type: 		 proto.ColumnType_STRING,
+			Name:        "instance_qualified_account_url",
+			Type:        proto.ColumnType_STRING,
 			Description: "Account URL prefixed with my instance",
-			Transform:   transform.FromField("Account.URL").Transform(instanceQualifiedUrl),
+			Transform:   transform.FromValue().Transform(instanceQualifiedAccountUrl),
 		},
 		{
 			Name:        "username",
@@ -185,6 +185,12 @@ func tootColumns() []*plugin.Column {
 			Type:        proto.ColumnType_STRING,
 			Description: "Account URL for toot author.",
 			Transform:   transform.FromValue().Transform(accountUrl),
+		},
+		{
+			Name:        "instance_qualified_account_url",
+			Type:        proto.ColumnType_STRING,
+			Description: "Account URL prefixed with my instance",
+			Transform:   transform.FromValue().Transform(instanceQualifiedStatusUrl),
 		},
 		{
 			Name:        "in_reply_to_account_id",
@@ -406,4 +412,3 @@ func sanitizeContent(ctx context.Context, input *transform.TransformData) (inter
 	status := input.Value.(*mastodon.Status)
 	return sanitize(status.Content), nil
 }
-

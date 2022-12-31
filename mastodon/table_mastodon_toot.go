@@ -164,5 +164,3 @@ func reblogServer(ctx context.Context, input *transform.TransformData) (interfac
 	matches := re.FindStringSubmatch(status.Reblog.Account.URL)
 	return matches[1], nil
 }
-
-
