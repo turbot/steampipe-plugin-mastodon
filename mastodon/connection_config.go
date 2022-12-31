@@ -29,5 +29,8 @@ func GetConfig(connection *plugin.Connection) PluginConfig {
 	}
 
 	config, _ := connection.Config.(PluginConfig)
+	if homeServer == "" {
+		homeServer = *config.Server
+	}
 	return config
 }
