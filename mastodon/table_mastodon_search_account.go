@@ -29,13 +29,12 @@ func searchAccount(query string, ctx context.Context, d *plugin.QueryData, h *pl
 		return nil, fmt.Errorf("unable to establish a connection: %v", err)
 	}
 
-	results, err := client.Search(ctx, query, false)
+	results, err := client.Search(ctx, query, true)
 	if err != nil {
 		return nil, err
 	}
 
-	accounts := results.Accounts
-	for _, activity := range accounts {
+	for _, activity := range results.Accounts {
 		d.StreamListItem(ctx, activity)
 	}
 
