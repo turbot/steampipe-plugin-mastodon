@@ -90,4 +90,4 @@ require (
 	k8s.io/apimachinery v0.23.5 // indirect
 )
 
-//replace github.com/mattn/go-mastodon => /home/jon/go-mastodon
+// replace github.com/mattn/go-mastodon => /home/jon/go-mastodon
