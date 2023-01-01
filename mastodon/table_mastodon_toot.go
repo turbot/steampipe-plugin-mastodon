@@ -161,41 +161,6 @@ func reblogServer(ctx context.Context, input *transform.TransformData) (interfac
 	return matches[1], nil
 }
 
-/*
-func instanceQualifiedStatusUrl(ctx context.Context, input *transform.TransformData) (interface{}, error) {
-	status := input.Value.(*mastodon.Status)
-	plugin.Logger(ctx).Debug("qualifiedStatusUrl try", "status", status, "reblog", status.Reblog)
-	if strings.HasPrefix(status.URL, homeServer) {
-		plugin.Logger(ctx).Debug("qualifiedStatusUrl: homeServer")
-		if status.Reblog != nil {
-			plugin.Logger(ctx).Debug("qualifiedStatusUrl returning reblog URL")
-			return status.Reblog.URL, nil
-		} else {
-			plugin.Logger(ctx).Debug("qualifiedStatusUrl returning status URL")
-			return status.URL, nil
-		}
-	}
-	re := regexp.MustCompile(`https://([^/]+)/@(.+)/`)
-	var matches []string
-	if status.Reblog == nil {
-		matches = re.FindStringSubmatch(status.URL)
-		if len(matches) == 0 {
-			return status.URL, nil
-		}
-	} else {
-        matches = re.FindStringSubmatch(status.Reblog.URL)
-		if len(matches) == 0 {
-			return status.Reblog.URL, nil
-		}
-	}
-	person := matches[1]
-	server := matches[2]
-	qualifiedStatusUrl := fmt.Sprintf("%s/@%s@%s/%s", homeServer, server, person, status.ID)
-	plugin.Logger(ctx).Debug("qualifiedStatusUrl succeed", "qualifiedStatusUrl", qualifiedStatusUrl)
-	return qualifiedStatusUrl, nil
-}
-*/
-
 func instanceQualifiedStatusUrl(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	status := input.Value.(*mastodon.Status)
 	plugin.Logger(ctx).Debug("qualifiedStatusUrl", "status.URL", status.URL)
