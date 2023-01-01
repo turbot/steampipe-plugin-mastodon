@@ -47,8 +47,8 @@ func accountServerFromAccount(ctx context.Context, input *transform.TransformDat
 	return matches[1], nil
 }
 
-func qualifiedUrl(ctx context.Context, url string) string {
-	plugin.Logger(ctx).Debug("instanceQualifiedUrl", "server", homeServer, "url", url)
+func qualifiedAccountUrl(ctx context.Context, url string) string {
+	plugin.Logger(ctx).Debug("qualifiedAccountUrl", "server", homeServer, "url", url)
 	re := regexp.MustCompile(`https://([^/]+)/@(.+)`)
 	matches := re.FindStringSubmatch(url)
 	if len(matches) == 0 {
@@ -56,22 +56,23 @@ func qualifiedUrl(ctx context.Context, url string) string {
 	}
 	person := matches[1]
 	server := matches[2]
-	qualifiedUrl := fmt.Sprintf("%s/@%s@%s", homeServer, server, person)
-	plugin.Logger(ctx).Debug("instanceQualifiedUrl", "qualifiedUrl", qualifiedUrl)
+	qualifiedAccountUrl := fmt.Sprintf("%s/@%s@%s", homeServer, server, person)
+	plugin.Logger(ctx).Debug("qualifiedAccountUrl", "qualifiedUrl", qualifiedAccountUrl)
 	schemelessHomeServer := strings.ReplaceAll(homeServer, "https://", "")
-	qualifiedUrl = strings.ReplaceAll(qualifiedUrl, "@"+schemelessHomeServer, "")
-	plugin.Logger(ctx).Debug("qualifiedUrl", "qualifiedUrl", qualifiedUrl)
-	return qualifiedUrl
+	qualifiedAccountUrl = strings.ReplaceAll(qualifiedAccountUrl, "@"+schemelessHomeServer, "")
+	plugin.Logger(ctx).Debug("qualifiedAccountUrl", "qualifiedAccountUrl", qualifiedAccountUrl)
+	return qualifiedAccountUrl
 }
 
 func instanceQualifiedAccountUrl(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	url := input.Value.(*mastodon.Account).URL
-	qualifiedUrl := qualifiedUrl(ctx, url)
+	qualifiedUrl := qualifiedAccountUrl(ctx, url)
 	return qualifiedUrl, nil
 }
 
-func instanceQualifiedStatusUrl(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+func instanceQualifiedStatusAccountUrl(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	url := input.Value.(*mastodon.Status).Account.URL
-	qualifiedUrl := qualifiedUrl(ctx, url)
+	qualifiedUrl := qualifiedAccountUrl(ctx, url)
 	return qualifiedUrl, nil
 }
+

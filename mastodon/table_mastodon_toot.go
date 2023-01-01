@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
@@ -91,7 +92,7 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 			}
 		} else if timeline == "search_status" {
 			plugin.Logger(ctx).Debug("listToots: search_status", "query", query, "pg", fmt.Sprintf("%+v", pg))
-			results, err := client.Search(ctx, query, false)
+			results, err := client.Search(ctx, query, true)
 			plugin.Logger(ctx).Debug("listToots: search_status", "pg", fmt.Sprintf("%+v", pg))
 			if err != nil {
 				return handleError(ctx, "listToots: search_status", err)
@@ -159,3 +160,80 @@ func reblogServer(ctx context.Context, input *transform.TransformData) (interfac
 	matches := re.FindStringSubmatch(status.Reblog.Account.URL)
 	return matches[1], nil
 }
+
+/*
+func instanceQualifiedStatusUrl(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	status := input.Value.(*mastodon.Status)
+	plugin.Logger(ctx).Debug("qualifiedStatusUrl try", "status", status, "reblog", status.Reblog)
+	if strings.HasPrefix(status.URL, homeServer) {
+		plugin.Logger(ctx).Debug("qualifiedStatusUrl: homeServer")
+		if status.Reblog != nil {
+			plugin.Logger(ctx).Debug("qualifiedStatusUrl returning reblog URL")
+			return status.Reblog.URL, nil
+		} else {
+			plugin.Logger(ctx).Debug("qualifiedStatusUrl returning status URL")
+			return status.URL, nil
+		}
+	}
+	re := regexp.MustCompile(`https://([^/]+)/@(.+)/`)
+	var matches []string
+	if status.Reblog == nil {
+		matches = re.FindStringSubmatch(status.URL)
+		if len(matches) == 0 {
+			return status.URL, nil
+		}
+	} else {
+        matches = re.FindStringSubmatch(status.Reblog.URL)
+		if len(matches) == 0 {
+			return status.Reblog.URL, nil
+		}
+	}
+	person := matches[1]
+	server := matches[2]
+	qualifiedStatusUrl := fmt.Sprintf("%s/@%s@%s/%s", homeServer, server, person, status.ID)
+	plugin.Logger(ctx).Debug("qualifiedStatusUrl succeed", "qualifiedStatusUrl", qualifiedStatusUrl)
+	return qualifiedStatusUrl, nil
+}
+*/
+
+func instanceQualifiedStatusUrl(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	status := input.Value.(*mastodon.Status)
+	plugin.Logger(ctx).Debug("qualifiedStatusUrl", "status.URL", status.URL)
+	if strings.HasPrefix(status.URL, homeServer) {
+		return status.URL, nil
+	}
+	re := regexp.MustCompile(`https://([^/]+)/@(.+)/`)
+	var matches []string
+	matches = re.FindStringSubmatch(status.URL)
+	if len(matches) == 0 {
+		return status.URL, nil
+	}
+	person := matches[1]
+	server := matches[2]
+	qualifiedStatusUrl := fmt.Sprintf("%s/@%s@%s/%s", homeServer, server, person, status.ID)
+	plugin.Logger(ctx).Debug("qualifiedStatusUrl succeed", "qualifiedStatusUrl", qualifiedStatusUrl)
+	return qualifiedStatusUrl, nil
+}
+
+func instanceQualifiedReblogUrl(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	status := input.Value.(*mastodon.Status)
+	plugin.Logger(ctx).Debug("qualifiedReblogUrl", "status.Reblog", status.Reblog)
+	if status.Reblog == nil {
+		return "", nil
+	}
+	if strings.HasPrefix(status.Reblog.URL, homeServer) {
+		return status.Reblog.URL, nil
+	}
+	re := regexp.MustCompile(`https://([^/]+)/@(.+)/`)
+    matches := re.FindStringSubmatch(status.Reblog.URL)
+	if len(matches) == 0 {
+		return status.Reblog.URL, nil
+	}
+	person := matches[1]
+	server := matches[2]
+	qualifiedReblogUrl := fmt.Sprintf("%s/@%s@%s/%s", homeServer, server, person, status.Reblog.ID)
+	plugin.Logger(ctx).Debug("qualifiedReblogUrl succeed", "qualifiedReblogUrl", qualifiedReblogUrl)
+	return qualifiedReblogUrl, nil
+}
+
+

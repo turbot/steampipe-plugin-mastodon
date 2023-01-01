@@ -129,6 +129,12 @@ func tootColumns() []*plugin.Column {
 			Description: "URL for the toot.",
 		},
 		{
+			Name:        "instance_qualified_url",
+			Type:        proto.ColumnType_STRING,
+			Description: "URL for the toot, as seen from my instance.",
+			Transform:   transform.FromValue().Transform(instanceQualifiedStatusUrl),
+		},
+		{
 			Name:        "display_name",
 			Type:        proto.ColumnType_STRING,
 			Description: "Display name for toot author.",
@@ -190,7 +196,7 @@ func tootColumns() []*plugin.Column {
 			Name:        "instance_qualified_account_url",
 			Type:        proto.ColumnType_STRING,
 			Description: "Account URL prefixed with my instance",
-			Transform:   transform.FromValue().Transform(instanceQualifiedStatusUrl),
+			Transform:   transform.FromValue().Transform(instanceQualifiedStatusAccountUrl),
 		},
 		{
 			Name:        "in_reply_to_account_id",
@@ -219,6 +225,12 @@ func tootColumns() []*plugin.Column {
 			Type:        proto.ColumnType_STRING,
 			Description: "Content of reblog (boost) of the toot.",
 			Transform:   transform.FromValue().Transform(sanitizeReblogContent),
+		},
+		{
+			Name:        "instance_qualified_reblog_url",
+			Type:        proto.ColumnType_STRING,
+			Description: "Url of the reblog (boost) of the toot, prefixed with my instance.",
+			Transform:   transform.FromValue().Transform(instanceQualifiedReblogUrl),
 		},
 		{
 			Name:        "status",
