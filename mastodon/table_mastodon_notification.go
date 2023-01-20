@@ -88,18 +88,53 @@ func listNotifications(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 		return nil, fmt.Errorf("unable to establish a connection: %v", err)
 	}
 
-	pg := mastodon.Pagination{Limit: 30}
-	notifications, err := client.GetNotifications(ctx, &pg)
-	plugin.Logger(ctx).Debug("listNotifications", "notifications", notifications)
-	if err != nil {
-		return nil, err
+	postgresLimit := d.QueryContext.GetLimit()
+	plugin.Logger(ctx).Debug("notifications", "limit", postgresLimit)
+
+	page := 0
+	apiMaxPerPage := 15
+	total := int64(0)
+	pg := mastodon.Pagination{Limit: int64(apiMaxPerPage)}
+
+	for {
+		page++
+		plugin.Logger(ctx).Debug("listNotifications", "page", page, "pg", pg, "minID", pg.MinID, "maxID", pg.MaxID)
+		notifications, err := client.GetNotifications(ctx, &pg)
+		if err != nil {
+			return handleError(ctx, "listNotifcations: err", err)
+		}
+
+		notificationsReceived := len(notifications)
+
+		plugin.Logger(ctx).Debug("listNotifications", "notifications received", notificationsReceived)
+
+		if postgresLimit == -1 && notificationsReceived < apiMaxPerPage {
+			plugin.Logger(ctx).Debug("listToots outer loop: got fewer than apiMaxPerPage, setting postgresLimit")
+			postgresLimit = total + int64(notificationsReceived)
+		}
+
+		for _, notification := range notifications {
+			total++
+			plugin.Logger(ctx).Debug("listNotifications", "total", total, "postgresLimit", postgresLimit)
+			d.StreamListItem(ctx, notification)
+			if postgresLimit != -1 && total >= postgresLimit {
+				plugin.Logger(ctx).Debug("listNotifications: break: inner loop reached postgres limit")
+				break
+			}
+		}
+		if postgresLimit != -1 && total >= postgresLimit {
+			plugin.Logger(ctx).Debug("listNotifications: break: outer loop reached postgres limit")
+			break
+		}
+
+		pg.MinID = ""
+
 	}
-	for _, notification := range notifications {
-		d.StreamListItem(ctx, notification)
-	}
+
 	return nil, nil
 
 }
+
 
 func category(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	notification := input.Value.(*mastodon.Notification)
