@@ -75,4 +75,3 @@ func instanceQualifiedStatusAccountUrl(ctx context.Context, input *transform.Tra
 	qualifiedUrl := qualifiedAccountUrl(ctx, url)
 	return qualifiedUrl, nil
 }
-

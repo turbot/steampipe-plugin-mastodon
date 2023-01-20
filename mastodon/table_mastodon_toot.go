@@ -51,7 +51,7 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 	apiMaxPerPage := 40
 	total := int64(0)
 	pg := mastodon.Pagination{Limit: int64(apiMaxPerPage)}
-	
+
 	for {
 		page++
 		plugin.Logger(ctx).Debug("listToots", "page", page, "pg", pg, "minID", pg.MinID, "maxID", pg.MaxID)
@@ -188,7 +188,7 @@ func instanceQualifiedReblogUrl(ctx context.Context, input *transform.TransformD
 		return status.Reblog.URL, nil
 	}
 	re := regexp.MustCompile(`https://([^/]+)/@(.+)/`)
-    matches := re.FindStringSubmatch(status.Reblog.URL)
+	matches := re.FindStringSubmatch(status.Reblog.URL)
 	if len(matches) == 0 {
 		return status.Reblog.URL, nil
 	}
@@ -198,5 +198,3 @@ func instanceQualifiedReblogUrl(ctx context.Context, input *transform.TransformD
 	plugin.Logger(ctx).Debug("qualifiedReblogUrl succeed", "qualifiedReblogUrl", qualifiedReblogUrl)
 	return qualifiedReblogUrl, nil
 }
-
-

@@ -135,7 +135,6 @@ func listNotifications(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 
 }
 
-
 func category(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	notification := input.Value.(*mastodon.Notification)
 	return notification.Type, nil
@@ -181,4 +180,3 @@ func notificationStatusContent(ctx context.Context, input *transform.TransformDa
 	plugin.Logger(ctx).Debug("notificationStatusContent", "after transform", content)
 	return content, nil
 }
-
