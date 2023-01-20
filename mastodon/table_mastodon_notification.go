@@ -51,6 +51,12 @@ func notificationColumns() []*plugin.Column {
 			Transform:   transform.FromValue().Transform(notificationAccountUrl),
 		},
 		{
+			Name:        "instance_qualified_account_url",
+			Type:        proto.ColumnType_STRING,
+			Description: "Account URL of notification sender, prefixed with home server.",
+			Transform:   transform.FromValue().Transform(instanceQualifiedNotificationAccountUrl),
+		},
+		{
 			Name:        "account_id",
 			Type:        proto.ColumnType_STRING,
 			Description: "Account ID of notification sender.",
@@ -110,6 +116,11 @@ func notificationAccountUrl(ctx context.Context, input *transform.TransformData)
 	return notification.Account.URL, nil
 }
 
+func instanceQualifiedNotificationAccountUrl(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	accountUrl := input.Value.(*mastodon.Notification).Account.URL
+	return qualifiedAccountUrl(ctx, accountUrl), nil
+}
+
 func notificationAccountId(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	notification := input.Value.(*mastodon.Notification)
 	return notification.Account.ID, nil
@@ -135,3 +146,4 @@ func notificationStatusContent(ctx context.Context, input *transform.TransformDa
 	plugin.Logger(ctx).Debug("notificationStatusContent", "after transform", content)
 	return content, nil
 }
+
