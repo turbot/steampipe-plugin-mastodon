@@ -1,4 +1,4 @@
-# Table: mastodon_list_accounts
+# Table: mastodon_list_account
 
 List accounts associated with a Mastodon list
 
