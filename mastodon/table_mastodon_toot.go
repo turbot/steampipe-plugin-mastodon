@@ -166,8 +166,7 @@ func instanceQualifiedStatusUrl(ctx context.Context, input *transform.TransformD
 		return status.URL, nil
 	}
 	re := regexp.MustCompile(`https://([^/]+)/@(.+)/`)
-	var matches []string
-	matches = re.FindStringSubmatch(status.URL)
+	matches := re.FindStringSubmatch(status.URL)
 	if len(matches) == 0 {
 		return status.URL, nil
 	}
