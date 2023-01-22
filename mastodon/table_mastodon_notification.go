@@ -3,6 +3,8 @@ package mastodon
 import (
 	"context"
 	"fmt"
+	"strings"
+	"regexp"
 
 	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
@@ -72,6 +74,12 @@ func notificationColumns() []*plugin.Column {
 			Type:        proto.ColumnType_STRING,
 			Description: "Status URL of the notification (if any).",
 			Transform:   transform.FromValue().Transform(notificationStatusUrl),
+		},
+		{
+			Name:        "instance_qualified_status_url",
+			Type:        proto.ColumnType_STRING,
+			Description: "Status URL of the notification (if any), prefixed with home server.",
+			Transform:   transform.FromValue().Transform(instanceQualifiedNotificationStatusUrl),
 		},
 		{
 			Name:        "status_content",
@@ -179,4 +187,24 @@ func notificationStatusContent(ctx context.Context, input *transform.TransformDa
 	content = sanitize(notification.Status.Content)
 	plugin.Logger(ctx).Debug("notificationStatusContent", "after transform", content)
 	return content, nil
+}
+
+func instanceQualifiedNotificationStatusUrl(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	status := input.Value.(*mastodon.Notification).Status
+	if status == nil {
+		return "", nil
+	}
+	if strings.HasPrefix(status.URL, homeServer) {
+		return status.URL, nil
+	}
+	re := regexp.MustCompile(`https:\/\/([^\/]+)\/@([^\/]+)\/(\d+)`)
+	matches := re.FindStringSubmatch(status.URL)
+	if len(matches) == 0 {
+		return status.URL, nil
+	}
+	server := matches[1]
+	person := matches[2]
+
+	qualifiedUrl := fmt.Sprintf("https://mastodon.social/@%s@%s/%s", person, server, status.ID)
+	return qualifiedUrl, nil
 }
