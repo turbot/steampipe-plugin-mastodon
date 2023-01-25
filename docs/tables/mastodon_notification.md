@@ -10,10 +10,9 @@ List recent Mastodon notifications
 select
   category,
   created_at,
-  account,
-  url
+  account ->> 'acct' as account
 from
   mastodon_notification
-order by
-  created_at
+limit
+  20
 ```
