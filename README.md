@@ -8,7 +8,7 @@ Prerequisites:
 
 - [Steampipe](https://steampipe.io/downloads)
 - [Golang](https://golang.org/doc/install)
-- A [Mastodon app](https://mastodon.social/settings/applications)
+- An account on a Mastodon server
 
 Clone:
 
@@ -32,19 +32,26 @@ cp config/* ~/.steampipe/config
 Then edit `~/.steampipe/config/mastodon.spc`, add your server's URL and the access token from the Mastodon app you created.
 
 ```
-connection "mastodon_social" {
+connection "myserver_social" {
     plugin = "mastodon"
-    server = "https://mastodon.social"
-    access_token = "S_xe...pLVE"
+    server = "https://myserver.social"    # my_server is mastodon.social, nerdculture.de, etc
+    access_token = "ABC...mytoken...XYZ"  # find token at https://myserver.social/settings/applications
 }
 ```
 
-Try it!
+View available tables:
 
 ```
 steampipe query
 > .inspect mastodon
 ```
+
+Try some sample queries.
+
+- [mastodon_toot](./docs/tables/mastodon_toot.md)
+- [mastodon_list](./docs/tables/mastodon_list.md)
+- [mastodon_following](./docs/tables/mastodon_following.md)
+- [mastodon_notification](./docs/tables/mastodon_notification.md)
 
 Further reading:
 
