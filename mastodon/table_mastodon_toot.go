@@ -91,7 +91,8 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 		} else if timeline == "search_status" {
 			plugin.Logger(ctx).Debug("listToots: search_status", "query", query, "pg", fmt.Sprintf("%+v", pg))
 			results, err := client.Search(ctx, query, true)
-			plugin.Logger(ctx).Debug("listToots: search_status", "pg", fmt.Sprintf("%+v", pg))
+			postgresLimit = int64(len(results.Statuses))
+			plugin.Logger(ctx).Debug("listToots: search_status", "pg", pg, "count", len(results.Statuses), "statuses", results.Statuses)
 			if err != nil {
 				return handleError(ctx, "listToots: search_status", err)
 			}
