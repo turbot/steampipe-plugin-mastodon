@@ -59,26 +59,28 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 		if timeline == "me" {
 			list, err := listMyToots(ctx, postgresLimit, d)
 			toots = list
-			plugin.Logger(ctx).Debug("listToots: me", "toots", len(toots))
+			plugin.Logger(ctx).Debug("listToots: me", "pg", pg, "toots", len(toots))
 			if err != nil {
 				return handleError(ctx, "listToots: home", err)
 			}
 		} else if timeline == "home" {
 			list, err := client.GetTimelineHome(ctx, &pg)
 			toots = list
-			plugin.Logger(ctx).Debug("listToots: home", "pg", fmt.Sprintf("%+v", pg), "list", len(toots))
+			plugin.Logger(ctx).Debug("listToots: home", "pg", pg, "toots", len(toots))
 			if err != nil {
 				return handleError(ctx, "listToots: home", err)
 			}
 		} else if timeline == "direct" {
 			list, err := client.GetTimelineDirect(ctx, &pg)
 			toots = list
+			plugin.Logger(ctx).Debug("listToots: direct", "pg", pg, "toots", len(toots))
 			if err != nil {
 				return handleError(ctx, "listToots: direct", err)
 			}
 		} else if timeline == "local" {
 			list, err := client.GetTimelinePublic(ctx, true, &pg)
 			toots = list
+			plugin.Logger(ctx).Debug("listToots: local", "pg", pg, "toots", len(toots))
 			if err != nil {
 				return handleError(ctx, "listToots: local", err)
 			}
@@ -89,18 +91,18 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 				return handleError(ctx, "listToots: remote", err)
 			}
 		} else if timeline == "search_status" {
-			plugin.Logger(ctx).Debug("listToots: search_status", "query", query, "pg", fmt.Sprintf("%+v", pg))
+			plugin.Logger(ctx).Debug("listToots: search_status", "query", query, "pg", pg)
 			results, err := client.Search(ctx, query, true)
 			postgresLimit = int64(len(results.Statuses))
-			plugin.Logger(ctx).Debug("listToots: search_status", "pg", pg, "count", len(results.Statuses), "statuses", results.Statuses)
 			if err != nil {
 				return handleError(ctx, "listToots: search_status", err)
 			}
 			toots = results.Statuses
+			plugin.Logger(ctx).Debug("listToots: search_status", "query", query, "pg", pg)
 		} else if timeline == "list" {
-			plugin.Logger(ctx).Debug("listToots: list", "list_id", list_id)
 			list, err := client.GetTimelineList(ctx, mastodon.ID(list_id), &pg)
 			toots = list
+			plugin.Logger(ctx).Debug("listToots: list", "list_id", list_id, "toots", len(toots))
 			if err != nil {
 				return handleError(ctx, "listToots: list", err)
 			}
@@ -109,7 +111,7 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 			return nil, nil
 		}
 
-		if postgresLimit == -1 && len(toots) < apiMaxPerPage {
+		if len(toots) < apiMaxPerPage {
 			plugin.Logger(ctx).Debug("listToots outer loop: got fewer than apiMaxPerPage, setting postgresLimit")
 			postgresLimit = total + int64(len(toots))
 		}
