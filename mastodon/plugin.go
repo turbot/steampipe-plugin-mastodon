@@ -24,6 +24,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"mastodon_followers":       tableMastodonFollowers(),
 			"mastodon_following":       tableMastodonFollowing(),
 			"mastodon_notification":    tableMastodonNotification(),
+			"mastodon_peers":           tableMastodonPeers(),
 			"mastodon_rate":            tableMastodonRate(),
 			"mastodon_rule":            tableMastodonRule(),
 			"mastodon_toot":            tableMastodonToot(),
