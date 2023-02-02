@@ -4,12 +4,25 @@ List rules for Mastodon instances
 
 ## Examples
 
-### Query rules
+### Query rules for the home server
 
 ```sql
 select
-  id
+  id,
   rule
 from
   mastodon_rule
+```
+
+### Query rules for another server
+
+```sql
+select
+  server,
+  id,
+  rule
+from
+  mastodon_rule
+where 
+  server = 'nerdculture.de'
 ```
