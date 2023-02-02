@@ -1,6 +1,6 @@
 # Table: mastodon_peer
 
-List peers of your Mastodon server
+List peers of a Mastodon server
 
 ## Examples
 

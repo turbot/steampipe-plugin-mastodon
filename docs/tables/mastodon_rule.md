@@ -1,6 +1,6 @@
 # Table: mastodon_rules
 
-List rules for Mastodon instances
+List rules for a Mastodon server
 
 ## Examples
 
