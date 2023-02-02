@@ -24,5 +24,5 @@ select
 from
   mastodon_rule
 where 
-  server = 'nerdculture.de'
-```
+  server = 'https://nerdculture.de'
+  ```
