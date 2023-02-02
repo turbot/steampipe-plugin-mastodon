@@ -11,10 +11,10 @@ import (
 )
 
 type mastodonDomainBlock struct {
-	Server string `json:"server"`
+	Server   string `json:"server"`
 	Domain   string `json:"domain"`
 	Digest   string `json:"digest"`
-	Severity   string `json:"severity"`
+	Severity string `json:"severity"`
 }
 
 func tableMastodonDomainBlock() *plugin.Table {
@@ -55,7 +55,6 @@ func domainColumns() []*plugin.Column {
 			Type:        proto.ColumnType_STRING,
 			Description: "Severity of a domain block.",
 		},
-
 	}
 }
 
@@ -80,9 +79,9 @@ func listDomainBlocks(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 	}
 	for _, block := range blocks {
 		b := mastodonDomainBlock{
-			Server: server,
-			Domain: block.Domain,
-			Digest: block.Digest,
+			Server:   server,
+			Domain:   block.Domain,
+			Digest:   block.Digest,
 			Severity: block.Severity,
 		}
 		d.StreamListItem(ctx, b)
