@@ -3,8 +3,8 @@ package mastodon
 import (
 	"context"
 	"fmt"
-	"strings"
 	"regexp"
+	"strings"
 
 	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
