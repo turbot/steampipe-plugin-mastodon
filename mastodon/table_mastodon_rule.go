@@ -65,13 +65,17 @@ func listRule(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (
 	url := fmt.Sprintf("%s/api/v1/instance/rules", server)
 	plugin.Logger(ctx).Debug("listRule", "url", url)
 	req, _ := http.NewRequest("GET", url, nil)
-	res, _ := client.Do(req)
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, nil
+	}
 	var rules []mastodonRule
 	defer res.Body.Close()
 	decoder := json.NewDecoder(res.Body)
-	err := decoder.Decode(&rules)
+	err = decoder.Decode(&rules)
 	if err != nil {
 		plugin.Logger(ctx).Error(err.Error())
+		return nil, nil
 	}
 	for _, rule := range rules {
 		r := mastodonRule{
