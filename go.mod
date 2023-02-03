@@ -3,8 +3,8 @@ module steampipe-plugin-mastodon
 go 1.19
 
 require (
-	github.com/mattn/go-mastodon v0.0.5
-	github.com/microcosm-cc/bluemonday v1.0.21
+	github.com/mattn/go-mastodon v0.0.6
+	github.com/microcosm-cc/bluemonday v1.0.22
 	github.com/tomnomnom/linkheader v0.0.0-20180905144013-02ca5825eb80
 	github.com/turbot/steampipe-plugin-sdk/v5 v5.1.2
 )
