@@ -62,12 +62,12 @@ func qualifiedAccountUrl(ctx context.Context, url string) string {
 	}
 	server := matches[1]
 	person := matches[2]
-    prefixedSchemelessHomeServer := schemelessHomeServer
+	prefixedSchemelessHomeServer := schemelessHomeServer
 	if app != "" {
 		prefixedSchemelessHomeServer = fmt.Sprintf("%s/%s", app, schemelessHomeServer)
 	}
 	qualifiedAccountUrl := fmt.Sprintf("https://%s/@%s@%s", prefixedSchemelessHomeServer, person, server)
-	qualifiedAccountUrl = strings.ReplaceAll(qualifiedAccountUrl, "@" + schemelessHomeServer, "")
+	qualifiedAccountUrl = strings.ReplaceAll(qualifiedAccountUrl, "@"+schemelessHomeServer, "")
 	plugin.Logger(ctx).Debug("qualifiedAccountUrl", "person", person, "server", server, "schemelessUrl", schemelessUrl, "schemelessHomeServer", schemelessHomeServer, "prefixedSchemelessHomeServer", prefixedSchemelessHomeServer, "qualifiedAccountUrl", qualifiedAccountUrl)
 	return qualifiedAccountUrl
 }

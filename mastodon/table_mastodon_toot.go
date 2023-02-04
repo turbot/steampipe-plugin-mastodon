@@ -167,7 +167,7 @@ func qualifiedStatusUrl(ctx context.Context, url string, id string) (interface{}
 	plugin.Logger(ctx).Debug("qualifiedStatusUrl", "url", url)
 	if strings.HasPrefix(url, homeServer) {
 		if app == "" {
-	    qualifiedStatusUrl := "https://" + url
+			qualifiedStatusUrl := "https://" + url
 			plugin.Logger(ctx).Debug("qualifiedStatusUrl", "home server, no app, returning...", qualifiedStatusUrl)
 			return qualifiedStatusUrl, nil
 		} else {
@@ -185,7 +185,7 @@ func qualifiedStatusUrl(ctx context.Context, url string, id string) (interface{}
 	server := matches[1]
 	person := matches[2]
 	qualifiedStatusUrl := ""
-    if app == "" {
+	if app == "" {
 		qualifiedStatusUrl = fmt.Sprintf("%s/@%s@%s/%s", homeServer, person, server, id)
 	} else {
 		qualifiedStatusUrl = fmt.Sprintf("https://%s/%s/@%s@%s/%s", app, schemelessHomeServer, person, server, id)
@@ -195,7 +195,7 @@ func qualifiedStatusUrl(ctx context.Context, url string, id string) (interface{}
 }
 
 func instanceQualifiedStatusUrl(ctx context.Context, input *transform.TransformData) (interface{}, error) {
-	status := input.Value.(*mastodon.Status	)
+	status := input.Value.(*mastodon.Status)
 	return qualifiedStatusUrl(ctx, status.URL, string(status.ID))
 }
 
