@@ -43,3 +43,5 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 
 var sanitizer = bluemonday.StrictPolicy()
 var homeServer = ""
+var schemelessHomeServer = ""
+var app = ""

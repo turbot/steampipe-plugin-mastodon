@@ -3,8 +3,6 @@ package mastodon
 import (
 	"context"
 	"fmt"
-	"regexp"
-	"strings"
 
 	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
@@ -194,17 +192,5 @@ func instanceQualifiedNotificationStatusUrl(ctx context.Context, input *transfor
 	if status == nil {
 		return "", nil
 	}
-	if strings.HasPrefix(status.URL, homeServer) {
-		return status.URL, nil
-	}
-	re := regexp.MustCompile(`https:\/\/([^\/]+)\/@([^\/]+)\/(\d+)`)
-	matches := re.FindStringSubmatch(status.URL)
-	if len(matches) == 0 {
-		return status.URL, nil
-	}
-	server := matches[1]
-	person := matches[2]
-
-	qualifiedUrl := fmt.Sprintf("https://mastodon.social/@%s@%s/%s", person, server, status.ID)
-	return qualifiedUrl, nil
+	return qualifiedStatusUrl(ctx, status.URL, string(status.ID))
 }
