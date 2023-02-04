@@ -25,7 +25,7 @@ func listSingleToot(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateD
 		return nil, fmt.Errorf("unable to establish a connection: %v", err)
 	}
 
-	id := d.EqualsQuals["id"].GetStringValue()
+	id := d.EqualsQualString("id")
 	mastodonId := mastodon.ID(id)
 	plugin.Logger(ctx).Debug("single_toot", "id", mastodonId)
 
