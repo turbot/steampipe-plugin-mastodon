@@ -253,76 +253,6 @@ func tootColumns() []*plugin.Column {
 	}
 }
 
-func listMyToots(ctx context.Context, postgresLimit int64, d *plugin.QueryData) ([]*mastodon.Status, error) {
-	client, err := connect(ctx, d)
-	if err != nil {
-		return nil, err
-	}
-	config := GetConfig(d.Connection)
-	token := *config.AccessToken
-	server := *config.Server
-
-	accountCurrentUser, err := client.GetAccountCurrentUser(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	plugin.Logger(ctx).Debug("listMyToots", "postgresLimit", postgresLimit)
-	httpClient := &http.Client{}
-
-	allToots := []*mastodon.Status{}
-	page := 0
-	count := int64(0)
-
-	url := fmt.Sprintf("%s/api/v1/accounts/%s/statuses?limit=40", server, accountCurrentUser.ID)
-	for {
-		page++
-		plugin.Logger(ctx).Debug("listMyToots", "page", page, "url", url)
-
-		toots := []*mastodon.Status{}
-		req, err := http.NewRequest("GET", url, nil)
-		if err != nil {
-			plugin.Logger(ctx).Debug("listMyToots", "err", err)
-		}
-		req.Header.Set("Authorization", "Bearer "+token)
-		res, err := httpClient.Do(req)
-		if err != nil {
-			plugin.Logger(ctx).Debug("listMyToots", "err", err)
-		}
-		defer res.Body.Close()
-		decoder := json.NewDecoder(res.Body)
-		err = decoder.Decode(&toots)
-		if err != nil {
-			plugin.Logger(ctx).Debug("listMyToots", "err", err)
-		}
-		plugin.Logger(ctx).Debug("listMyToots", "toots", len(toots))
-		for i, toot := range toots {
-			count++
-			plugin.Logger(ctx).Debug("toot", "i", i, "count", count, "toot", toot.CreatedAt)
-			allToots = append(allToots, toot)
-			if postgresLimit != -1 && count >= postgresLimit {
-				plugin.Logger(ctx).Debug("at postgres limit, return allToots")
-				return allToots, nil
-			}
-		}
-		header := res.Header
-		newUrl := ""
-		for _, link := range linkheader.Parse(header.Get("Link")) {
-			if link.Rel == "next" {
-				newUrl = link.URL
-			}
-		}
-		plugin.Logger(ctx).Debug("followers", "newUrl", newUrl)
-		if newUrl == "" {
-			return allToots, nil
-		} else {
-			url = newUrl
-		}
-
-	}
-
-}
-
 // This is a workaround for the upstream SDK's doGet() method which intends to handle link-based pagination but seems to fail for:
 //
 // https://pkg.go.dev/github.com/mattn/go-mastodon#Client.GetAccountFollowers
@@ -424,3 +354,4 @@ func sanitizeContent(ctx context.Context, input *transform.TransformData) (inter
 	status := input.Value.(*mastodon.Status)
 	return sanitize(status.Content), nil
 }
+

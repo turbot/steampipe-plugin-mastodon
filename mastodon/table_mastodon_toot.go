@@ -51,13 +51,19 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 	apiMaxPerPage := 40
 	total := int64(0)
 	pg := mastodon.Pagination{Limit: int64(apiMaxPerPage)}
+	account, err := client.GetAccountCurrentUser(ctx)
+	if err != nil {
+		plugin.Logger(ctx).Error("listToots", "err", err)
+	}
+	plugin.Logger(ctx).Debug("listToots", "account", account)
 
 	for {
 		page++
 		plugin.Logger(ctx).Debug("listToots", "page", page, "pg", pg, "minID", pg.MinID, "maxID", pg.MaxID)
 		toots := []*mastodon.Status{}
 		if timeline == "me" {
-			list, err := listMyToots(ctx, postgresLimit, d)
+			apiMaxPerPage = 20
+			list, err := client.GetAccountStatuses(ctx, account.ID, &pg)
 			toots = list
 			plugin.Logger(ctx).Debug("listToots: me", "pg", pg, "toots", len(toots))
 			if err != nil {
