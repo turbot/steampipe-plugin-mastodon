@@ -7,8 +7,8 @@ import (
 	"net/http"
 
 	"github.com/mattn/go-mastodon"
-	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
 
 func tableMastodonRelationship() *plugin.Table {
@@ -88,7 +88,7 @@ func listRelationships(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	token := *config.AccessToken
 	server := *config.Server
 
-	id := d.KeyColumnQuals["id"].GetStringValue()
+	id := d.EqualsQuals["id"].GetStringValue()
 	plugin.Logger(ctx).Debug("relationships", "id", id)
 
 	url := fmt.Sprintf("%s/api/v1/accounts/relationships?id[]=%s", server, id)

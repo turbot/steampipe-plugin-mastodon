@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 func tableMastodonWeeklyActivity() *plugin.Table {
@@ -71,9 +71,9 @@ func weeklyActivityColumns() []*plugin.Column {
 func listWeeklyActivity(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	config := GetConfig(d.Connection)
 	server := *config.Server
-	quals := d.KeyColumnQuals
-	if quals["server"] != nil {
-		server = quals["server"].GetStringValue()
+	qualServer := d.EqualsQuals["server"].GetStringValue()
+	if qualServer != "" {
+		server = qualServer
 	}
 	client := &http.Client{}
 	url := fmt.Sprintf("%s/api/v1/instance/activity", server)

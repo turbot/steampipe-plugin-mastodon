@@ -9,9 +9,9 @@ import (
 
 	"github.com/mattn/go-mastodon"
 	"github.com/tomnomnom/linkheader"
-	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 func connect(_ context.Context, d *plugin.QueryData) (*mastodon.Client, error) {
@@ -354,4 +354,3 @@ func sanitizeContent(ctx context.Context, input *transform.TransformData) (inter
 	status := input.Value.(*mastodon.Status)
 	return sanitize(status.Content), nil
 }
-

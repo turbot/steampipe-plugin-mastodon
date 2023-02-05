@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
 
 type mastodonDomainBlock struct {
@@ -61,9 +61,9 @@ func domainColumns() []*plugin.Column {
 func listDomainBlocks(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	config := GetConfig(d.Connection)
 	server := *config.Server
-	quals := d.KeyColumnQuals
-	if quals["server"] != nil {
-		server = quals["server"].GetStringValue()
+	qualServer := d.EqualsQuals["server"].GetStringValue()
+	if qualServer != "" {
+		server = qualServer
 	}
 	client := &http.Client{}
 	url := fmt.Sprintf("%s/api/v1/instance/domain_blocks", server)

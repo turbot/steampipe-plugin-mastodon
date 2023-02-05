@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 func tableMastodonSearchHashtag() *plugin.Table {
@@ -66,8 +66,7 @@ func searchHashtag(query string, ctx context.Context, d *plugin.QueryData, h *pl
 }
 
 func listHashtag(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	quals := d.KeyColumnQuals
-	query := quals["query"].GetStringValue()
+	query := d.EqualsQuals["query"].GetStringValue()
 	plugin.Logger(ctx).Debug("searchHashtag", "quals", d.Quals, "query", query)
 	return searchHashtag(query, ctx, d, h)
 }
