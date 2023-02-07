@@ -88,7 +88,7 @@ func listRelationships(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	token := *config.AccessToken
 	server := *config.Server
 
-	id := d.EqualsQuals["id"].GetStringValue()
+	id := d.EqualsQualString("id")
 	plugin.Logger(ctx).Debug("relationships", "id", id)
 
 	url := fmt.Sprintf("%s/api/v1/accounts/relationships?id[]=%s", server, id)

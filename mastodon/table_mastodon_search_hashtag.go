@@ -66,7 +66,7 @@ func searchHashtag(query string, ctx context.Context, d *plugin.QueryData, h *pl
 }
 
 func listHashtag(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	query := d.EqualsQuals["query"].GetStringValue()
+	query := d.EqualsQualString("query")
 	plugin.Logger(ctx).Debug("searchHashtag", "quals", d.Quals, "query", query)
 	return searchHashtag(query, ctx, d, h)
 }
