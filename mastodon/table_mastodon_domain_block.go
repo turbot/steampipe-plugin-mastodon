@@ -61,9 +61,9 @@ func domainColumns() []*plugin.Column {
 func listDomainBlocks(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	config := GetConfig(d.Connection)
 	server := *config.Server
-	qualServer := d.EqualsQuals["server"].GetStringValue()
-	if qualServer != "" {
-		server = qualServer
+	serverQual := d.EqualsQualString("server")
+	if serverQual != "" {
+		server = serverQual
 	}
 	client := &http.Client{}
 	url := fmt.Sprintf("%s/api/v1/instance/domain_blocks", server)

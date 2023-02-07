@@ -3,10 +3,9 @@ module steampipe-plugin-mastodon
 go 1.19
 
 require (
-	github.com/mattn/go-mastodon v0.0.5
-	github.com/microcosm-cc/bluemonday v1.0.21
+	github.com/mattn/go-mastodon v0.0.6
+	github.com/microcosm-cc/bluemonday v1.0.22
 	github.com/tomnomnom/linkheader v0.0.0-20180905144013-02ca5825eb80
-	github.com/turbot/steampipe-plugin-sdk/v4 v4.1.7
 	github.com/turbot/steampipe-plugin-sdk/v5 v5.1.2
 )
 
@@ -113,5 +112,3 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	k8s.io/apimachinery v0.23.5 // indirect
 )
-
-// replace github.com/mattn/go-mastodon => /home/jon/go-mastodon

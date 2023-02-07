@@ -49,9 +49,9 @@ func peerColumns() []*plugin.Column {
 func listPeers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	config := GetConfig(d.Connection)
 	server := *config.Server
-	qualServer := d.EqualsQuals["server"].GetStringValue()
-	if qualServer != "" {
-		server = qualServer
+	serverQual := d.EqualsQualString("server")
+	if serverQual != "" {
+		server = serverQual
 	}
 	client := &http.Client{}
 	url := fmt.Sprintf("%s/api/v1/instance/peers", server)
