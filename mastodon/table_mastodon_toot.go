@@ -173,7 +173,7 @@ func qualifiedStatusUrl(ctx context.Context, url string, id string) (interface{}
 	plugin.Logger(ctx).Debug("qualifiedStatusUrl", "url", url)
 	if strings.HasPrefix(url, homeServer) {
 		if app == "" {
-			qualifiedStatusUrl := "https://" + url
+			qualifiedStatusUrl := url
 			plugin.Logger(ctx).Debug("qualifiedStatusUrl", "home server, no app, returning...", qualifiedStatusUrl)
 			return qualifiedStatusUrl, nil
 		} else {
