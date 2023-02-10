@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/mattn/go-mastodon"
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
@@ -19,6 +20,86 @@ func tableMastodonAccount() *plugin.Table {
 			KeyColumns: plugin.SingleColumn("id"),
 		},
 		Columns: accountColumns(),
+	}
+}
+
+func accountColumns() []*plugin.Column {
+	return []*plugin.Column{
+		{
+			Name:        "id",
+			Type:        proto.ColumnType_STRING,
+			Description: "ID of the account.",
+		},
+		{
+			Name:        "acct",
+			Type:        proto.ColumnType_STRING,
+			Description: "username@server for the account.",
+		},
+		{
+			Name:        "created_at",
+			Type:        proto.ColumnType_TIMESTAMP,
+			Description: "Timestamp when the account was created.",
+		},
+		{
+			Name:        "url",
+			Type:        proto.ColumnType_STRING,
+			Description: "URL for the account.",
+		},
+		{
+			Name:        "instance_qualified_account_url",
+			Type:        proto.ColumnType_STRING,
+			Description: "Account URL prefixed with my instance.",
+			Transform:   transform.FromValue().Transform(instanceQualifiedAccountUrl),
+		},
+		{
+			Name:        "username",
+			Type:        proto.ColumnType_STRING,
+			Description: "Username for the account.",
+		},
+		{
+			Name:        "server",
+			Type:        proto.ColumnType_STRING,
+			Description: "Server for the account.",
+			Transform:   transform.FromValue().Transform(accountServerFromAccount),
+		},
+		{
+			Name:        "display_name",
+			Type:        proto.ColumnType_STRING,
+			Description: "Display name for the account.",
+		},
+		{
+			Name:        "followers_count",
+			Type:        proto.ColumnType_INT,
+			Description: "Number of followers for the account.",
+		},
+		{
+			Name:        "following_count",
+			Type:        proto.ColumnType_INT,
+			Description: "Number of accounts this account follows.",
+		},
+		{
+			Name:        "statuses_count",
+			Type:        proto.ColumnType_INT,
+			Description: "Toots from this account.",
+		},
+		{
+			Name:        "note",
+			Type:        proto.ColumnType_STRING,
+			Description: "Description of the account.",
+			Transform:   transform.FromValue().Transform(sanitizeNote),
+		},
+		{
+			Name:        "query",
+			Type:        proto.ColumnType_STRING,
+			Description: "Query used to search hashtags.",
+			Transform:   transform.FromQual("query"),
+		},
+		{
+			Name:        "list_id",
+			Type:        proto.ColumnType_STRING,
+			Description: "List ID for account.",
+			Transform:   transform.FromQual("list_id"),
+		},
 	}
 }
 
