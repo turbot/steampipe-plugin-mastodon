@@ -18,7 +18,7 @@ import (
 // https://pkg.go.dev/github.com/mattn/go-mastodon#Client.GetAccountFollowers
 // https://pkg.go.dev/github.com/mattn/go-mastodon#Client.GetAccountFollowing
 //
-// The workaround sacrifices the exponential backoff provided by the SDK's doGet().
+// The workaround sacrifices the exponential back-off provided by the SDK's doGet().
 
 func listFollows(ctx context.Context, category string, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	client, err := connect(ctx, d)
