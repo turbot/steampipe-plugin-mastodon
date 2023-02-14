@@ -2,20 +2,12 @@ package mastodon
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"net/http"
 
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
 
-type mastodonPeer struct {
-	Server string `json:"server"`
-	Name   string `json:"peer"`
-}
-
-func tablemastodonPeer() *plugin.Table {
+func tableMastodonPeer() *plugin.Table {
 	return &plugin.Table{
 		Name: "mastodon_peer",
 		List: &plugin.ListConfig{
@@ -47,30 +39,28 @@ func peerColumns() []*plugin.Column {
 }
 
 func listPeers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+
 	config := GetConfig(d.Connection)
 	server := *config.Server
 	serverQual := d.EqualsQualString("server")
 	if serverQual != "" {
 		server = serverQual
 	}
-	client := &http.Client{}
-	url := fmt.Sprintf("%s/api/v1/instance/peers", server)
-	plugin.Logger(ctx).Debug("listPeers", "url", url)
-	req, _ := http.NewRequest("GET", url, nil)
-	res, _ := client.Do(req)
-	var peers []string
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
-	err := decoder.Decode(&peers)
+
+	client, err := connectRest(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error(err.Error())
+		logger.Error("mastodon_peer.listPeers", "connect_error", err)
+		return nil, err
+	}
+
+	peers, err := client.ListPeers(server)
+	if err != nil {
+		logger.Error("mastodon_peer.listPeers", "query_error", err)
+		return nil, err
 	}
 	for _, peer := range peers {
-		p := mastodonPeer{
-			Server: server,
-			Name:   peer,
-		}
-		d.StreamListItem(ctx, p)
+		d.StreamListItem(ctx, peer)
 	}
 
 	return nil, nil

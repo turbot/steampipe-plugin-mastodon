@@ -2,20 +2,10 @@ package mastodon
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"net/http"
 
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
-
-type mastodonDomainBlock struct {
-	Server   string `json:"server"`
-	Domain   string `json:"domain"`
-	Digest   string `json:"digest"`
-	Severity string `json:"severity"`
-}
 
 func tableMastodonDomainBlock() *plugin.Table {
 	return &plugin.Table{
@@ -59,32 +49,28 @@ func domainColumns() []*plugin.Column {
 }
 
 func listDomainBlocks(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+
 	config := GetConfig(d.Connection)
 	server := *config.Server
 	serverQual := d.EqualsQualString("server")
 	if serverQual != "" {
 		server = serverQual
 	}
-	client := &http.Client{}
-	url := fmt.Sprintf("%s/api/v1/instance/domain_blocks", server)
-	plugin.Logger(ctx).Debug("listPeers", "url", url)
-	req, _ := http.NewRequest("GET", url, nil)
-	res, _ := client.Do(req)
-	var blocks []mastodonDomainBlock
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
-	err := decoder.Decode(&blocks)
+
+	client, err := connectRest(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error(err.Error())
+		logger.Error("mastodon_block.listDomainBlocks", "connect_error", err)
+		return nil, err
+	}
+
+	blocks, err := client.ListDomainBlocks(server)
+	if err != nil {
+		logger.Error("mastodon_block.listDomainBlocks", "query_error", err)
+		return nil, err
 	}
 	for _, block := range blocks {
-		b := mastodonDomainBlock{
-			Server:   server,
-			Domain:   block.Domain,
-			Digest:   block.Digest,
-			Severity: block.Severity,
-		}
-		d.StreamListItem(ctx, b)
+		d.StreamListItem(ctx, block)
 	}
 
 	return nil, nil

@@ -2,9 +2,6 @@ package mastodon
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"net/http"
 	"strconv"
 	"time"
 
@@ -27,14 +24,6 @@ func tableMastodonWeeklyActivity() *plugin.Table {
 		},
 		Columns: weeklyActivityColumns(),
 	}
-}
-
-type mastodonWeeklyActivity struct {
-	Server        string `json:"server"`
-	Week          string `json:"week"`
-	Statuses      string `json:"statuses"`
-	Logins        string `json:"logins"`
-	Registrations string `json:"registrations"`
 }
 
 func weeklyActivityColumns() []*plugin.Column {
@@ -69,35 +58,29 @@ func weeklyActivityColumns() []*plugin.Column {
 }
 
 func listWeeklyActivity(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+
 	config := GetConfig(d.Connection)
 	server := *config.Server
 	serverQual := d.EqualsQualString("server")
 	if serverQual != "" {
 		server = serverQual
 	}
-	client := &http.Client{}
-	url := fmt.Sprintf("%s/api/v1/instance/activity", server)
-	plugin.Logger(ctx).Debug("listWeeklyActivity", "url", url)
-	req, _ := http.NewRequest("GET", url, nil)
-	res, _ := client.Do(req)
-	var activities []mastodonWeeklyActivity
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
-	err := decoder.Decode(&activities)
+
+	client, err := connectRest(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error(err.Error())
-	}
-	for _, activity := range activities {
-		a := mastodonWeeklyActivity{
-			Server:        server,
-			Week:          activity.Week,
-			Statuses:      activity.Statuses,
-			Logins:        activity.Logins,
-			Registrations: activity.Registrations,
-		}
-		d.StreamListItem(ctx, a)
+		logger.Error("mastodon_rule.listWeeklyActivity", "connect_error", err)
+		return nil, err
 	}
 
+	activities, err := client.ListWeeklyActivity(server)
+	if err != nil {
+		logger.Error("mastodon_rule.listWeeklyActivity", "query_error", err)
+		return nil, err
+	}
+	for _, rule := range activities {
+		d.StreamListItem(ctx, rule)
+	}
 	return nil, nil
 }
 

@@ -63,7 +63,7 @@ func listRule(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (
 
 	rules, err := client.ListRules(server)
 	if err != nil {
-		logger.Error("mastodon_rule.listMastodonRule", "list_rules_error", err)
+		logger.Error("mastodon_rule.listMastodonRule", "query_error", err)
 		return nil, err
 	}
 	for _, rule := range rules {
