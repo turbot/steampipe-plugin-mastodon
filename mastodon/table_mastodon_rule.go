@@ -48,20 +48,13 @@ func ruleColumns() []*plugin.Column {
 func listRule(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
-	config := GetConfig(d.Connection)
-	server := *config.Server
-	serverQual := d.EqualsQualString("server")
-	if serverQual != "" {
-		server = serverQual
-	}
-
-	client, err := connectRest(ctx, d)
+	client, err := connectUnauthenticated(ctx, d)
 	if err != nil {
 		logger.Error("mastodon_rule.listMastodonRule", "connect_error", err)
 		return nil, err
 	}
 
-	rules, err := client.ListRules(server)
+	rules, err := client.GetRules(ctx)
 	if err != nil {
 		logger.Error("mastodon_rule.listMastodonRule", "query_error", err)
 		return nil, err

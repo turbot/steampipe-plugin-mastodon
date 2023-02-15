@@ -30,6 +30,29 @@ func connectUncached(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrate
 	return client, nil
 }
 
+func connectUnauthenticated(ctx context.Context, d *plugin.QueryData) (*mastodon.Client, error) {
+	config := GetConfig(d.Connection)
+
+	server := *config.Server
+	serverQual := d.EqualsQualString("server")
+	if serverQual != "" {
+		server = serverQual
+	}
+
+	sessionCacheKey := server
+	if cachedData, ok := d.ConnectionManager.Cache.Get(sessionCacheKey); ok {
+		return cachedData.(*mastodon.Client), nil
+	}
+
+	client := mastodon.NewClient(&mastodon.Config{
+		Server: server,
+	})
+
+	d.ConnectionManager.Cache.Set(sessionCacheKey, client)
+	return client, nil
+
+}
+
 func connectRest(ctx context.Context, d *plugin.QueryData) (*rest.Client, error) {
 	conn, err := connectRestCached(ctx, d, nil)
 	if err != nil {
