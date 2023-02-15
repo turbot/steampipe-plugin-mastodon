@@ -2,6 +2,8 @@ module steampipe-plugin-mastodon
 
 go 1.19
 
+replace github.com/mattn/go-mastodon => github.com/luisffc/go-mastodon v0.0.6
+
 require (
 	github.com/mattn/go-mastodon v0.0.6
 	github.com/microcosm-cc/bluemonday v1.0.22
