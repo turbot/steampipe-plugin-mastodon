@@ -194,38 +194,6 @@ func reblogServer(ctx context.Context, input *transform.TransformData) (interfac
 	return matches[1], nil
 }
 
-func qualifiedStatusUrl(ctx context.Context, url string, id string) (interface{}, error) {
-	schemelessStatusUrl := strings.ReplaceAll(url, "https://", "")
-	plugin.Logger(ctx).Debug("qualifiedStatusUrl", "url", url)
-	if strings.HasPrefix(url, homeServer) {
-		if app == "" {
-			qualifiedStatusUrl := url
-			plugin.Logger(ctx).Debug("qualifiedStatusUrl", "home server, no app, returning...", qualifiedStatusUrl)
-			return qualifiedStatusUrl, nil
-		} else {
-			qualifiedStatusUrl := fmt.Sprintf("https://%s/%s/", app, schemelessStatusUrl)
-			plugin.Logger(ctx).Debug("qualifiedStatusUrl", "home server, app, returning...", qualifiedStatusUrl)
-			return qualifiedStatusUrl, nil
-		}
-	}
-	re := regexp.MustCompile(`https://([^/]+)/@(.+)/`)
-	matches := re.FindStringSubmatch(url)
-	if len(matches) == 0 {
-		plugin.Logger(ctx).Debug("qualifiedStatusUrl", "no match for status.URL, returning", url)
-		return url, nil
-	}
-	server := matches[1]
-	person := matches[2]
-	qualifiedStatusUrl := ""
-	if app == "" {
-		qualifiedStatusUrl = fmt.Sprintf("%s/@%s@%s/%s", homeServer, person, server, id)
-	} else {
-		qualifiedStatusUrl = fmt.Sprintf("https://%s/%s/@%s@%s/%s", app, schemelessHomeServer, person, server, id)
-	}
-	plugin.Logger(ctx).Debug("qualifiedStatusUrl", "homeServer", homeServer, "server", server, "person", person, "id", id, "qualifiedStatusUrl", qualifiedStatusUrl)
-	return qualifiedStatusUrl, nil
-}
-
 func instanceQualifiedStatusUrl(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	status := input.Value.(*mastodon.Status)
 	return qualifiedStatusUrl(ctx, status.URL, string(status.ID))
