@@ -2,7 +2,6 @@ package mastodon
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
@@ -16,12 +15,22 @@ func tableMastodonNotification() *plugin.Table {
 		List: &plugin.ListConfig{
 			Hydrate: listNotifications,
 		},
+		Get: &plugin.GetConfig{
+			Hydrate:    getNotification,
+			KeyColumns: plugin.SingleColumn("id"),
+		},
 		Columns: notificationColumns(),
 	}
 }
 
 func notificationColumns() []*plugin.Column {
 	return []*plugin.Column{
+		{
+			Name:        "id",
+			Type:        proto.ColumnType_STRING,
+			Description: "Unique identification for the notification.",
+			Transform:   transform.FromField("ID"),
+		},
 		{
 			Name:        "category",
 			Type:        proto.ColumnType_STRING,
@@ -89,13 +98,16 @@ func notificationColumns() []*plugin.Column {
 }
 
 func listNotifications(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+
 	client, err := connect(ctx, d)
 	if err != nil {
-		return nil, fmt.Errorf("unable to establish a connection: %v", err)
+		logger.Error("mastodon_notification.listNotifications", "connect_error", err)
+		return nil, err
 	}
 
 	postgresLimit := d.QueryContext.GetLimit()
-	plugin.Logger(ctx).Debug("notifications", "limit", postgresLimit)
+	logger.Debug("notifications", "limit", postgresLimit)
 
 	page := 0
 	apiMaxPerPage := 15
@@ -104,41 +116,59 @@ func listNotifications(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 
 	for {
 		page++
-		plugin.Logger(ctx).Debug("listNotifications", "page", page, "pg", pg, "minID", pg.MinID, "maxID", pg.MaxID)
+		logger.Debug("listNotifications", "page", page, "pg", pg, "minID", pg.MinID, "maxID", pg.MaxID)
 		notifications, err := client.GetNotifications(ctx, &pg)
 		if err != nil {
-			return handleError(ctx, "listNotifcations: err", err)
+			logger.Error("mastodon_notification.listNotifications", "query_error", err)
+			return nil, err
 		}
 
 		notificationsReceived := len(notifications)
 
-		plugin.Logger(ctx).Debug("listNotifications", "notifications received", notificationsReceived)
+		logger.Debug("listNotifications", "notifications received", notificationsReceived)
 
 		if postgresLimit == -1 && notificationsReceived < apiMaxPerPage {
-			plugin.Logger(ctx).Debug("listToots outer loop: got fewer than apiMaxPerPage, setting postgresLimit")
+			logger.Debug("listToots outer loop: got fewer than apiMaxPerPage, setting postgresLimit")
 			postgresLimit = total + int64(notificationsReceived)
 		}
 
 		for _, notification := range notifications {
 			total++
-			plugin.Logger(ctx).Debug("listNotifications", "total", total, "postgresLimit", postgresLimit)
+			logger.Debug("listNotifications", "total", total, "postgresLimit", postgresLimit)
 			d.StreamListItem(ctx, notification)
 			if postgresLimit != -1 && total >= postgresLimit {
-				plugin.Logger(ctx).Debug("listNotifications: break: inner loop reached postgres limit")
+				logger.Debug("listNotifications: break: inner loop reached postgres limit")
 				break
 			}
 		}
 		if postgresLimit != -1 && total >= postgresLimit {
-			plugin.Logger(ctx).Debug("listNotifications: break: outer loop reached postgres limit")
+			logger.Debug("listNotifications: break: outer loop reached postgres limit")
 			break
 		}
 
 		pg.MinID = ""
-
 	}
 
 	return nil, nil
+}
 
+func getNotification(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+
+	id := d.EqualsQualString("id")
+
+	client, err := connect(ctx, d)
+	if err != nil {
+		logger.Error("mastodon_notification.getNotification", "connect_error", err)
+		return nil, err
+	}
+
+	list, err := client.GetNotification(ctx, mastodon.ID(id))
+	if err != nil {
+		logger.Error("mastodon_notification.getNotification", "query_error", err)
+		return nil, err
+	}
+	return list, nil
 }
 
 func category(ctx context.Context, input *transform.TransformData) (interface{}, error) {
