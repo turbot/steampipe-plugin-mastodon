@@ -2,7 +2,6 @@ package mastodon
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
@@ -20,16 +19,18 @@ func tableMastodonListAccount() *plugin.Table {
 }
 
 func listListAccount(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	plugin.Logger(ctx).Debug("listListAccount")
+	logger := plugin.Logger(ctx)
 	client, err := connect(ctx, d)
 	if err != nil {
-		return nil, fmt.Errorf("unable to establish a connection: %v", err)
+		logger.Error("mastodon_list_account.listListAccount", "connect_error", err)
+		return nil, err
 	}
 
 	listId := d.EqualsQualString("list_id")
 
 	accounts, err := client.GetListAccounts(ctx, mastodon.ID(listId))
 	if err != nil {
+		logger.Error("mastodon_list_account.listListAccount", "query_error", err)
 		return nil, err
 	}
 

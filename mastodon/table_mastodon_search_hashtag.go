@@ -2,7 +2,6 @@ package mastodon
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
@@ -47,13 +46,16 @@ func hashtagColumns() []*plugin.Column {
 }
 
 func searchHashtag(query string, ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
 	client, err := connect(ctx, d)
 	if err != nil {
-		return nil, fmt.Errorf("unable to establish a connection: %v", err)
+		logger.Error("mastodon_search_hashtag.listHashtag", "connect_error", err)
+		return nil, err
 	}
 
 	results, err := client.Search(ctx, query, true)
 	if err != nil {
+		logger.Error("mastodon_search_hashtag.listHashtag", "query_error", err)
 		return nil, err
 	}
 
@@ -66,7 +68,8 @@ func searchHashtag(query string, ctx context.Context, d *plugin.QueryData, h *pl
 }
 
 func listHashtag(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
 	query := d.EqualsQualString("query")
-	plugin.Logger(ctx).Debug("searchHashtag", "quals", d.Quals, "query", query)
+	logger.Debug("mastodon_search_hashtag.searchHashtag", "quals", d.Quals, "query", query)
 	return searchHashtag(query, ctx, d, h)
 }

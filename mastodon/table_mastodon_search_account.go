@@ -2,7 +2,6 @@ package mastodon
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
@@ -24,13 +23,17 @@ func tableMastodonSearchAccount() *plugin.Table {
 }
 
 func searchAccount(query string, ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+
 	client, err := connect(ctx, d)
 	if err != nil {
-		return nil, fmt.Errorf("unable to establish a connection: %v", err)
+		logger.Error("mastodon_search_account.listSearchAccount", "connect_error", err)
+		return nil, err
 	}
 
 	results, err := client.Search(ctx, query, true)
 	if err != nil {
+		logger.Error("mastodon_search_account.listSearchAccount", "query_error", err)
 		return nil, err
 	}
 
@@ -42,7 +45,8 @@ func searchAccount(query string, ctx context.Context, d *plugin.QueryData, h *pl
 }
 
 func listSearchAccount(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
 	query := d.EqualsQualString("query")
-	plugin.Logger(ctx).Debug("searchAccount", "quals", d.Quals, "query", query)
+	logger.Debug("mastodon_search_account.searchAccount", "quals", d.Quals, "query", query)
 	return searchAccount(query, ctx, d, h)
 }

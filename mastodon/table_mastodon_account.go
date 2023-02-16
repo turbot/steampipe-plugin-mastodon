@@ -104,15 +104,19 @@ func accountColumns() []*plugin.Column {
 }
 
 func listAccount(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+
 	client, err := connect(ctx, d)
 	if err != nil {
-		return nil, fmt.Errorf("unable to establish a connection: %v", err)
+		logger.Error("mastodon_account.listAccount", "connect_error", err)
+		return nil, err
 	}
 
 	id := d.EqualsQualString("id")
 
 	account, err := client.GetAccount(ctx, mastodon.ID(id))
 	if err != nil {
+		logger.Error("mastodon_account.listAccount", "query_error", err)
 		return nil, err
 	}
 	d.StreamListItem(ctx, account)

@@ -2,7 +2,6 @@ package mastodon
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
@@ -169,9 +168,12 @@ func tootColumns() []*plugin.Column {
 }
 
 func listFavorites(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+
 	client, err := connect(ctx, d)
 	if err != nil {
-		return nil, fmt.Errorf("unable to establish a connection: %v", err)
+		logger.Error("mastodon_favorite.listFavorites", "connect_error", err)
+		return nil, err
 	}
 
 	postgresLimit := d.QueryContext.GetLimit()
@@ -189,6 +191,7 @@ func listFavorites(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 		plugin.Logger(ctx).Debug("listFavorites", "page", page, "pg", pg, "minID", pg.MinID, "maxID", pg.MaxID, "prevMaxID", prevMaxID, "sinceID", pg.SinceID)
 		favorites, err := client.GetFavourites(ctx, &pg)
 		if err != nil {
+			logger.Error("mastodon_favorite.listFavorites", "query_error", err)
 			return nil, err
 		}
 		for _, favorite := range favorites {
