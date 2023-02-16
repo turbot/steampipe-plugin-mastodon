@@ -35,7 +35,7 @@ func notificationColumns() []*plugin.Column {
 			Name:        "category",
 			Type:        proto.ColumnType_STRING,
 			Description: "Type of notification.",
-			Transform:   transform.FromValue().Transform(category),
+			Transform:   transform.FromField("Type"),
 		},
 		{
 			Name:        "created_at",
@@ -169,11 +169,6 @@ func getNotification(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 		return nil, err
 	}
 	return list, nil
-}
-
-func category(ctx context.Context, input *transform.TransformData) (interface{}, error) {
-	notification := input.Value.(*mastodon.Notification)
-	return notification.Type, nil
 }
 
 func notificationDisplayName(ctx context.Context, input *transform.TransformData) (interface{}, error) {
