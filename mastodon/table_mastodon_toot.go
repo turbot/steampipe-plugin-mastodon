@@ -2,9 +2,7 @@ package mastodon
 
 import (
 	"context"
-	"fmt"
 	"regexp"
-	"strings"
 
 	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
@@ -31,21 +29,28 @@ func tableMastodonToot() *plugin.Table {
 				},
 			},
 		},
+		Get: &plugin.GetConfig{
+			Hydrate:    getToot,
+			KeyColumns: plugin.SingleColumn("id"),
+		},
 		Columns: tootColumns(),
 	}
 }
 
 func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+
 	client, err := connect(ctx, d)
 	if err != nil {
-		return nil, fmt.Errorf("unable to establish a connection: %v", err)
+		logger.Error("mastodon_toot.listToots", "connect_error", err)
+		return nil, err
 	}
 
 	timeline := d.EqualsQualString("timeline")
 	query := d.EqualsQualString("query")
 	list_id := d.EqualsQualString("list_id")
 	postgresLimit := d.QueryContext.GetLimit()
-	plugin.Logger(ctx).Debug("toots", "timeline", timeline, "limit", postgresLimit)
+	logger.Debug("toots", "timeline", timeline, "limit", postgresLimit)
 
 	page := 0
 	apiMaxPerPage := 40
@@ -53,40 +58,41 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 	pg := mastodon.Pagination{Limit: int64(apiMaxPerPage)}
 	account, err := client.GetAccountCurrentUser(ctx)
 	if err != nil {
-		plugin.Logger(ctx).Error("listToots", "err", err)
+		logger.Error("mastodon_toot.listToots", "query_error", err)
+		return nil, err
 	}
-	plugin.Logger(ctx).Debug("listToots", "account", account)
+	logger.Debug("listToots", "account", account)
 
 	for {
 		page++
-		plugin.Logger(ctx).Debug("listToots", "page", page, "pg", pg, "minID", pg.MinID, "maxID", pg.MaxID)
+		logger.Debug("listToots", "page", page, "pg", pg, "minID", pg.MinID, "maxID", pg.MaxID)
 		toots := []*mastodon.Status{}
 		if timeline == "me" {
 			apiMaxPerPage = 20
 			list, err := client.GetAccountStatuses(ctx, account.ID, &pg)
 			toots = list
-			plugin.Logger(ctx).Debug("listToots: me", "pg", pg, "toots", len(toots))
+			logger.Debug("listToots: me", "pg", pg, "toots", len(toots))
 			if err != nil {
 				return handleError(ctx, "listToots: home", err)
 			}
 		} else if timeline == "home" {
 			list, err := client.GetTimelineHome(ctx, &pg)
 			toots = list
-			plugin.Logger(ctx).Debug("listToots: home", "pg", pg, "toots", len(toots))
+			logger.Debug("listToots: home", "pg", pg, "toots", len(toots))
 			if err != nil {
 				return handleError(ctx, "listToots: home", err)
 			}
 		} else if timeline == "direct" {
 			list, err := client.GetTimelineDirect(ctx, &pg)
 			toots = list
-			plugin.Logger(ctx).Debug("listToots: direct", "pg", pg, "toots", len(toots))
+			logger.Debug("listToots: direct", "pg", pg, "toots", len(toots))
 			if err != nil {
 				return handleError(ctx, "listToots: direct", err)
 			}
 		} else if timeline == "local" {
 			list, err := client.GetTimelinePublic(ctx, true, &pg)
 			toots = list
-			plugin.Logger(ctx).Debug("listToots: local", "pg", pg, "toots", len(toots))
+			logger.Debug("listToots: local", "pg", pg, "toots", len(toots))
 			if err != nil {
 				return handleError(ctx, "listToots: local", err)
 			}
@@ -97,42 +103,42 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 				return handleError(ctx, "listToots: remote", err)
 			}
 		} else if timeline == "search_status" {
-			plugin.Logger(ctx).Debug("listToots: search_status", "query", query, "pg", pg)
+			logger.Debug("listToots: search_status", "query", query, "pg", pg)
 			results, err := client.Search(ctx, query, true)
 			postgresLimit = int64(len(results.Statuses))
 			if err != nil {
 				return handleError(ctx, "listToots: search_status", err)
 			}
 			toots = results.Statuses
-			plugin.Logger(ctx).Debug("listToots: search_status", "query", query, "pg", pg)
+			logger.Debug("listToots: search_status", "query", query, "pg", pg)
 		} else if timeline == "list" {
 			list, err := client.GetTimelineList(ctx, mastodon.ID(list_id), &pg)
 			toots = list
-			plugin.Logger(ctx).Debug("listToots: list", "list_id", list_id, "toots", len(toots))
+			logger.Debug("listToots: list", "list_id", list_id, "toots", len(toots))
 			if err != nil {
 				return handleError(ctx, "listToots: list", err)
 			}
 		} else {
-			plugin.Logger(ctx).Error("listToots", "unknown timeline: must be one of home|direct|local|remote|search_status|list", timeline)
+			logger.Error("listToots", "unknown timeline: must be one of home|direct|local|remote|search_status|list", timeline)
 			return nil, nil
 		}
 
 		if len(toots) < apiMaxPerPage {
-			plugin.Logger(ctx).Debug("listToots outer loop: got fewer than apiMaxPerPage, setting postgresLimit")
+			logger.Debug("listToots outer loop: got fewer than apiMaxPerPage, setting postgresLimit")
 			postgresLimit = total + int64(len(toots))
 		}
 
 		for _, toot := range toots {
 			total++
-			plugin.Logger(ctx).Debug("listToots", "total", total, "postgresLimit", postgresLimit)
+			logger.Debug("listToots", "total", total, "postgresLimit", postgresLimit)
 			d.StreamListItem(ctx, toot)
 			if postgresLimit != -1 && total >= postgresLimit {
-				plugin.Logger(ctx).Debug("listToots: inner loop reached postgres limit")
+				logger.Debug("listToots: inner loop reached postgres limit")
 				break
 			}
 		}
 		if postgresLimit != -1 && total >= postgresLimit {
-			plugin.Logger(ctx).Debug("listNotifications: break: outer loop reached postgres limit")
+			logger.Debug("listNotifications: break: outer loop reached postgres limit")
 			break
 		}
 
@@ -141,6 +147,26 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 
 	return nil, nil
 
+}
+
+func getToot(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+
+	client, err := connect(ctx, d)
+	if err != nil {
+		logger.Error("mastodon_toot.getToot", "connect_error", err)
+		return nil, err
+	}
+
+	id := d.EqualsQualString("id")
+
+	toot, err := client.GetStatus(ctx, mastodon.ID(id))
+	if err != nil {
+		logger.Error("mastodon_toot.getToot", "query_error", err)
+		return nil, err
+	}
+
+	return toot, nil
 }
 
 func accountServerFromStatus(ctx context.Context, input *transform.TransformData) (interface{}, error) {

@@ -32,7 +32,6 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"mastodon_search_account":  tableMastodonSearchAccount(),
 			"mastodon_search_hashtag":  tableMastodonSearchHashtag(),
 			"mastodon_server":          tableMastodonServer(),
-			"mastodon_single_toot":     tableMastodonSingleToot(),
 			"mastodon_toot":            tableMastodonToot(),
 			"mastodon_weekly_activity": tableMastodonWeeklyActivity(),
 		},
