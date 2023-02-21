@@ -30,6 +30,7 @@ func ruleColumns() []*plugin.Column {
 			Name:        "server",
 			Type:        proto.ColumnType_STRING,
 			Description: "Server to which rules apply.",
+			Transform:   transform.FromQual("server"),
 		},
 		{
 			Name:        "id",
@@ -48,7 +49,7 @@ func ruleColumns() []*plugin.Column {
 func listRule(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
-	client, err := connectUnauthenticated(ctx, d)
+	client, err := connect(ctx, d)
 	if err != nil {
 		logger.Error("mastodon_rule.listMastodonRule", "connect_error", err)
 		return nil, err

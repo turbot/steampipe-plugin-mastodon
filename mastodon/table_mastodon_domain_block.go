@@ -53,7 +53,7 @@ func domainColumns() []*plugin.Column {
 func listDomainBlocks(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
-	client, err := connectUnauthenticated(ctx, d)
+	client, err := connect(ctx, d)
 	if err != nil {
 		logger.Error("mastodon_block.listDomainBlocks", "connect_error", err)
 		return nil, err

@@ -44,7 +44,7 @@ func peerColumns() []*plugin.Column {
 func listPeers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
-	client, err := connectUnauthenticated(ctx, d)
+	client, err := connect(ctx, d)
 	if err != nil {
 		logger.Error("mastodon_peer.listPeers", "connect_error", err)
 		return nil, err
