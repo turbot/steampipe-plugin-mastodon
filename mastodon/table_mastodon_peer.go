@@ -5,6 +5,7 @@ import (
 
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 func tableMastodonPeer() *plugin.Table {
@@ -29,11 +30,13 @@ func peerColumns() []*plugin.Column {
 			Name:        "server",
 			Type:        proto.ColumnType_STRING,
 			Description: "Server that is the peer origin.",
+			Transform:   transform.FromQual("server"),
 		},
 		{
 			Name:        "peer",
 			Type:        proto.ColumnType_STRING,
 			Description: "Domain of a Mastodon peer.",
+			Transform:   transform.FromValue(),
 		},
 	}
 }
@@ -41,20 +44,13 @@ func peerColumns() []*plugin.Column {
 func listPeers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
-	config := GetConfig(d.Connection)
-	server := *config.Server
-	serverQual := d.EqualsQualString("server")
-	if serverQual != "" {
-		server = serverQual
-	}
-
-	client, err := connectRest(ctx, d)
+	client, err := connectUnauthenticated(ctx, d)
 	if err != nil {
 		logger.Error("mastodon_peer.listPeers", "connect_error", err)
 		return nil, err
 	}
 
-	peers, err := client.ListPeers(server)
+	peers, err := client.GetInstancePeers(ctx)
 	if err != nil {
 		logger.Error("mastodon_peer.listPeers", "query_error", err)
 		return nil, err

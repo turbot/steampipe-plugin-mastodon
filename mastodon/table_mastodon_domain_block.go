@@ -5,6 +5,7 @@ import (
 
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 func tableMastodonDomainBlock() *plugin.Table {
@@ -29,6 +30,7 @@ func domainColumns() []*plugin.Column {
 			Name:        "server",
 			Type:        proto.ColumnType_STRING,
 			Description: "Server that is blocking domains.",
+			Transform:   transform.FromQual("server"),
 		},
 		{
 			Name:        "domain",
@@ -51,20 +53,13 @@ func domainColumns() []*plugin.Column {
 func listDomainBlocks(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
-	config := GetConfig(d.Connection)
-	server := *config.Server
-	serverQual := d.EqualsQualString("server")
-	if serverQual != "" {
-		server = serverQual
-	}
-
-	client, err := connectRest(ctx, d)
+	client, err := connectUnauthenticated(ctx, d)
 	if err != nil {
 		logger.Error("mastodon_block.listDomainBlocks", "connect_error", err)
 		return nil, err
 	}
 
-	blocks, err := client.ListDomainBlocks(server)
+	blocks, err := client.GetDomainBlocks(ctx)
 	if err != nil {
 		logger.Error("mastodon_block.listDomainBlocks", "query_error", err)
 		return nil, err

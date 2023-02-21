@@ -32,6 +32,7 @@ func weeklyActivityColumns() []*plugin.Column {
 			Name:        "server",
 			Type:        proto.ColumnType_STRING,
 			Description: "Server whose activity is reported.",
+			Transform:   transform.FromQual("server"),
 		},
 		{
 			Name:        "week",
@@ -60,20 +61,13 @@ func weeklyActivityColumns() []*plugin.Column {
 func listWeeklyActivity(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
-	config := GetConfig(d.Connection)
-	server := *config.Server
-	serverQual := d.EqualsQualString("server")
-	if serverQual != "" {
-		server = serverQual
-	}
-
-	client, err := connectRest(ctx, d)
+	client, err := connectUnauthenticated(ctx, d)
 	if err != nil {
 		logger.Error("mastodon_rule.listWeeklyActivity", "connect_error", err)
 		return nil, err
 	}
 
-	activities, err := client.ListWeeklyActivity(server)
+	activities, err := client.GetInstanceActivity(ctx)
 	if err != nil {
 		logger.Error("mastodon_rule.listWeeklyActivity", "query_error", err)
 		return nil, err
