@@ -28,15 +28,28 @@ func listListAccount(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 
 	listId := d.EqualsQualString("list_id")
 
-	accounts, err := client.GetListAccounts(ctx, mastodon.ID(listId))
-	if err != nil {
-		logger.Error("mastodon_list_account.listListAccount", "query_error", err)
-		return nil, err
-	}
+	pg := mastodon.Pagination{}
+	for {
+		accounts, err := client.GetListAccounts(ctx, mastodon.ID(listId), &pg)
+		if err != nil {
+			logger.Error("mastodon_list_account.listListAccount", "query_error", err)
+			return nil, err
+		}
 
-	for i, account := range accounts {
-		plugin.Logger(ctx).Debug("listListAccount", "i", i, "account", account)
-		d.StreamListItem(ctx, account)
+		for _, account := range accounts {
+			d.StreamListItem(ctx, account)
+		}
+
+		if pg.MaxID == "" {
+			break
+		}
+
+		// Set next page
+		maxId := pg.MaxID
+		logger.Warn("maxId", maxId)
+		pg = mastodon.Pagination{
+			MaxID: maxId,
+		}
 	}
 
 	return nil, nil
