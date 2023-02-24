@@ -2,20 +2,10 @@ package mastodon
 
 import (
 	"context"
-	"fmt"
-	"net/http"
-	"strconv"
-	"time"
 
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
-
-type mastodonRate struct {
-	Remaining int64     `json:"remaining"`
-	Max       int64     `json:"max"`
-	Reset     time.Time `json:"reset"`
-}
 
 func tableMastodonRate() *plugin.Table {
 	return &plugin.Table{
@@ -35,7 +25,7 @@ func rateColumns() []*plugin.Column {
 			Description: "Number of API calls remaining until next reset.",
 		},
 		{
-			Name:        "max",
+			Name:        "max_limit",
 			Type:        proto.ColumnType_INT,
 			Description: "Limit of API calls per 5-minute interval. ",
 		},
@@ -48,31 +38,20 @@ func rateColumns() []*plugin.Column {
 }
 
 func listRateLimit(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	config := GetConfig(d.Connection)
-	token := *config.AccessToken
-	server := *config.Server
-	url := fmt.Sprintf("%s/api/v1/notifications", server)
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", url, nil)
+	logger := plugin.Logger(ctx)
+
+	client, err := connect(ctx, d)
 	if err != nil {
+		logger.Error("mastodon_rate.listRateLimit", "connect_error", err)
 		return nil, err
 	}
-	req.Header.Set("Authorization", "Bearer "+token)
-	res, _ := client.Do(req)
-	header := res.Header
-	remaining, _ := strconv.ParseInt(header["X-Ratelimit-Remaining"][0], 10, 64)
-	max, _ := strconv.ParseInt(header["X-Ratelimit-Limit"][0], 10, 64)
-	resetStr := header["X-Ratelimit-Reset"][0]
-	plugin.Logger(ctx).Debug("reset", "reset", resetStr, "truncated", resetStr[0:10])
-	resetTimestamp, _ := time.Parse(time.RFC3339, resetStr)
 
-	rate := mastodonRate{
-		Remaining: remaining,
-		Max:       max,
-		Reset:     resetTimestamp,
+	rate, err := client.GetRate(ctx)
+	if err != nil {
+		logger.Error("mastodon_rate.listRateLimit", "query_error", err)
+		return nil, err
 	}
 
 	d.StreamListItem(ctx, rate)
-
 	return nil, nil
 }

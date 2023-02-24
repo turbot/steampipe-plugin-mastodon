@@ -8,7 +8,7 @@ List Mastodon rate-limit info
 
 ```sql
 select
-  max,
+  max_limit,
   remaining,
   reset
 from
