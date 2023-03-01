@@ -3,6 +3,7 @@ package mastodon
 import (
 	"context"
 
+	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
@@ -56,7 +57,10 @@ func searchHashtag(query string, ctx context.Context, d *plugin.QueryData, h *pl
 	limit := 20
 	offset := 0
 	for {
-		results, err := client.Search(ctx, query, "hashtags", false, false, "", false, "", "", int64(limit), int64(offset))
+		results, err := client.Search(ctx, query, "hashtags", false, false, "", false, &mastodon.Pagination{
+			Limit:  int64(limit),
+			Offset: int64(offset),
+		})
 		if err != nil {
 			logger.Error("mastodon_search_hashtag.listHashtag", "query_error", err)
 			return nil, err
