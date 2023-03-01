@@ -53,17 +53,25 @@ func searchHashtag(query string, ctx context.Context, d *plugin.QueryData, h *pl
 		return nil, err
 	}
 
-	results, err := client.Search(ctx, query, true)
-	if err != nil {
-		logger.Error("mastodon_search_hashtag.listHashtag", "query_error", err)
-		return nil, err
-	}
+	limit := 20
+	offset := 0
+	for {
+		results, err := client.Search(ctx, query, "hashtags", false, false, "", false, "", "", int64(limit), int64(offset))
+		if err != nil {
+			logger.Error("mastodon_search_hashtag.listHashtag", "query_error", err)
+			return nil, err
+		}
 
-	hashtags := results.Hashtags
-	for _, activity := range hashtags {
-		d.StreamListItem(ctx, activity)
-	}
+		hashtags := results.Hashtags
+		for _, activity := range hashtags {
+			d.StreamListItem(ctx, activity)
+		}
 
+		if len(hashtags) == 0 {
+			break
+		}
+		offset += limit
+	}
 	return nil, nil
 }
 
