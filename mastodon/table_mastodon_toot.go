@@ -19,19 +19,7 @@ func tableMastodonToot() *plugin.Table {
 					Name:    "timeline",
 					Require: plugin.Required,
 				},
-				{
-					Name:    "query",
-					Require: plugin.Optional,
-				},
-				{
-					Name:    "list_id",
-					Require: plugin.Optional,
-				},
 			},
-		},
-		Get: &plugin.GetConfig{
-			Hydrate:    getToot,
-			KeyColumns: plugin.SingleColumn("id"),
 		},
 		Columns: tootColumns(),
 	}
@@ -47,8 +35,6 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 	}
 
 	timeline := d.EqualsQualString("timeline")
-	query := d.EqualsQualString("query")
-	list_id := d.EqualsQualString("list_id")
 	postgresLimit := d.QueryContext.GetLimit()
 	logger.Debug("toots", "timeline", timeline, "limit", postgresLimit)
 
@@ -67,22 +53,7 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 		page++
 		logger.Debug("listToots", "page", page, "pg", pg, "minID", pg.MinID, "maxID", pg.MaxID)
 		toots := []*mastodon.Status{}
-		if timeline == "me" {
-			apiMaxPerPage = 20
-			list, err := client.GetAccountStatuses(ctx, account.ID, &pg)
-			toots = list
-			logger.Debug("listToots: me", "pg", pg, "toots", len(toots))
-			if err != nil {
-				return handleError(ctx, "listToots: home", err)
-			}
-		} else if timeline == "home" {
-			list, err := client.GetTimelineHome(ctx, &pg)
-			toots = list
-			logger.Debug("listToots: home", "pg", pg, "toots", len(toots))
-			if err != nil {
-				return handleError(ctx, "listToots: home", err)
-			}
-		} else if timeline == "direct" {
+		if timeline == "direct" {
 			list, err := client.GetTimelineDirect(ctx, &pg)
 			toots = list
 			logger.Debug("listToots: direct", "pg", pg, "toots", len(toots))
@@ -101,22 +72,6 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 			toots = list
 			if err != nil {
 				return handleError(ctx, "listToots: remote", err)
-			}
-		} else if timeline == "search_status" {
-			logger.Debug("listToots: search_status", "query", query, "pg", pg)
-			results, err := client.Search(ctx, query, true)
-			postgresLimit = int64(len(results.Statuses))
-			if err != nil {
-				return handleError(ctx, "listToots: search_status", err)
-			}
-			toots = results.Statuses
-			logger.Debug("listToots: search_status", "query", query, "pg", pg)
-		} else if timeline == "list" {
-			list, err := client.GetTimelineList(ctx, mastodon.ID(list_id), &pg)
-			toots = list
-			logger.Debug("listToots: list", "list_id", list_id, "toots", len(toots))
-			if err != nil {
-				return handleError(ctx, "listToots: list", err)
 			}
 		} else {
 			logger.Error("listToots", "unknown timeline: must be one of home|direct|local|remote|search_status|list", timeline)
@@ -147,26 +102,6 @@ func listToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 
 	return nil, nil
 
-}
-
-func getToot(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	logger := plugin.Logger(ctx)
-
-	client, err := connect(ctx, d)
-	if err != nil {
-		logger.Error("mastodon_toot.getToot", "connect_error", err)
-		return nil, err
-	}
-
-	id := d.EqualsQualString("id")
-
-	toot, err := client.GetStatus(ctx, mastodon.ID(id))
-	if err != nil {
-		logger.Error("mastodon_toot.getToot", "query_error", err)
-		return nil, err
-	}
-
-	return toot, nil
 }
 
 func accountServerFromStatus(ctx context.Context, input *transform.TransformData) (interface{}, error) {
