@@ -7,22 +7,22 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
 
-func tableMastodonFollowers() *plugin.Table {
+func tableMastodonMyFollower() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_followers",
+		Name: "mastodon_my_follower",
 		List: &plugin.ListConfig{
-			Hydrate: listFollowers,
+			Hydrate: listMyFollowers,
 		},
 		Columns: accountColumns(),
 	}
 }
 
-func listFollowers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listMyFollowers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	client, err := connect(ctx, d)
 	if err != nil {
-		logger.Error("mastodon_followers.listMastodonFollowers", "connect_error", err)
+		logger.Error("mastodon_my_follower.listMyFollowers", "connect_error", err)
 		return nil, err
 	}
 
@@ -35,7 +35,7 @@ func listFollowers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 	for {
 		follows, err := client.GetAccountFollowers(ctx, accountCurrentUser.ID, &pg)
 		if err != nil {
-			logger.Error("mastodon_followers.listMastodonFollowers", "query_error", err)
+			logger.Error("mastodon_my_follower.listMyFollowers", "query_error", err)
 			return nil, err
 		}
 

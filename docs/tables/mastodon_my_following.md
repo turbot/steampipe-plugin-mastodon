@@ -1,4 +1,4 @@
-# Table: mastodon_following
+# Table: mastodon_my_following
 
 List Mastodon accounts the authenticated account follows
 
@@ -15,5 +15,5 @@ select
   following_count,
   statuses_count
 from
-  mastodon_following
+  mastodon_my_following
 ```

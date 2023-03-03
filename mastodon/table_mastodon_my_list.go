@@ -8,11 +8,11 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
 
-func tableMastodonList() *plugin.Table {
+func tableMastodonMyList() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_list",
+		Name: "mastodon_my_list",
 		List: &plugin.ListConfig{
-			Hydrate: listLists,
+			Hydrate: listMyLists,
 		},
 		Get: &plugin.GetConfig{
 			Hydrate:    getList,
@@ -37,18 +37,18 @@ func listColumns() []*plugin.Column {
 	}
 }
 
-func listLists(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listMyLists(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	client, err := connect(ctx, d)
 	if err != nil {
-		logger.Error("mastodon_list.listLists", "connect_error", err)
+		logger.Error("mastodon_my_list.listMyLists", "connect_error", err)
 		return nil, err
 	}
 
 	lists, err := client.GetLists(ctx)
 	if err != nil {
-		logger.Error("mastodon_list.listLists", "query_error", err)
+		logger.Error("mastodon_my_list.listMyLists", "query_error", err)
 		return nil, err
 	}
 	for _, list := range lists {
@@ -58,20 +58,20 @@ func listLists(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) 
 	return nil, nil
 }
 
-func getList(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func getMyList(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	id := d.EqualsQualString("id")
 
 	client, err := connect(ctx, d)
 	if err != nil {
-		logger.Error("mastodon_list.getList", "connect_error", err)
+		logger.Error("mastodon_my_list.getMyList", "connect_error", err)
 		return nil, err
 	}
 
 	list, err := client.GetList(ctx, mastodon.ID(id))
 	if err != nil {
-		logger.Error("mastodon_list.getList", "query_error", err)
+		logger.Error("mastodon_my_list.getMyList", "query_error", err)
 		return nil, err
 	}
 	return list, nil

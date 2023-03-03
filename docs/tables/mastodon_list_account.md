@@ -27,7 +27,7 @@ select
   a.username,
   a.display_name
 from
-  mastodon_list l
+  mastodon_my_list l
 join
   mastodon_list_account a
 on

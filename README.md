@@ -49,8 +49,8 @@ steampipe query
 Try some sample queries.
 
 - [mastodon_toot](./docs/tables/mastodon_toot.md)
-- [mastodon_list](./docs/tables/mastodon_list.md)
-- [mastodon_following](./docs/tables/mastodon_following.md)
+- [mastodon_my_list](./docs/tables/mastodon_my_list.md)
+- [mastodon_my_following](./docs/tables/mastodon_my_following.md)
 - [mastodon_notification](./docs/tables/mastodon_notification.md)
 
 Further reading:

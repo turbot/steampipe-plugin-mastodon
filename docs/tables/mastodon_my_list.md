@@ -1,4 +1,4 @@
-# Table: mastodon_list
+# Table: mastodon_my_list
 
 List Mastodon lists
 
@@ -11,5 +11,5 @@ select
   id,
   title
 from
-  mastodon_list
+  mastodon_my_list
 ```

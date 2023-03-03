@@ -11,7 +11,7 @@ with following as (
   select
     *
   from
-    mastodon_following
+    mastodon_my_following
   where
     created_at < date('2017-01-01')
 )

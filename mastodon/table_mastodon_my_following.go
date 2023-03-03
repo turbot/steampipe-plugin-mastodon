@@ -9,20 +9,20 @@ import (
 
 func tableMastodonFollowing() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_following",
+		Name: "mastodon_my_following",
 		List: &plugin.ListConfig{
-			Hydrate: listFollowing,
+			Hydrate: listMyFollowing,
 		},
 		Columns: accountColumns(),
 	}
 }
 
-func listFollowing(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listMyFollowing(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	client, err := connect(ctx, d)
 	if err != nil {
-		logger.Error("mastodon_following.listMastodonFollowing", "connect_error", err)
+		logger.Error("mastodon_my_following.listMyFollowing", "connect_error", err)
 		return nil, err
 	}
 
@@ -35,7 +35,7 @@ func listFollowing(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 	for {
 		follows, err := client.GetAccountFollowing(ctx, accountCurrentUser.ID, &pg)
 		if err != nil {
-			logger.Error("mastodon_following.listMastodonFollowing", "query_error", err)
+			logger.Error("mastodon_my_following.listMyFollowing", "query_error", err)
 			return nil, err
 		}
 
