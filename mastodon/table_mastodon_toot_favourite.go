@@ -9,11 +9,11 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-func tableMastodonFavorite() *plugin.Table {
+func tableMastodonTootFavourite() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_favorite",
+		Name: "mastodon_toot_favourite",
 		List: &plugin.ListConfig{
-			Hydrate: listFavorites,
+			Hydrate: listTootFavourites,
 		},
 		Columns: tootColumns(),
 	}
@@ -161,17 +161,17 @@ func tootColumns() []*plugin.Column {
 	}
 }
 
-func listFavorites(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listTootFavourites(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	client, err := connect(ctx, d)
 	if err != nil {
-		logger.Error("mastodon_favorite.listFavorites", "connect_error", err)
+		logger.Error("mastodon_toot_favourite.listTootFavourites", "connect_error", err)
 		return nil, err
 	}
 
 	postgresLimit := d.QueryContext.GetLimit()
-	plugin.Logger(ctx).Debug("listFavorites", "limit", postgresLimit)
+	plugin.Logger(ctx).Debug("listTootFavourites", "limit", postgresLimit)
 
 	page := 0
 	apiMaxPerPage := 40
@@ -182,23 +182,23 @@ func listFavorites(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 	for {
 		page++
 		count := 0
-		plugin.Logger(ctx).Debug("listFavorites", "page", page, "pg", pg, "minID", pg.MinID, "maxID", pg.MaxID, "prevMaxID", prevMaxID, "sinceID", pg.SinceID)
-		favorites, err := client.GetFavourites(ctx, &pg)
+		plugin.Logger(ctx).Debug("listTootFavourites", "page", page, "pg", pg, "minID", pg.MinID, "maxID", pg.MaxID, "prevMaxID", prevMaxID, "sinceID", pg.SinceID)
+		favourites, err := client.GetFavourites(ctx, &pg)
 		if err != nil {
-			logger.Error("mastodon_favorite.listFavorites", "query_error", err)
+			logger.Error("mastodon_toot_favourite.listTootFavourites", "query_error", err)
 			return nil, err
 		}
-		for _, favorite := range favorites {
+		for _, favourite := range favourites {
 			total++
 			count++
-			plugin.Logger(ctx).Debug("listFavorites", "count", count, "total", total)
-			d.StreamListItem(ctx, favorite)
+			plugin.Logger(ctx).Debug("listTootFavourites", "count", count, "total", total)
+			d.StreamListItem(ctx, favourite)
 			if postgresLimit != -1 && total >= postgresLimit {
-				plugin.Logger(ctx).Debug("listFavorites: inner loop reached postgres limit")
+				plugin.Logger(ctx).Debug("listTootFavourites: inner loop reached postgres limit")
 				break
 			}
 		}
-		plugin.Logger(ctx).Debug("favorites break?", "count", count, "total", total, "limit", postgresLimit)
+		plugin.Logger(ctx).Debug("favourites break?", "count", count, "total", total, "limit", postgresLimit)
 		if pg.MaxID == "" {
 			plugin.Logger(ctx).Debug("break: pg.MaxID is empty")
 			break
