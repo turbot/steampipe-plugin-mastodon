@@ -7,29 +7,22 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
 
-func tableMastodonMyToot() *plugin.Table {
+func tableMastodonTootLocal() *plugin.Table {
 	return &plugin.Table{
-		Name:        "mastodon_my_toot",
-		Description: "Statuses posted to your account",
+		Name: "mastodon_toot_local",
 		List: &plugin.ListConfig{
-			Hydrate: listMyToots,
+			Hydrate: listTootsLocal,
 		},
 		Columns: tootColumns(),
 	}
 }
 
-func listMyToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listTootsLocal(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	client, err := connect(ctx, d)
 	if err != nil {
-		logger.Error("mastodon_my_toot.listMyToots", "connect_error", err)
-		return nil, err
-	}
-
-	account, err := client.GetAccountCurrentUser(ctx)
-	if err != nil {
-		logger.Error("mastodon_my_toot.listMyToots", "query_error", err)
+		logger.Error("mastodon_toot_local.listTootsLocal", "connect_error", err)
 		return nil, err
 	}
 
@@ -42,13 +35,13 @@ func listMyToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData
 	pg := mastodon.Pagination{Limit: int64(initialLimit)}
 
 	for {
-		logger.Debug("mastodon_my_toot.listMyToots", "pg", pg)
-		toots, err := client.GetAccountStatuses(ctx, account.ID, &pg)
+		logger.Debug("mastodon_toot_local.listTootsLocal", "pg", pg)
+		toots, err := client.GetTimelinePublic(ctx, true, &pg)
 		if err != nil {
-			logger.Error("mastodon_my_toot.listMyToots", "query_error", err)
+			logger.Error("mastodon_toot_local.listTootsLocal", "query_error", err)
 			return nil, err
 		}
-		logger.Debug("mastodon_my_toot.listMyToots", "toots", len(toots))
+		logger.Debug("mastodon_toot_local.listTootsLocal", "toots", len(toots))
 
 		for _, toot := range toots {
 			d.StreamListItem(ctx, toot)
@@ -70,5 +63,6 @@ func listMyToots(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData
 			MaxID: maxId,
 		}
 	}
+
 	return nil, nil
 }

@@ -33,50 +33,43 @@ func listTootsList(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 	}
 
 	list_id := d.EqualsQualString("list_id")
-	postgresLimit := d.QueryContext.GetLimit()
 
-	page := 0
-	apiMaxPerPage := 40
-	total := int64(0)
-	pg := mastodon.Pagination{Limit: int64(apiMaxPerPage)}
-	account, err := client.GetAccountCurrentUser(ctx)
-	if err != nil {
-		logger.Error("mastodon_toot_list.listTootsList", "query_error", err)
-		return nil, err
+	postgresLimit := d.QueryContext.GetLimit()
+	apiMaxPerPage := int64(40)
+	initialLimit := apiMaxPerPage
+	if postgresLimit > 0 && postgresLimit < apiMaxPerPage {
+		initialLimit = postgresLimit
 	}
-	logger.Debug("listTootsList", "account", account)
+	pg := mastodon.Pagination{Limit: int64(initialLimit)}
 
 	for {
-		page++
-		logger.Debug("listTootsList", "page", page, "pg", pg, "minID", pg.MinID, "maxID", pg.MaxID)
-
+		logger.Debug("mastodon_toot_list.listTootsList", "pg", pg)
 		toots, err := client.GetTimelineList(ctx, mastodon.ID(list_id), &pg)
-		logger.Debug("listTootsList: list", "list_id", list_id, "toots", len(toots))
 		if err != nil {
 			logger.Error("mastodon_toot_list.listTootsList", "query_error", err)
 			return nil, err
 		}
-
-		if len(toots) < apiMaxPerPage {
-			logger.Debug("listTootsList outer loop: got fewer than apiMaxPerPage, setting postgresLimit")
-			postgresLimit = total + int64(len(toots))
-		}
+		logger.Debug("mastodon_toot_list.listTootsList", "list_id", list_id, "toots", len(toots))
 
 		for _, toot := range toots {
-			total++
-			logger.Debug("listTootsList", "total", total, "postgresLimit", postgresLimit)
 			d.StreamListItem(ctx, toot)
-			if postgresLimit != -1 && total >= postgresLimit {
-				logger.Debug("listTootsList: inner loop reached postgres limit")
-				break
+			// Context can be cancelled due to manual cancellation or the limit has been hit
+			if d.RowsRemaining(ctx) == 0 {
+				return nil, nil
 			}
 		}
-		if postgresLimit != -1 && total >= postgresLimit {
-			logger.Debug("listNotifications: break: outer loop reached postgres limit")
+
+		// Stop if last page
+		if int64(len(toots)) < apiMaxPerPage {
 			break
 		}
 
-		pg.MinID = ""
+		// Set next page
+		maxId := pg.MaxID
+		pg = mastodon.Pagination{
+			Limit: int64(apiMaxPerPage),
+			MaxID: maxId,
+		}
 	}
 
 	return nil, nil

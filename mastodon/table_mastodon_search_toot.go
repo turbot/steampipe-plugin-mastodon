@@ -2,9 +2,11 @@ package mastodon
 
 import (
 	"context"
+	"regexp"
 
 	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 func tableMastodonSearchToot() *plugin.Table {
@@ -55,4 +57,44 @@ func listSearchToot(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateD
 		offset += limit
 	}
 	return nil, nil
+}
+
+func accountServerFromStatus(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	status := input.Value.(*mastodon.Status)
+	re := regexp.MustCompile(`https://(.+)/`)
+	matches := re.FindStringSubmatch(status.Account.URL)
+	return matches[1], nil
+}
+
+func reblogUsername(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	status := input.Value.(*mastodon.Status)
+	if status.Reblog == nil {
+		return nil, nil
+	}
+	return status.Reblog.Account.Username, nil
+}
+
+func reblogServer(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	status := input.Value.(*mastodon.Status)
+	if status.Reblog == nil {
+		return nil, nil
+	}
+	re := regexp.MustCompile(`https://(.+)/`)
+	matches := re.FindStringSubmatch(status.Reblog.Account.URL)
+	return matches[1], nil
+}
+
+func instanceQualifiedStatusUrl(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	status := input.Value.(*mastodon.Status)
+	return qualifiedStatusUrl(ctx, status.URL, string(status.ID))
+}
+
+func instanceQualifiedReblogUrl(ctx context.Context, input *transform.TransformData) (interface{}, error) {
+	status := input.Value.(*mastodon.Status)
+	plugin.Logger(ctx).Debug("qualifiedReblogUrl", "status.Reblog", status.Reblog)
+	if status.Reblog == nil {
+		return "", nil
+	}
+	status = status.Reblog
+	return qualifiedStatusUrl(ctx, status.URL, string(status.ID))
 }

@@ -11,10 +11,6 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-func handleError(ctx context.Context, from string, err error) (interface{}, error) {
-	return nil, fmt.Errorf("%s error: %v", from, err)
-}
-
 func sanitize(str string) string {
 	str = strings.ReplaceAll(str, "<p>", " </p>")
 	str = strings.ReplaceAll(str, "#", " #")

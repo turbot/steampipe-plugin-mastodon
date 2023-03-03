@@ -27,42 +27,41 @@ func listTootHome(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDat
 	}
 
 	postgresLimit := d.QueryContext.GetLimit()
-
-	page := 0
-	apiMaxPerPage := 40
-	total := int64(0)
-	pg := mastodon.Pagination{Limit: int64(apiMaxPerPage)}
+	apiMaxPerPage := int64(40)
+	initialLimit := apiMaxPerPage
+	if postgresLimit > 0 && postgresLimit < apiMaxPerPage {
+		initialLimit = postgresLimit
+	}
+	pg := mastodon.Pagination{Limit: int64(initialLimit)}
 
 	for {
-		page++
-		logger.Debug("listTootHome", "page", page, "pg", pg, "minID", pg.MinID, "maxID", pg.MaxID)
-
+		logger.Debug("mastodon_toot_home.listTootHome", "pg", pg)
 		toots, err := client.GetTimelineHome(ctx, &pg)
 		if err != nil {
 			logger.Error("mastodon_toot_home.listTootHome", "query_error", err)
 			return nil, err
 		}
-
-		if len(toots) < apiMaxPerPage {
-			logger.Debug("listTootHome outer loop: got fewer than apiMaxPerPage, setting postgresLimit")
-			postgresLimit = total + int64(len(toots))
-		}
+		logger.Debug("mastodon_toot_local.listTootsLocal", "toots", len(toots))
 
 		for _, toot := range toots {
-			total++
-			logger.Debug("listTootHome", "total", total, "postgresLimit", postgresLimit)
 			d.StreamListItem(ctx, toot)
-			if postgresLimit != -1 && total >= postgresLimit {
-				logger.Debug("listTootHome: inner loop reached postgres limit")
-				break
+			// Context can be cancelled due to manual cancellation or the limit has been hit
+			if d.RowsRemaining(ctx) == 0 {
+				return nil, nil
 			}
 		}
-		if postgresLimit != -1 && total >= postgresLimit {
-			logger.Debug("listNotifications: break: outer loop reached postgres limit")
+
+		// Stop if last page
+		if int64(len(toots)) < apiMaxPerPage {
 			break
 		}
 
-		pg.MinID = ""
+		// Set next page
+		maxId := pg.MaxID
+		pg = mastodon.Pagination{
+			Limit: int64(apiMaxPerPage),
+			MaxID: maxId,
+		}
 	}
 
 	return nil, nil

@@ -22,12 +22,6 @@ func tableMastodonFavorite() *plugin.Table {
 func tootColumns() []*plugin.Column {
 	return []*plugin.Column{
 		{
-			Name:        "timeline",
-			Type:        proto.ColumnType_STRING,
-			Description: "Timeline of the toot: home|direct|local|remote",
-			Transform:   transform.FromQual("timeline"),
-		},
-		{
 			Name:        "id",
 			Type:        proto.ColumnType_STRING,
 			Description: "ID of the toot.",
