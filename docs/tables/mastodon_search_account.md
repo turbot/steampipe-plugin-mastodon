@@ -17,5 +17,5 @@ select
 from
   mastodon_search_account
 where
-  query= 'alice'
+  query= 'alice';
 ```

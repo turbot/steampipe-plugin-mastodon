@@ -13,15 +13,16 @@ List peers of a Mastodon server
     mastodon_peer
   order by
    peer
- limit 10
+ limit 10;
 ```
 
 ### Query peers of another Mastodon server
 ```sql
-> select
-    server,
-    peer
-  from
-    mastodon_peer
-  where
-    server = 'https://nerdculture.de'
+select
+  server,
+  peer
+from
+  mastodon_peer
+where
+  server = 'https://nerdculture.de';
+```

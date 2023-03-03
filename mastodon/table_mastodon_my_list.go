@@ -15,7 +15,7 @@ func tableMastodonMyList() *plugin.Table {
 			Hydrate: listMyLists,
 		},
 		Get: &plugin.GetConfig{
-			Hydrate:    getList,
+			Hydrate:    getMyList,
 			KeyColumns: plugin.SingleColumn("id"),
 		},
 		Columns: listColumns(),

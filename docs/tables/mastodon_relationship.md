@@ -27,5 +27,5 @@ join
 on
   f.id = m.id
 order by
-  created_at
+  created_at;
 ```

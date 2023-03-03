@@ -10,5 +10,5 @@ Get the name of your Mastodon instance
 select
   name
 from
-  mastodon_server
+  mastodon_server;
 ```

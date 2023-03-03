@@ -15,6 +15,6 @@ select
 from
     mastodon_favorite
 limit 
-    60
+    60;
 ```
 

@@ -14,7 +14,7 @@ select
 from
   mastodon_list_account
 where
-  list_id = '42994'
+  list_id = '42994';
 ```
 
 ### List accounts for all Mastodon lists
@@ -31,5 +31,5 @@ from
 join
   mastodon_list_account a
 on
-  l.id = a.list_id
+  l.id = a.list_id;
 ```

@@ -16,5 +16,5 @@ from
   mastodon_toot
 where
   timeline = 'search_status'
-  and query = 'twitter'
+  and query = 'twitter';
 ```

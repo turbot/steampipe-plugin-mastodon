@@ -1,10 +1,10 @@
-# Table: mastodon_my_follower
+# Table: mastodon_my_account
 
-List Mastodon followers for the authenticated account
+List details a Mastodon account
 
 ## Examples
 
-### List followers
+### Details for my account
 
 ```sql
 select
@@ -15,6 +15,5 @@ select
   following_count,
   statuses_count
 from
-  mastodon_my_follower;
+  mastodon_my_account;
 ```
-

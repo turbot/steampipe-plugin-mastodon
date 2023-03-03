@@ -11,7 +11,7 @@ select
   id,
   rule
 from
-  mastodon_rule
+  mastodon_rule;
 ```
 
 ### Query rules for another server

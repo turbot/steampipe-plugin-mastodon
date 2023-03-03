@@ -12,5 +12,5 @@ select
   remaining,
   reset
 from
-  mastodon_rate
+  mastodon_rate;
 ```

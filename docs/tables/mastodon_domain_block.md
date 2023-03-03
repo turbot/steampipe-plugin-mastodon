@@ -13,7 +13,7 @@ List domains blocked by a Mastodon server
     severity
   from
     mastodon_domain_block
- limit 10
+ limit 10;
 ```
 
 ### Domains blocked by another Mastodon server

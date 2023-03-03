@@ -14,5 +14,5 @@ select
 from
   mastodon_notification
 limit
-  20
+  20;
 ```

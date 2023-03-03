@@ -15,5 +15,5 @@ select
 from
   mastodon_weekly_activity
 order by
-  week desc
+  week desc;
 ```

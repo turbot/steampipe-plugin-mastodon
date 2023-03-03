@@ -11,5 +11,5 @@ select
   id,
   title
 from
-  mastodon_my_list
+  mastodon_my_list;
 ```

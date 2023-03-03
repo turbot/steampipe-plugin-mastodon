@@ -24,5 +24,5 @@ with data as (
     data d
   group 
     by name 
-  order by sum desc
+  order by sum desc;
 ```

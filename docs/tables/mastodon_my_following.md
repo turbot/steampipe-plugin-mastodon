@@ -15,5 +15,5 @@ select
   following_count,
   statuses_count
 from
-  mastodon_my_following
+  mastodon_my_following;
 ```

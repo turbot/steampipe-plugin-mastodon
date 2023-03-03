@@ -15,6 +15,6 @@ select
 from
     mastodon_single_toot
 where
-    id = '109441210184763990'
+    id = '109441210184763990';
 ```
 

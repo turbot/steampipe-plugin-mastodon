@@ -17,5 +17,5 @@ select
 from
   mastodon_account
 where
-  id = '57523'
+  id = '57523';
 ```
