@@ -2,6 +2,7 @@ package mastodon
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
@@ -26,6 +27,11 @@ func listTootsLocal(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateD
 		return nil, err
 	}
 
+	maxItems := GetConfig(d.Connection).MaxItems
+
+	logger.Debug("MaxItems", fmt.Sprint(*maxItems))
+	logger.Debug("MaxItems", fmt.Sprint(maxItems))
+
 	postgresLimit := d.QueryContext.GetLimit()
 	apiMaxPerPage := int64(40)
 	initialLimit := apiMaxPerPage
@@ -34,6 +40,7 @@ func listTootsLocal(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateD
 	}
 	pg := mastodon.Pagination{Limit: int64(initialLimit)}
 
+	rowCount := 0
 	for {
 		logger.Debug("mastodon_toot_local.listTootsLocal", "pg", pg)
 		toots, err := client.GetTimelinePublic(ctx, true, &pg)
@@ -45,6 +52,11 @@ func listTootsLocal(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateD
 
 		for _, toot := range toots {
 			d.StreamListItem(ctx, toot)
+			rowCount++
+			if rowCount == *maxItems {
+				logger.Debug("mastodon_toot_local.listTootsLocal", "max_items limit reached", *maxItems)
+				return nil, nil
+			}
 			// Context can be cancelled due to manual cancellation or the limit has been hit
 			if d.RowsRemaining(ctx) == 0 {
 				return nil, nil
