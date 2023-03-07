@@ -19,6 +19,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		TableMap: map[string]*plugin.Table{
 			"mastodon_account":         tableMastodonAccount(),
 			"mastodon_domain_block":    tableMastodonDomainBlock(),
+			"mastodon_follower":        tableMastodonFollower(),
 			"mastodon_list_account":    tableMastodonListAccount(),
 			"mastodon_my_account":      tableMastodonMyAccount(),
 			"mastodon_my_follower":     tableMastodonMyFollower(),
@@ -35,7 +36,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"mastodon_search_toot":     tableMastodonSearchToot(),
 			"mastodon_server":          tableMastodonServer(),
 			"mastodon_toot_direct":     tableMastodonTootDirect(),
-			"mastodon_toot_favorite":   tableMastodonTootFavorite(),
+			"mastodon_toot_favourite":  tableMastodonTootFavourite(),
 			"mastodon_toot_federated":  tableMastodonTootFederated(),
 			"mastodon_toot_home":       tableMastodonTootHome(),
 			"mastodon_toot_list":       tableMastodonTootList(),
