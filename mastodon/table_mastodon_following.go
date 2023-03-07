@@ -7,35 +7,33 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
 
-func tableMastodonMyFollowing() *plugin.Table {
+func tableMastodonFollowing() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_my_following",
+		Name: "mastodon_following",
 		List: &plugin.ListConfig{
-			Hydrate: listMyFollowing,
+			Hydrate:    listFollowing,
+			KeyColumns: plugin.SingleColumn("account_id"),
 		},
-		Columns: accountColumns(),
+		Columns: followColumns(),
 	}
 }
 
-func listMyFollowing(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listFollowing(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	client, err := connect(ctx, d)
 	if err != nil {
-		logger.Error("mastodon_my_following.listMyFollowing", "connect_error", err)
+		logger.Error("mastodon_following.listFollowing", "connect_error", err)
 		return nil, err
 	}
 
-	accountCurrentUser, err := client.GetAccountCurrentUser(ctx)
-	if err != nil {
-		return nil, err
-	}
+	account_id := d.EqualsQualString("account_id")
 
 	pg := mastodon.Pagination{}
 	for {
-		follows, err := client.GetAccountFollowing(ctx, accountCurrentUser.ID, &pg)
+		follows, err := client.GetAccountFollowing(ctx, mastodon.ID(account_id), &pg)
 		if err != nil {
-			logger.Error("mastodon_my_following.listMyFollowing", "query_error", err)
+			logger.Error("mastodon_following.listFollowing", "query_error", err)
 			return nil, err
 		}
 

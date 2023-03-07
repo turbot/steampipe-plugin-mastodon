@@ -16,11 +16,11 @@ func tableMastodonFollower() *plugin.Table {
 			Hydrate:    listFollowers,
 			KeyColumns: plugin.SingleColumn("account_id"),
 		},
-		Columns: followerColumns(),
+		Columns: followColumns(),
 	}
 }
 
-func followerColumns() []*plugin.Column {
+func followColumns() []*plugin.Column {
 	additionalColumns := []*plugin.Column{
 		{
 			Name:        "account_id",
