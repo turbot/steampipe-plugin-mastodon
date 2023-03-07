@@ -6,6 +6,7 @@ connection "myserver_social" {
 
     # Define the maximum number of items to list in the mastodon tables.
     # If not set, the default is 5000.
+    # To avoid limiting, set max_items = -1
     #max_items = 5000
 }
 

@@ -2,7 +2,6 @@ package mastodon
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
@@ -27,11 +26,6 @@ func listTootsLocal(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateD
 		return nil, err
 	}
 
-	maxItems := GetConfig(d.Connection).MaxItems
-
-	logger.Debug("MaxItems", fmt.Sprint(*maxItems))
-	logger.Debug("MaxItems", fmt.Sprint(maxItems))
-
 	postgresLimit := d.QueryContext.GetLimit()
 	apiMaxPerPage := int64(40)
 	initialLimit := apiMaxPerPage
@@ -40,6 +34,7 @@ func listTootsLocal(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateD
 	}
 	pg := mastodon.Pagination{Limit: int64(initialLimit)}
 
+	maxItems := GetConfig(d.Connection).MaxItems
 	rowCount := 0
 	for {
 		logger.Debug("mastodon_toot_local.listTootsLocal", "pg", pg)
@@ -53,7 +48,7 @@ func listTootsLocal(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateD
 		for _, toot := range toots {
 			d.StreamListItem(ctx, toot)
 			rowCount++
-			if rowCount == *maxItems {
+			if *maxItems > 0 && rowCount >= *maxItems {
 				logger.Debug("mastodon_toot_local.listTootsLocal", "max_items limit reached", *maxItems)
 				return nil, nil
 			}

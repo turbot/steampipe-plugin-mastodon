@@ -42,6 +42,8 @@ func listTootsList(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 	}
 	pg := mastodon.Pagination{Limit: int64(initialLimit)}
 
+	maxItems := GetConfig(d.Connection).MaxItems
+	rowCount := 0
 	for {
 		logger.Debug("mastodon_toot_list.listTootsList", "pg", pg)
 		toots, err := client.GetTimelineList(ctx, mastodon.ID(list_id), &pg)
@@ -53,6 +55,11 @@ func listTootsList(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 
 		for _, toot := range toots {
 			d.StreamListItem(ctx, toot)
+			rowCount++
+			if *maxItems > 0 && rowCount >= *maxItems {
+				logger.Debug("mastodon_toot_list.listTootsList", "max_items limit reached", *maxItems)
+				return nil, nil
+			}
 			// Context can be cancelled due to manual cancellation or the limit has been hit
 			if d.RowsRemaining(ctx) == 0 {
 				return nil, nil
