@@ -4,7 +4,9 @@ import (
 	"context"
 
 	"github.com/mattn/go-mastodon"
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 func tableMastodonFollowing() *plugin.Table {
@@ -12,10 +14,28 @@ func tableMastodonFollowing() *plugin.Table {
 		Name: "mastodon_following",
 		List: &plugin.ListConfig{
 			Hydrate:    listFollowing,
-			KeyColumns: plugin.SingleColumn("account_id"),
+			KeyColumns: plugin.SingleColumn("following_account_id"),
 		},
-		Columns: followColumns(),
+		Columns: followingColumns(),
 	}
+}
+
+func followingColumns() []*plugin.Column {
+	additionalColumns := []*plugin.Column{
+		{
+			Name:        "following_account_id",
+			Type:        proto.ColumnType_STRING,
+			Description: "ID of the account who is following.",
+			Transform:   transform.FromQual("following_account_id"),
+		},
+		{
+			Name:        "followed_account_id",
+			Type:        proto.ColumnType_STRING,
+			Description: "ID of the follower account.",
+			Transform:   transform.FromField("ID"),
+		},
+	}
+	return append(additionalColumns, baseAccountColumns()...)
 }
 
 func listFollowing(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
@@ -27,11 +47,11 @@ func listFollowing(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 		return nil, err
 	}
 
-	account_id := d.EqualsQualString("account_id")
+	following_account_id := d.EqualsQualString("following_account_id")
 
 	pg := mastodon.Pagination{}
 	for {
-		follows, err := client.GetAccountFollowing(ctx, mastodon.ID(account_id), &pg)
+		follows, err := client.GetAccountFollowing(ctx, mastodon.ID(following_account_id), &pg)
 		if err != nil {
 			logger.Error("mastodon_following.listFollowing", "query_error", err)
 			return nil, err

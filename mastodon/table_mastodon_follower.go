@@ -14,22 +14,28 @@ func tableMastodonFollower() *plugin.Table {
 		Name: "mastodon_follower",
 		List: &plugin.ListConfig{
 			Hydrate:    listFollowers,
-			KeyColumns: plugin.SingleColumn("account_id"),
+			KeyColumns: plugin.SingleColumn("followed_account_id"),
 		},
-		Columns: followColumns(),
+		Columns: followerColumns(),
 	}
 }
 
-func followColumns() []*plugin.Column {
+func followerColumns() []*plugin.Column {
 	additionalColumns := []*plugin.Column{
 		{
-			Name:        "account_id",
+			Name:        "followed_account_id",
 			Type:        proto.ColumnType_STRING,
-			Description: "ID of the account.",
-			Transform:   transform.FromQual("account_id"),
+			Description: "ID of the account who is being followed.",
+			Transform:   transform.FromQual("followed_account_id"),
+		},
+		{
+			Name:        "follower_account_id",
+			Type:        proto.ColumnType_STRING,
+			Description: "ID of the follower account.",
+			Transform:   transform.FromField("ID"),
 		},
 	}
-	return append(additionalColumns, baseAccountColumns...)
+	return append(additionalColumns, baseAccountColumns()...)
 }
 
 func listFollowers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
@@ -41,11 +47,11 @@ func listFollowers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 		return nil, err
 	}
 
-	account_id := d.EqualsQualString("account_id")
+	followed_account_id := d.EqualsQualString("followed_account_id")
 
 	pg := mastodon.Pagination{}
 	for {
-		follows, err := client.GetAccountFollowers(ctx, mastodon.ID(account_id), &pg)
+		follows, err := client.GetAccountFollowers(ctx, mastodon.ID(followed_account_id), &pg)
 		if err != nil {
 			logger.Error("mastodon_follower.listFollowers", "query_error", err)
 			return nil, err
