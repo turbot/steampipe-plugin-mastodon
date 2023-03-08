@@ -3,7 +3,9 @@ package mastodon
 import (
 	"context"
 
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 func tableMastodonSearchAccount() *plugin.Table {
@@ -18,8 +20,20 @@ func tableMastodonSearchAccount() *plugin.Table {
 				},
 			},
 		},
-		Columns: accountColumns(),
+		Columns: accountSearchColumns(),
 	}
+}
+
+func accountSearchColumns() []*plugin.Column {
+	additionalColumns := []*plugin.Column{
+		{
+			Name:        "query",
+			Type:        proto.ColumnType_STRING,
+			Description: "Query used to search hashtags.",
+			Transform:   transform.FromQual("query"),
+		},
+	}
+	return append(accountColumns(), additionalColumns...)
 }
 
 func searchAccount(query string, ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {

@@ -4,7 +4,9 @@ import (
 	"context"
 
 	"github.com/mattn/go-mastodon"
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 func tableMastodonListAccount() *plugin.Table {
@@ -14,8 +16,20 @@ func tableMastodonListAccount() *plugin.Table {
 			Hydrate:    listListAccount,
 			KeyColumns: plugin.SingleColumn("list_id"),
 		},
-		Columns: accountColumns(),
+		Columns: listAccountColumns(),
 	}
+}
+
+func listAccountColumns() []*plugin.Column {
+	additionalColumns := []*plugin.Column{
+		{
+			Name:        "list_id",
+			Type:        proto.ColumnType_STRING,
+			Description: "List ID for account.",
+			Transform:   transform.FromQual("list_id"),
+		},
+	}
+	return append(accountColumns(), additionalColumns...)
 }
 
 func listListAccount(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
