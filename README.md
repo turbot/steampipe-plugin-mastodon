@@ -32,7 +32,7 @@ cp config/* ~/.steampipe/config
 Then edit `~/.steampipe/config/mastodon.spc`, add your server's URL and the access token from the Mastodon app you created.
 
 ```
-connection "myserver_social" {
+connection "mastodon" {
     plugin = "mastodon"
     server = "https://myserver.social"    # my_server is mastodon.social, nerdculture.de, etc
     access_token = "ABC...mytoken...XYZ"  # find token at https://myserver.social/settings/applications

@@ -13,7 +13,7 @@ select
   url,
   content
 from
-  mastodon_toot_search
+  mastodon_search_toot
 where
   query = 'twitter'
 limit
