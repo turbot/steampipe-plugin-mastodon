@@ -2,12 +2,11 @@ module steampipe-plugin-mastodon
 
 go 1.19
 
-replace github.com/mattn/go-mastodon => github.com/luisffc/go-mastodon v0.0.6
+replace github.com/mattn/go-mastodon => github.com/turbot/go-mastodon v0.0.1
 
 require (
 	github.com/mattn/go-mastodon v0.0.6
 	github.com/microcosm-cc/bluemonday v1.0.22
-	github.com/tomnomnom/linkheader v0.0.0-20180905144013-02ca5825eb80
 	github.com/turbot/steampipe-plugin-sdk/v5 v5.2.0-rc.5
 )
 
@@ -82,6 +81,7 @@ require (
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/stevenle/topsort v0.0.0-20130922064739-8130c1d7596b // indirect
 	github.com/tkrajina/go-reflector v0.5.6 // indirect
+	github.com/tomnomnom/linkheader v0.0.0-20180905144013-02ca5825eb80 // indirect
 	github.com/turbot/go-kit v0.5.0 // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
 	github.com/zclconf/go-cty v1.12.1 // indirect

@@ -311,8 +311,6 @@ github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
 github.com/kr/text v0.2.0 h1:5Nx0Ya0ZqY2ygV366QzturHI13Jq95ApcVaJBhpS+AY=
 github.com/kylelemons/godebug v0.0.0-20170820004349-d65d576e9348 h1:MtvEpTB6LX3vkb4ax0b5D2DHbNAUsen0Gx5wZoq3lV4=
-github.com/luisffc/go-mastodon v0.0.6 h1:51rO2ob7ouXwFtXzjGSsEJv0WU5jtilA0BlLzLiEQ0s=
-github.com/luisffc/go-mastodon v0.0.6/go.mod h1:cg7RFk2pcUfHZw/IvKe1FUzmlq5KnLFqs7eV2PHplV8=
 github.com/mailru/easyjson v0.0.0-20160728113105-d5b7844b561a/go.mod h1:C1wdFJiN94OJF2b5HbByQZoLdCWB1Yqtg26g4irojpc=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
 github.com/mattn/go-colorable v0.1.4/go.mod h1:U0ppj6V5qS13XJ6of8GYAs25YV2eR4EVcfRqFIhoBtE=
@@ -443,6 +441,8 @@ github.com/tomnomnom/linkheader v0.0.0-20180905144013-02ca5825eb80 h1:nrZ3ySNYwJ
 github.com/tomnomnom/linkheader v0.0.0-20180905144013-02ca5825eb80/go.mod h1:iFyPdL66DjUD96XmzVL3ZntbzcflLnznH0fr99w5VqE=
 github.com/turbot/go-kit v0.5.0 h1:bulbpYGyOQWt4/qFAULPBdrLis//sf3VFz5mTZelv0k=
 github.com/turbot/go-kit v0.5.0/go.mod h1:oP9gLk6bETL4nkEuujZZbOlcv9jnHQlf7DYcI/+Ke8Q=
+github.com/turbot/go-mastodon v0.0.1 h1:Lqdd5JOvUSjyhpUMUG3IEAGFW3N9emfLwDbrD5F0kAs=
+github.com/turbot/go-mastodon v0.0.1/go.mod h1:cg7RFk2pcUfHZw/IvKe1FUzmlq5KnLFqs7eV2PHplV8=
 github.com/turbot/steampipe-plugin-sdk/v5 v5.2.0-rc.5 h1:GeaJ6JV63NuZC3ZCg2Ei5vUvbQZYloPjNv2zubRB7nw=
 github.com/turbot/steampipe-plugin-sdk/v5 v5.2.0-rc.5/go.mod h1:bfvdKaLwemr13EPOMbnr7/hOQOO7m4oM7HnVMdNotgY=
 github.com/ulikunitz/xz v0.5.8 h1:ERv8V6GKqVi23rgu5cj9pVfVzJbOqAY2Ntl88O6c2nQ=
