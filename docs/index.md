@@ -67,10 +67,10 @@ connection "mastodon" {
     access_token = "ABC...mytoken...XYZ"  # from Settings -> Development -> New Application
     # app = "elk.zone"                    # uncomment to follow links to Elk instead of stock client
 
-    # Define the maximum number of items to list in the mastodon tables.
+    # Define the maximum number of toots to list in the mastodon toot tables.
     # If not set, the default is 5000.
-    # To avoid limiting, set max_items = -1
-    #max_items = 5000
+    # To avoid limiting, set max_toots = -1
+    #max_toots = 5000
 }
 ```
 

@@ -34,7 +34,7 @@ func listTootsLocal(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateD
 	}
 	pg := mastodon.Pagination{Limit: int64(initialLimit)}
 
-	maxItems := GetConfig(d.Connection).MaxItems
+	maxToots := GetConfig(d.Connection).MaxToots
 	rowCount := 0
 	for {
 		logger.Debug("mastodon_toot_local.listTootsLocal", "pg", pg)
@@ -48,8 +48,8 @@ func listTootsLocal(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateD
 		for _, toot := range toots {
 			d.StreamListItem(ctx, toot)
 			rowCount++
-			if *maxItems > 0 && rowCount >= *maxItems {
-				logger.Debug("mastodon_toot_local.listTootsLocal", "max_items limit reached", *maxItems)
+			if *maxToots > 0 && rowCount >= *maxToots {
+				logger.Debug("mastodon_toot_local.listTootsLocal", "max_toots limit reached", *maxToots)
 				return nil, nil
 			}
 			// Context can be cancelled due to manual cancellation or the limit has been hit
