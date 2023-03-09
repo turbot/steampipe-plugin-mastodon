@@ -32,6 +32,7 @@ func getClientCacheKey(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydra
 }
 
 func connectUncached(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (any, error) {
+	logger := plugin.Logger(ctx)
 	config := GetConfig(d.Connection)
 
 	server := *config.Server
@@ -39,6 +40,7 @@ func connectUncached(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrate
 	if serverQual != "" {
 		server = serverQual
 	}
+	logger.Debug("Creating new connection to", server)
 
 	client := mastodon.NewClient(&mastodon.Config{
 		Server:      server,

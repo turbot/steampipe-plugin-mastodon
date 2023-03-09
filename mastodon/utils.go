@@ -77,3 +77,15 @@ func qualifiedStatusUrl(ctx context.Context, url string, id string) (interface{}
 	logger.Debug("qualifiedStatusUrl", "homeServer", homeServer, "server", server, "person", person, "id", id, "qualifiedStatusUrl", qualifiedStatusUrl)
 	return qualifiedStatusUrl, nil
 }
+
+func isNotFoundError(notFoundErrors []string) plugin.ErrorPredicateWithContext {
+	return func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData, err error) bool {
+
+		for _, pattern := range notFoundErrors {
+			if strings.Contains(err.Error(), pattern) {
+				return true
+			}
+		}
+		return false
+	}
+}

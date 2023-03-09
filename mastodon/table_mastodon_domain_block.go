@@ -19,6 +19,9 @@ func tableMastodonDomainBlock() *plugin.Table {
 					Require: plugin.Optional,
 				},
 			},
+			IgnoreConfig: &plugin.IgnoreConfig{
+				ShouldIgnoreErrorFunc: isNotFoundError([]string{"404"}),
+			},
 		},
 		Columns: domainColumns(),
 	}
