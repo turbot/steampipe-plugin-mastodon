@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/mattn/go-mastodon"
+	"github.com/turbot/steampipe-plugin-sdk/v5/memoize"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
 
@@ -16,7 +17,7 @@ func connect(ctx context.Context, d *plugin.QueryData) (*mastodon.Client, error)
 	return conn.(*mastodon.Client), nil
 }
 
-var connectCached = plugin.HydrateFunc(connectUncached).Memoize(plugin.WithCacheKeyFunction(getClientCacheKey))
+var connectCached = plugin.HydrateFunc(connectUncached).Memoize(memoize.WithCacheKeyFunction(getClientCacheKey))
 
 func getClientCacheKey(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	config := GetConfig(d.Connection)

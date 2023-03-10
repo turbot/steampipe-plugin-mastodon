@@ -2,10 +2,10 @@
 organization: Turbot
 category: ["media"]
 icon_url: "/images/plugins/turbot/mastodon.svg"
-brand_color: "#1DA1F2"
+brand_color: "#6364FF"
 display_name: Mastodon
 name: mastodon
-description: Steampipe plugin to query toots, users and followers from Mastodon.
+description: Use SQL to instantly query Mastodon timelines, accounts, followers and more.
 og_description: Query Mastodon with SQL! Open source CLI. No DB required.
 og_image: "/images/plugins/turbot/mastodon-social-graphic.png"
 ---
@@ -31,12 +31,12 @@ where
 ```
 
 ```
-+---------------------------+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| created_at                | username       | content                                                                                                                              |
-+---------------------------+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
-| 2023-01-19T15:08:14-03:00 | arinbasu1      | But the point is  #Mastodon is not a replacement of Twitter anyway, it was not meant to be. Rather, it is an antithesis of twitter. |
-| 2023-02-05T22:13:11-03:00 | ancient_catbus | a nice thing about mastodon, i didn't know the grammys were on until I opened twitter to check in on my dm's                        |
-+---------------------------+----------------+--------------------------------------------------------------------------------------------------------------------------------------+
++---------------------------+----------------+---------------------------------------------------------------------+
+| created_at                | username       | content                                                             |
++---------------------------+----------------+---------------------------------------------------------------------+
+| 2023-01-19T15:08:14-03:00 | arinbasu1      | But the point is  #Mastodon is not a replacement of Twitter anyway. |
+| 2023-02-05T22:13:11-03:00 | ancient_catbus | i didn't know the grammys were on until I opened twitter            |
++---------------------------+----------------+---------------------------------------------------------------------+
 ```
 
 ## Documentation
@@ -55,6 +55,12 @@ steampipe plugin install mastodon
 
 ### Credentials
 
+| Item        | Description                                                                                                                                   |
+|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| Credentials | Mastodon requires an [API token](https://docs.joinmastodon.org/client/token/) for some of the tables.                                         |
+| Permissions | API tokens have the same permissions as the user who creates them, and if the user permissions change, the API token permissions also change. |
+| Radius      | Each connection represents a single Mastodon Installation.                                                                                    |
+| Resolution  | 1. Credentials explicitly set in a steampipe config file (`~/.steampipe/config/mastodon.spc`)<br />                                           |
 
 ### Configuration
 
@@ -63,14 +69,20 @@ Installing the latest mastodon plugin will create a config file (`~/.steampipe/c
 ```hcl
 connection "mastodon" {
     plugin = "mastodon"
-    server = "https://myserver.social"    # my_server is mastodon.social, nerdculture.de, etc
-    access_token = "ABC...mytoken...XYZ"  # from Settings -> Development -> New Application
-    # app = "elk.zone"                    # uncomment to follow links to Elk instead of stock client
 
-    # Define the maximum number of toots to list in the mastodon toot tables.
-    # If not set, the default is 5000.
-    # To avoid limiting, set max_toots = -1
-    #max_toots = 5000
+    # `server` (required) - The federated server your account lives. Ex: mastodon.social, nerdculture.de, etc
+    server = "https://myserver.social"
+
+    # `access_token` (required) - Get your access token by going to your Mastodon server, then: Settings -> Development -> New Application
+    # Refer to this page for more details: https://docs.joinmastodon.org/client/token
+    access_token = "ABC...mytoken...XYZ"
+
+    # `app` (optional) - Allows you to follow links to Elk instead of stock client
+    # app = "elk.zone"
+
+    # `max_toots` (optional) - Defines the maximum number of toots to list in the mastodon toot tables.
+    # If not set, the default is 1000. To avoid limiting, set max_toots = -1
+    # max_toots = 1000
 }
 ```
 

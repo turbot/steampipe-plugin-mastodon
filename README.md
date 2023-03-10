@@ -1,14 +1,35 @@
 # Mastodon plugin for Steampipe
 
-Use SQL to instantly query Mastodon timelines and more. Open source CLI. No DB  required.
+Use SQL to instantly query Mastodon timelines, accounts, followers and more. Open source CLI. No DB  required.
 
 ## Quick start
+
+Install the plugin with [Steampipe](https://steampipe.io):
+
+```shell
+steampipe plugin install mastodon
+```
+
+Run a query:
+
+```sql
+select
+    created_at,
+    username,
+    url,
+    content
+from
+    mastodon_toot_home
+limit 
+    30;
+```
+
+## Developing
 
 Prerequisites:
 
 - [Steampipe](https://steampipe.io/downloads)
 - [Golang](https://golang.org/doc/install)
-- An account on a Mastodon server
 
 Clone:
 
@@ -27,33 +48,26 @@ Configure the plugin:
 
 ```
 cp config/* ~/.steampipe/config
+vi ~/.steampipe/config/mastodon.spc
 ```
 
-Then edit `~/.steampipe/config/mastodon.spc`, add your server's URL and the access token from the Mastodon app you created.
-
-```
-connection "mastodon" {
-    plugin = "mastodon"
-    server = "https://myserver.social"    # my_server is mastodon.social, nerdculture.de, etc
-    access_token = "ABC...mytoken...XYZ"  # find token at https://myserver.social/settings/applications
-}
-```
-
-View available tables:
+Try it!
 
 ```
 steampipe query
 > .inspect mastodon
 ```
 
-Try some sample queries.
-
-- [mastodon_toot](./docs/tables/mastodon_toot.md)
-- [mastodon_my_list](./docs/tables/mastodon_my_list.md)
-- [mastodon_my_following](./docs/tables/mastodon_my_following.md)
-- [mastodon_notification](./docs/tables/mastodon_notification.md)
-
 Further reading:
 
 - [Writing plugins](https://steampipe.io/docs/develop/writing-plugins)
 - [Writing your first table](https://steampipe.io/docs/develop/writing-your-first-table)
+
+## Contributing
+
+Please see the [contribution guidelines](https://github.com/turbot/steampipe/blob/main/CONTRIBUTING.md) and our [code of conduct](https://github.com/turbot/steampipe/blob/main/CODE_OF_CONDUCT.md). All contributions are subject to the [Apache 2.0 open source license](https://github.com/turbot/steampipe-plugin-mastodon/blob/main/LICENSE).
+
+`help wanted` issues:
+
+- [Steampipe](https://github.com/turbot/steampipe/labels/help%20wanted)
+- [Mastodon Plugin](https://github.com/turbot/steampipe-plugin-mastodon/labels/help%20wanted)

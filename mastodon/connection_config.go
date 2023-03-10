@@ -14,7 +14,7 @@ type PluginConfig struct {
 	MaxToots    *int    `cty:"max_toots"`
 }
 
-var default_max_toots = 5000
+var default_max_toots = 1000
 
 var ConfigSchema = map[string]*schema.Attribute{
 	"server": {
