@@ -9,7 +9,8 @@ import (
 
 func tableMastodonMyFollower() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_my_follower",
+		Name:        "mastodon_my_follower",
+		Description: "Represents an account that follows you.",
 		List: &plugin.ListConfig{
 			Hydrate: listMyFollowers,
 		},

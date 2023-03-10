@@ -1,6 +1,6 @@
 # Table: mastodon_toot_federated
 
-Mastodon toots on the federated servers
+Represents a toot in a federated server.
 
 ## Examples
 

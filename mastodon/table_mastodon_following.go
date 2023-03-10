@@ -11,7 +11,8 @@ import (
 
 func tableMastodonFollowing() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_following",
+		Name:        "mastodon_following",
+		Description: "Represents a user of Mastodon an account is following.",
 		List: &plugin.ListConfig{
 			Hydrate:    listFollowing,
 			KeyColumns: plugin.SingleColumn("following_account_id"),

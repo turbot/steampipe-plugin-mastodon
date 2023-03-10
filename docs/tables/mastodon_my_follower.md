@@ -1,6 +1,6 @@
 # Table: mastodon_my_follower
 
-List Mastodon followers for the authenticated account
+Represents an account that follows you.
 
 ## Examples
 

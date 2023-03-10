@@ -1,6 +1,6 @@
 # Table: mastodon_list_account
 
-List accounts associated with a Mastodon list
+Represents an accounts of a list of yours.
 
 ## Examples
 

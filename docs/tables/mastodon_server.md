@@ -1,6 +1,6 @@
 # Table: mastodon_server
 
-Get the name of your Mastodon instance
+Represents an independent instance of Mastodon.
 
 ## Examples
 

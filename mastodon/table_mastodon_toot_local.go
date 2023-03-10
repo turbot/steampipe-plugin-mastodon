@@ -9,7 +9,8 @@ import (
 
 func tableMastodonTootLocal() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_toot_local",
+		Name:        "mastodon_toot_local",
+		Description: "Represents a toot on your local server.",
 		List: &plugin.ListConfig{
 			Hydrate: listTootsLocal,
 		},

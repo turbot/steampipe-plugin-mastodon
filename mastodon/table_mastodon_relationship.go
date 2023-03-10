@@ -9,7 +9,8 @@ import (
 
 func tableMastodonRelationship() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_relationship",
+		Name:        "mastodon_relationship",
+		Description: "Represents the relationship between accounts.",
 		List: &plugin.ListConfig{
 			Hydrate:    listRelationships,
 			KeyColumns: plugin.SingleColumn("id"),

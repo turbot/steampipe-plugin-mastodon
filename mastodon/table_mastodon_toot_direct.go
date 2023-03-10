@@ -9,7 +9,8 @@ import (
 
 func tableMastodonTootDirect() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_toot_direct",
+		Name:        "mastodon_toot_direct",
+		Description: "Represents a toot on your direct timeline.",
 		List: &plugin.ListConfig{
 			Hydrate: listTootsDirect,
 		},

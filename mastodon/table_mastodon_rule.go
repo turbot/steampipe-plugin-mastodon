@@ -10,7 +10,8 @@ import (
 
 func tableMastodonRule() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_rule",
+		Name:        "mastodon_rule",
+		Description: "Represents a rule that server users should follow.",
 		List: &plugin.ListConfig{
 			Hydrate: listRule,
 			KeyColumns: []*plugin.KeyColumn{

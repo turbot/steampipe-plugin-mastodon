@@ -14,7 +14,8 @@ import (
 
 func tableMastodonAccount() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_account",
+		Name:        "mastodon_account",
+		Description: "Represents a user of Mastodon and their associated profile.",
 		List: &plugin.ListConfig{
 			Hydrate:    listAccount,
 			KeyColumns: plugin.SingleColumn("id"),

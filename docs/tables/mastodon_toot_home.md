@@ -1,6 +1,6 @@
 # Table: mastodon_toot_home
 
-Mastodon toots on the home timeline
+Represents a toot on your home timeline.
 
 ## Examples
 

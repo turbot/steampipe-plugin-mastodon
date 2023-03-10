@@ -1,6 +1,6 @@
 # Table: mastodon_toot_list
 
-Mastodon toots on list timeline
+Represents a toot on your list timeline.
 
 ## Examples
 

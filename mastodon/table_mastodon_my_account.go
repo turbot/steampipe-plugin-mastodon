@@ -8,7 +8,8 @@ import (
 
 func tableMastodonMyAccount() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_my_account",
+		Name:        "mastodon_my_account",
+		Description: "Represents your user of Mastodon and its associated profile.",
 		List: &plugin.ListConfig{
 			Hydrate: listMyAccount,
 		},

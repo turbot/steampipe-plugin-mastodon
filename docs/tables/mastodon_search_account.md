@@ -1,6 +1,6 @@
 # Table: mastodon_search_account
 
-Find Mastodon accounts matching a search term
+Represents an account matching a search term.
 
 ## Examples
 

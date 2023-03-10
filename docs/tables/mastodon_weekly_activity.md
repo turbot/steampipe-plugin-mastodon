@@ -1,6 +1,6 @@
 # Table: mastodon_weekly_activity
 
-List weekly activity stats for a Mastodon instance
+Represents a weekly activity stats of a Mastodon server.
 
 ## Examples
 

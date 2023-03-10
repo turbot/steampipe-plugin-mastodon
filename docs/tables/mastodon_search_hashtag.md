@@ -1,6 +1,6 @@
 # Table: mastodon_search_status
 
-Search Mastodon hashtags
+Represents a hashtag matching a search term.
 
 ## Examples
 

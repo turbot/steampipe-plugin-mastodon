@@ -1,6 +1,6 @@
 # Table: mastodon_relationship
 
-List relationship details for Mastodon accounts
+Represents the relationship between accounts.
 
 ## Examples
 

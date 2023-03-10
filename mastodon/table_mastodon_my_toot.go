@@ -10,7 +10,7 @@ import (
 func tableMastodonMyToot() *plugin.Table {
 	return &plugin.Table{
 		Name:        "mastodon_my_toot",
-		Description: "Statuses posted to your account",
+		Description: "Represents a toot posted to your account.",
 		List: &plugin.ListConfig{
 			Hydrate: listMyToots,
 		},

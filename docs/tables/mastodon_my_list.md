@@ -1,6 +1,6 @@
 # Table: mastodon_my_list
 
-List Mastodon lists
+Represents your list of accounts.
 
 ## Examples
 

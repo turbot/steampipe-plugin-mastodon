@@ -9,7 +9,8 @@ import (
 
 func tableMastodonTootFederated() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_toot_federated",
+		Name:        "mastodon_toot_federated",
+		Description: "Represents a toot in a federated server.",
 		List: &plugin.ListConfig{
 			Hydrate: listTootsFederated,
 		},

@@ -11,7 +11,8 @@ import (
 
 func tableMastodonNotification() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_notification",
+		Name:        "mastodon_notification",
+		Description: "Represents a notification of an event relevant to your account.",
 		List: &plugin.ListConfig{
 			Hydrate: listNotifications,
 		},

@@ -9,7 +9,8 @@ import (
 
 func tableMastodonRate() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_rate",
+		Name:        "mastodon_rate",
+		Description: "Represents API rate-limit information about your access token.",
 		List: &plugin.ListConfig{
 			Hydrate: listRateLimit,
 		},

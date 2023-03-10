@@ -14,7 +14,8 @@ type mastodonServer struct {
 
 func tableMastodonServer() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_server",
+		Name:        "mastodon_server",
+		Description: "Represents an independent instance of Mastodon.",
 		List: &plugin.ListConfig{
 			Hydrate: getServer,
 		},

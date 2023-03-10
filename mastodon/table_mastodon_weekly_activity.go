@@ -12,7 +12,8 @@ import (
 
 func tableMastodonWeeklyActivity() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_weekly_activity",
+		Name:        "mastodon_weekly_activity",
+		Description: "Represents a weekly activity stats of a Mastodon server.",
 		List: &plugin.ListConfig{
 			Hydrate: listWeeklyActivity,
 			KeyColumns: []*plugin.KeyColumn{

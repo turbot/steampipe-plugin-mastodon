@@ -10,7 +10,8 @@ import (
 
 func tableMastodonDomainBlock() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_domain_block",
+		Name:        "mastodon_domain_block",
+		Description: "Represents a domain blocked by a Mastodon server.",
 		List: &plugin.ListConfig{
 			Hydrate: listDomainBlocks,
 			KeyColumns: []*plugin.KeyColumn{

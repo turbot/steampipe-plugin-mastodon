@@ -11,7 +11,8 @@ import (
 
 func tableMastodonTootFavourite() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_toot_favourite",
+		Name:        "mastodon_toot_favourite",
+		Description: "Represents a favourite toot of yours.",
 		List: &plugin.ListConfig{
 			Hydrate: listTootFavourites,
 		},

@@ -1,6 +1,6 @@
 # Table: mastodon_toot_favourite
 
-Favourite Mastodon toots
+Represents a favourite toot of yours.
 
 ## Examples
 

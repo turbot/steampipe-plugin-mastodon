@@ -9,7 +9,8 @@ import (
 
 func tableMastodonTootList() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_toot_list",
+		Name:        "mastodon_toot_list",
+		Description: "Represents a toot on your list timeline.",
 		List: &plugin.ListConfig{
 			Hydrate: listTootsList,
 			KeyColumns: []*plugin.KeyColumn{

@@ -10,7 +10,8 @@ import (
 
 func tableMastodonSearchAccount() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_search_account",
+		Name:        "mastodon_search_account",
+		Description: "Represents an account matching a search term.",
 		List: &plugin.ListConfig{
 			Hydrate: listSearchAccount,
 			KeyColumns: []*plugin.KeyColumn{

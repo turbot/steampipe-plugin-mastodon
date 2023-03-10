@@ -1,6 +1,6 @@
 # Table: mastodon_peer
 
-List peers of a Mastodon server
+Represents a neighbor Mastodon server your server is connected to.
 
 ## Examples
 

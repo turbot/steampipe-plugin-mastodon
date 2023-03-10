@@ -10,7 +10,8 @@ import (
 
 func tableMastodonPeer() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_peer",
+		Name:        "mastodon_peer",
+		Description: "Represents a neighbor Mastodon server your server is connected to.",
 		List: &plugin.ListConfig{
 			Hydrate: listPeers,
 			KeyColumns: []*plugin.KeyColumn{

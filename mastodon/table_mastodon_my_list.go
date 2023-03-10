@@ -10,7 +10,8 @@ import (
 
 func tableMastodonMyList() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_my_list",
+		Name:        "mastodon_my_list",
+		Description: "Represents your list of accounts.",
 		List: &plugin.ListConfig{
 			Hydrate: listMyLists,
 		},

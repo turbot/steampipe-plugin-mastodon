@@ -11,7 +11,8 @@ import (
 
 func tableMastodonSearchHashtag() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_search_hashtag",
+		Name:        "mastodon_search_hashtag",
+		Description: "Represents a hashtag matching a search term.",
 		List: &plugin.ListConfig{
 			Hydrate:    listHashtag,
 			KeyColumns: plugin.SingleColumn("query"),

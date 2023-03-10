@@ -1,6 +1,6 @@
 # Table: mastodon_rules
 
-List rules for a Mastodon server
+Represents a rule that server users should follow.
 
 ## Examples
 

@@ -1,6 +1,6 @@
 # Table: mastodon_rate
 
-List Mastodon rate-limit info
+Represents API rate-limit information about your access token.
 
 ## Examples
 

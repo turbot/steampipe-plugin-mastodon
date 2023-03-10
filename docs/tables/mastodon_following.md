@@ -1,6 +1,6 @@
 # Table: mastodon_following
 
-List Mastodon accounts the authenticated account follows
+Represents a user of Mastodon an account is following.
 
 ## Examples
 

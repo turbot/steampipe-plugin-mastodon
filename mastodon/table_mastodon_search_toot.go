@@ -12,7 +12,7 @@ import (
 func tableMastodonSearchToot() *plugin.Table {
 	return &plugin.Table{
 		Name:        "mastodon_search_toot",
-		Description: "Search for content in statuses",
+		Description: "Represents a toot matching a search term.",
 		List: &plugin.ListConfig{
 			Hydrate: listSearchToot,
 			KeyColumns: []*plugin.KeyColumn{

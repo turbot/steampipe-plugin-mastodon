@@ -1,6 +1,6 @@
 # Table: mastodon_domain_block
 
-List domains blocked by a Mastodon server
+Represents a domain blocked by a Mastodon server.
 
 ## Examples
 

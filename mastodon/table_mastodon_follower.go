@@ -11,7 +11,8 @@ import (
 
 func tableMastodonFollower() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_follower",
+		Name:        "mastodon_follower",
+		Description: "Represents a follower of a user of Mastodon.",
 		List: &plugin.ListConfig{
 			Hydrate:    listFollowers,
 			KeyColumns: plugin.SingleColumn("followed_account_id"),

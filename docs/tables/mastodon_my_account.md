@@ -1,6 +1,6 @@
 # Table: mastodon_my_account
 
-List details a Mastodon account
+Represents your user of Mastodon and its associated profile.
 
 ## Examples
 

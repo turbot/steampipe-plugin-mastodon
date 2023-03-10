@@ -1,6 +1,6 @@
 # Table: mastodon_toot_local
 
-Mastodon toots on the local server
+Represents a toot on your local server.
 
 ## Examples
 

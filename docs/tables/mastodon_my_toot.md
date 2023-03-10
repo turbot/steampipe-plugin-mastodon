@@ -1,6 +1,6 @@
 # Table: mastodon_my_toot
 
-Mastodon toots posted to account.
+Represents a toot posted to your account.
 
 ## Examples
 

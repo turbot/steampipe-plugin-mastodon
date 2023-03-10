@@ -1,6 +1,6 @@
 # Table: mastodon_toot_direct
 
-Mastodon toots on the direct timeline
+Represents a toot on your direct timeline.
 
 ## Examples
 

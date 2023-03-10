@@ -1,6 +1,6 @@
 # Table: mastodon_notification
 
-List recent Mastodon notifications
+Represents a notification of an event relevant to your account.
 
 ## Examples
 

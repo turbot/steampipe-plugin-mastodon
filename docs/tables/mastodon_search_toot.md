@@ -1,6 +1,6 @@
 # Table: mastodon_toot_search
 
-Mastodon toots matching a search query
+Represents a toot matching a search term.
 
 ## Examples
 
