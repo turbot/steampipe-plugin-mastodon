@@ -1,6 +1,6 @@
 # Table: mastodon_follower
 
-List Mastodon followers for the authenticated account
+List Mastodon followers for an account
 
 ## Examples
 
@@ -15,6 +15,9 @@ select
   following_count,
   statuses_count
 from
-  mastodon_follower;
+  mastodon_follower
+where
+  followed_account_id = '1'
+limit 100
 ```
 

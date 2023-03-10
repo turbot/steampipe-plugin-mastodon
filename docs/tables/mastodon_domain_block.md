@@ -25,5 +25,5 @@ select
 from
   mastodon_domain_block
 where
-  server = 'https://nerdculture.de'
+  server = 'https://nerdculture.de';
 ```

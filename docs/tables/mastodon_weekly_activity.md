@@ -4,7 +4,7 @@ List weekly activity stats for a Mastodon instance
 
 ## Examples
 
-### Activity for recent weeks
+### My home server's recent activity
 
 ```sql
 select

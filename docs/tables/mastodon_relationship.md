@@ -4,7 +4,24 @@ List relationship details for Mastodon accounts
 
 ## Examples
 
-### Relationship details for accounts I follow
+### My relationships to `account_id` 1 (@Gargron)
+
+select
+  following,
+  followed_by,
+  showing_reblogs,
+  blocking,
+  muting,
+  muting_notifications,
+  requested,
+  domain_blocking,
+  endorsed
+from
+  mastodon_relationship
+where
+   id = '1'
+
+### Relationship details for the earliest accounts I follow
 
 ```sql
 with following as (
