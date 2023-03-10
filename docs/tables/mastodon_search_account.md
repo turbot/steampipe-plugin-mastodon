@@ -17,5 +17,7 @@ select
 from
   mastodon_search_account
 where
-  query= 'alice';
+  query = 'alice';
 ```
+
+Note: Finds the search term case-insensitively in the `username` or `display_name` columns.

@@ -4,7 +4,7 @@ Represents a weekly activity stats of a Mastodon server.
 
 ## Examples
 
-### Activity for recent weeks
+### My home server's recent activity
 
 ```sql
 select

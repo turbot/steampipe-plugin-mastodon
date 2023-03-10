@@ -1,6 +1,6 @@
 # Table: mastodon_follower
 
-Represents a follower of a user of Mastodon.
+Represents a follower of an account.
 
 ## Examples
 

@@ -4,7 +4,7 @@ Represents a toot on your list timeline.
 
 ## Examples
 
-### Get newest 30 toots on the list timeline
+### Get newest 30 toots on a list's timeline
 
 ```sql
 select
@@ -14,8 +14,28 @@ select
   content
 from
   mastodon_toot_list
+where
+  list_id = '42994'
 limit 
   30;
 ```
 
-Always use `limit` or the query will try to read the whole timeline. 
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+

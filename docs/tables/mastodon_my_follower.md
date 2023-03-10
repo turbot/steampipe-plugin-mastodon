@@ -15,6 +15,18 @@ select
   following_count,
   statuses_count
 from
-  mastodon_my_follower;
+  mastodon_my_follower
 ```
 
+### Count my followers by the servers they belong to
+
+```sql
+select 
+  server, 
+  count(*)
+from 
+  mastodon_my_follower 
+group by
+  server
+order by count desc
+```
