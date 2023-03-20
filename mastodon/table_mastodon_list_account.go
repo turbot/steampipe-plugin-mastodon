@@ -14,7 +14,7 @@ func tableMastodonListAccount() *plugin.Table {
 		Name:        "mastodon_list_account",
 		Description: "Represents an account of a list of yours.",
 		List: &plugin.ListConfig{
-			Hydrate:    listListAccount,
+			Hydrate:    listListAccounts,
 			KeyColumns: plugin.SingleColumn("list_id"),
 		},
 		Columns: listAccountColumns(),
@@ -33,11 +33,11 @@ func listAccountColumns() []*plugin.Column {
 	return append(accountColumns(), additionalColumns...)
 }
 
-func listListAccount(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listListAccounts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 	client, err := connect(ctx, d)
 	if err != nil {
-		logger.Error("mastodon_list_account.listListAccount", "connect_error", err)
+		logger.Error("mastodon_list_account.listListAccounts", "connect_error", err)
 		return nil, err
 	}
 
@@ -47,7 +47,7 @@ func listListAccount(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 	for {
 		accounts, err := client.GetListAccounts(ctx, mastodon.ID(listId), &pg)
 		if err != nil {
-			logger.Error("mastodon_list_account.listListAccount", "query_error", err)
+			logger.Error("mastodon_list_account.listListAccounts", "query_error", err)
 			return nil, err
 		}
 
