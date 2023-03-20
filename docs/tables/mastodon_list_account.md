@@ -1,6 +1,6 @@
 # Table: mastodon_list_account
 
-Represents an accounts of a list of yours.
+Represents the list of accounts.
 
 ## Examples
 
