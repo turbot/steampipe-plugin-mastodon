@@ -34,7 +34,7 @@ where
 +---------------------------+----------------+---------------------------------------------------------------------+
 | created_at                | username       | content                                                             |
 +---------------------------+----------------+---------------------------------------------------------------------+
-| 2023-01-19T15:08:14-03:00 | arinbasu1      | But the point is  #Mastodon is not a replacement of Twitter anyway. |
+| 2023-01-19T15:08:14-03:00 | arinbasu1      | But the point is #Mastodon is not a replacement of Twitter anyway. |
 | 2023-02-05T22:13:11-03:00 | ancient_catbus | i didn't know the grammys were on until I opened twitter            |
 +---------------------------+----------------+---------------------------------------------------------------------+
 ```
