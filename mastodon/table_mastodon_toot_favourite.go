@@ -172,7 +172,6 @@ func listTootFavourites(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 	}
 
 	postgresLimit := d.QueryContext.GetLimit()
-	plugin.Logger(ctx).Debug("listTootFavourites", "limit", postgresLimit)
 
 	page := 0
 	apiMaxPerPage := 40
