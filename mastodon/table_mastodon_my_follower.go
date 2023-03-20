@@ -29,6 +29,7 @@ func listMyFollowers(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 
 	accountCurrentUser, err := client.GetAccountCurrentUser(ctx)
 	if err != nil {
+		logger.Error("mastodon_my_follower.listMyFollowers", "account_query_error", err)
 		return nil, err
 	}
 
