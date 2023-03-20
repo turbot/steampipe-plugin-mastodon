@@ -98,7 +98,7 @@ func accountColumns() []*plugin.Column {
 	return append(additionalColumns, baseAccountColumns()...)
 }
 
-func listAccount(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func getAccount(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	client, err := connect(ctx, d)
