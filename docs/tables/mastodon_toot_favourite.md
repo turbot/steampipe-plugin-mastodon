@@ -8,13 +8,13 @@ Represents a favourite toot of yours.
 
 ```sql
 select
-    created_at,
-    username,
-    url,
-    content
+  created_at,
+  username,
+  url,
+  content
 from
-    mastodon_toot_favourite
+  mastodon_toot_favourite
 limit 
-    60;
+  60;
 ```
 

@@ -55,12 +55,12 @@ steampipe plugin install mastodon
 
 ### Credentials
 
-| Item        | Description                                                                                                                                   |
-|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
-| Credentials | Mastodon requires an [API token](https://docs.joinmastodon.org/client/token/) for some of the tables.                                         |
-| Permissions | API tokens have the same permissions as the user who creates them, and if the user permissions change, the API token permissions also change. |
-| Radius      | Each connection represents a single Mastodon Installation.                                                                                    |
-| Resolution  | 1. Credentials explicitly set in a steampipe config file (`~/.steampipe/config/mastodon.spc`)<br />                                           |
+| Item        | Description                                                                                                                                                                                                             |
+|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Credentials | Mastodon requires an [API token](https://docs.joinmastodon.org/client/token/) for most of the tables, except mastodon_rule, mastodon_peer, mastodon_server, mastodon_weekly_activity, and mastodon_domain_block tables. |
+| Permissions | API tokens have the same permissions as the user who creates them, and if the user permissions change, the API token permissions also change.                                                                           |
+| Radius      | Each connection represents a single Mastodon Installation.                                                                                                                                                              |
+| Resolution  | 1. Credentials explicitly set in a steampipe config file (`~/.steampipe/config/mastodon.spc`)<br />                                                                                                                     |
 
 ### Configuration
 

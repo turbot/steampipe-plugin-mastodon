@@ -12,7 +12,7 @@ import (
 func tableMastodonListAccount() *plugin.Table {
 	return &plugin.Table{
 		Name:        "mastodon_list_account",
-		Description: "Represents an accounts of a list of yours.",
+		Description: "Represents an account of a list of yours.",
 		List: &plugin.ListConfig{
 			Hydrate:    listListAccount,
 			KeyColumns: plugin.SingleColumn("list_id"),
