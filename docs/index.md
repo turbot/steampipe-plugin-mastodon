@@ -27,7 +27,7 @@ select
 from
   mastodon_search_toot
 where
-  query = 'twitter'
+  query = 'twitter';
 ```
 
 ```
