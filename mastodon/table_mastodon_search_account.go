@@ -46,8 +46,15 @@ func searchAccount(query string, ctx context.Context, d *plugin.QueryData, h *pl
 		return nil, err
 	}
 
-	limit := 40
 	offset := 0
+	limit := 40
+	if d.QueryContext.Limit != nil {
+		pgLimit := int(*d.QueryContext.Limit)
+		if pgLimit < limit {
+			limit = pgLimit
+		}
+	}
+
 	for {
 		accounts, err := client.AccountsSearch(ctx, query, int64(limit), int64(offset), false, false)
 		if err != nil {
@@ -57,6 +64,9 @@ func searchAccount(query string, ctx context.Context, d *plugin.QueryData, h *pl
 
 		for _, account := range accounts {
 			d.StreamListItem(ctx, account)
+			if d.RowsRemaining(ctx) == 0 {
+				return nil, nil
+			}
 		}
 
 		if len(accounts) == 0 {

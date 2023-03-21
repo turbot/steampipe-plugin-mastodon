@@ -55,8 +55,15 @@ func searchHashtag(query string, ctx context.Context, d *plugin.QueryData, h *pl
 		return nil, err
 	}
 
-	limit := 20
 	offset := 0
+	limit := 20
+	if d.QueryContext.Limit != nil {
+		pgLimit := int(*d.QueryContext.Limit)
+		if pgLimit < limit {
+			limit = pgLimit
+		}
+	}
+
 	for {
 		results, err := client.Search(ctx, query, "hashtags", false, false, "", false, &mastodon.Pagination{
 			Limit:  int64(limit),
@@ -70,6 +77,9 @@ func searchHashtag(query string, ctx context.Context, d *plugin.QueryData, h *pl
 		hashtags := results.Hashtags
 		for _, activity := range hashtags {
 			d.StreamListItem(ctx, activity)
+			if d.RowsRemaining(ctx) == 0 {
+				return nil, nil
+			}
 		}
 
 		if len(hashtags) == 0 {

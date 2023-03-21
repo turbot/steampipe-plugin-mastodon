@@ -37,8 +37,15 @@ func listSearchToot(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateD
 
 	query := d.EqualsQualString("query")
 
-	limit := 20
 	offset := 0
+	limit := 20
+	if d.QueryContext.Limit != nil {
+		pgLimit := int(*d.QueryContext.Limit)
+		if pgLimit < limit {
+			limit = pgLimit
+		}
+	}
+
 	for {
 		results, err := client.Search(ctx, query, "statuses", true, false, "", false, &mastodon.Pagination{
 			Limit:  int64(limit),
@@ -50,6 +57,9 @@ func listSearchToot(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateD
 		}
 		for _, status := range results.Statuses {
 			d.StreamListItem(ctx, status)
+			if d.RowsRemaining(ctx) == 0 {
+				return nil, nil
+			}
 		}
 		if len(results.Statuses) == 0 {
 			break
