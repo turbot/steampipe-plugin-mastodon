@@ -2,6 +2,7 @@ package mastodon
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
@@ -35,7 +36,11 @@ func serverColumns() []*plugin.Column {
 
 func getServer(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	config := GetConfig(d.Connection)
-	server := strings.ReplaceAll(*config.Server, "https://", "")
+	var server string
+	if config.Server == nil {
+		return nil, fmt.Errorf("server must be configured")
+	}
+	server = strings.ReplaceAll(*config.Server, "https://", "")
 	d.StreamListItem(ctx, mastodonServer{server})
 	return nil, nil
 }

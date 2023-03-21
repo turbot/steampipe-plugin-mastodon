@@ -22,7 +22,11 @@ var connectCached = plugin.HydrateFunc(connectUncached).Memoize(memoize.WithCach
 func getClientCacheKey(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	config := GetConfig(d.Connection)
 
-	server := *config.Server
+	var server string
+	if config.Server != nil {
+		server = *config.Server
+	}
+
 	serverQual := d.EqualsQualString("server")
 	if serverQual != "" {
 		server = serverQual
@@ -36,7 +40,17 @@ func connectUncached(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrate
 	logger := plugin.Logger(ctx)
 	config := GetConfig(d.Connection)
 
-	server := *config.Server
+	var server, accessToken string
+	if config.Server == nil {
+		return nil, fmt.Errorf("server must be configured")
+	}
+	server = *config.Server
+
+	if config.AccessToken == nil {
+		return nil, fmt.Errorf("access_token must be configured")
+	}
+	accessToken = *config.AccessToken
+
 	serverQual := d.EqualsQualString("server")
 	if serverQual != "" {
 		server = serverQual
@@ -45,7 +59,7 @@ func connectUncached(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrate
 
 	client := mastodon.NewClient(&mastodon.Config{
 		Server:      server,
-		AccessToken: *config.AccessToken,
+		AccessToken: accessToken,
 	})
 
 	return client, nil
