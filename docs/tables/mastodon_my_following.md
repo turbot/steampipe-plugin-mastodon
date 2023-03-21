@@ -4,7 +4,7 @@ Represents an account you are following.
 
 ## Examples
 
-### List following
+### List the accounts I follow
 
 ```sql
 select
@@ -16,4 +16,17 @@ select
   statuses_count
 from
   mastodon_my_following;
+```
+
+### Count my followers by the servers they belong to
+
+```sql
+select 
+  server, 
+  count(*)
+from 
+  mastodon_my_following
+group by
+  server
+order by count desc
 ```

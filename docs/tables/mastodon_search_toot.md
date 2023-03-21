@@ -15,9 +15,21 @@ select
 from
   mastodon_search_toot
 where
-  query = 'twitter'
-limit
-  10;
+  query = 'twitter';
 ```
 
-Always use `limit` or the query will try to read the whole timeline. 
+### Search for a toot
+
+```
+select
+  created_at,
+  username,
+  url,
+  content
+from
+  mastodon_search_toot
+where
+  query = 'https://mastodon.social/@Ronkjeffries/109915239922151298';
+```
+
+
