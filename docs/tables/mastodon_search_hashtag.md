@@ -1,4 +1,4 @@
-# Table: mastodon_search_status
+# Table: mastodon_search_hashtag
 
 Represents a hashtag matching a search term.
 
@@ -23,22 +23,22 @@ Note: It's fuzzy match that will find e.g. 'steampipe' and 'steampipes'
 
 ```sql
 with data as (
-  select 
+  select
     name,
     url,
-    ( jsonb_array_elements(history) ->> 'uses' )::int as uses 
-  from 
-    mastodon_search_hashtag 
-  where 
+    ( jsonb_array_elements(history) ->> 'uses' )::int as uses
+  from
+    mastodon_search_hashtag
+  where
     query = 'science'
   )
-  select 
+  select
     d.name,
-    sum(d.uses) 
-  from 
+    sum(d.uses)
+  from
     data d
   group by
-    name 
+    name
   order by
     sum desc;
 ```

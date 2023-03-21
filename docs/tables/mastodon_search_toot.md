@@ -1,4 +1,4 @@
-# Table: mastodon_toot_search
+# Table: mastodon_search_toot
 
 Represents a toot matching a search term.
 

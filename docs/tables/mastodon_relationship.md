@@ -4,7 +4,7 @@ Represents the relationship between accounts.
 
 ## Examples
 
-### My relationships to `account_id` 1 (@Gargron)
+### My relationships to an `account_id`
 
 ```sql
 select

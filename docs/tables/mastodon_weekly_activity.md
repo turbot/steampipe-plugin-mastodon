@@ -15,7 +15,7 @@ select
 from
   mastodon_weekly_activity
 order by
-  week desc;
+  week;
 ```
 
 ### Activity on another server
@@ -29,8 +29,8 @@ select
 from
   mastodon_weekly_activity
 where
-  server = 'https://fosstodon.org'
+  server = 'https://infosec.exchange'
 order by
-  week desc;
+  week;
 ```
 
