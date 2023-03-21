@@ -28,5 +28,5 @@ from
   mastodon_my_following
 group by
   server
-order by count desc
+order by count desc;
 ```

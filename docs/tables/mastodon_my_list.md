@@ -28,4 +28,5 @@ from
 join
   mastodon_list_account a
 on
-  l.id = a.list_id
+  l.id = a.list_id;
+```

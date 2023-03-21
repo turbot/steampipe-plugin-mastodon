@@ -8,13 +8,12 @@ List details for a single Mastodon toot
 
 ```sql
 select
-    created_at,
-    username,
-    url,
-    content
+  created_at,
+  username,
+  url,
+  content
 from
-    mastodon_single_toot
+  mastodon_single_toot
 where
-    id = '109441210184763990';
+  id = '109441210184763990';
 ```
-

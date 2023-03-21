@@ -6,6 +6,7 @@ Represents the relationship between accounts.
 
 ### My relationships to `account_id` 1 (@Gargron)
 
+```sql
 select
   following,
   followed_by,
@@ -19,7 +20,8 @@ select
 from
   mastodon_relationship
 where
-   id = '1'
+  id = '1';
+```
 
 ### Relationship details for the earliest accounts I follow
 

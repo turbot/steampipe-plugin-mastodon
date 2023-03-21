@@ -20,7 +20,7 @@ where
 
 ### Search for a toot
 
-```
+```sql
 select
   created_at,
   username,
@@ -31,5 +31,3 @@ from
 where
   query = 'https://mastodon.social/@Ronkjeffries/109915239922151298';
 ```
-
-

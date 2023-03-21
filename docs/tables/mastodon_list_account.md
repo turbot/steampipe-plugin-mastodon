@@ -31,7 +31,7 @@ from
 join
   mastodon_list_account a
 on
-  l.id = a.list_id
+  l.id = a.list_id;
 ```
 
 ### Count how many of the accounts I follow are assigned (and not assigned) to lists
@@ -66,5 +66,5 @@ select
 from
   list_account_follows
 where
-  list is null
+  list is null;
 ```

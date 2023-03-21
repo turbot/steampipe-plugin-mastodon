@@ -6,7 +6,7 @@ Represents a hashtag matching a search term.
 
 ### Search for the hashtag `steampipe`
 
-```
+```sql
 select
   name,
   url,
@@ -15,6 +15,7 @@ from
   mastodon_search_hashtag
 where
   query = 'steampipe';
+```
 
 Note: It's fuzzy match that will find e.g. 'steampipe' and 'steampipes'
 
@@ -76,4 +77,3 @@ limit 10
 ```
 
 Note: This example joins with the `rss_item` column provided by the [RSS](https://hub.steampipe.io/plugins/turbot/rss) plugin.
-

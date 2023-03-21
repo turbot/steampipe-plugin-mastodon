@@ -59,5 +59,5 @@ select
 from
   mastodon_toot_home
 limit
-  30
+  30;
 ```

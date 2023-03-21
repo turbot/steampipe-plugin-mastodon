@@ -19,4 +19,3 @@ limit
 ```
 
 Note: Always use `limit` or the query will try to read the whole timeline (until `max_items` is reached).
-
