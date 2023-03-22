@@ -47,5 +47,5 @@ select distinct on (person, day) -- only one per person per day
 from
   data
 order by
-  day desc, person
+  day desc, person;
 ```
