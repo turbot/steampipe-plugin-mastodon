@@ -36,7 +36,7 @@ from
 group by
   category
 order by
-  count desc
+  count desc;
 ```
 
 ### List details of recent notifications

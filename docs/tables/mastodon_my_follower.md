@@ -21,11 +21,11 @@ from
 ### Count my followers by the servers they belong to
 
 ```sql
-select 
-  server, 
+select
+  server,
   count(*)
-from 
-  mastodon_my_follower 
+from
+  mastodon_my_follower
 group by
   server
 order by count desc;

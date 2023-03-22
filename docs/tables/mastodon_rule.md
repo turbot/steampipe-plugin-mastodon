@@ -1,4 +1,4 @@
-# Table: mastodon_rules
+# Table: mastodon_rule
 
 Represents a rule that server users should follow.
 
@@ -8,21 +8,24 @@ Represents a rule that server users should follow.
 
 ```sql
 select
-  id,
+  id as "#",
   rule
 from
-  mastodon_rule;
+  mastodon_rule
+order by
+  id::int
 ```
 
 ### Query rules for another server
 
 ```sql
 select
-  server,
-  id,
+  id as "#",
   rule
 from
   mastodon_rule
-where 
-  server = 'https://nerdculture.de';
+where
+  server = 'https://fosstodon.org'
+order by
+  id::int;
 ```

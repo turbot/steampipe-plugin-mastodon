@@ -8,7 +8,6 @@ Represents a domain blocked by a Mastodon server.
 
 ```sql
 select
-  server,
   domain,
   severity
 from
@@ -17,6 +16,7 @@ limit 10;
 ```
 
 ### Domains blocked by another Mastodon server
+
 ```sql
 select
   server,
@@ -27,3 +27,16 @@ from
 where
   server = 'https://nerdculture.de';
 ```
+
+### Classify block severities for the home Mastodon server
+
+```sql
+select
+  severity,
+  count(*)
+from
+  mastodon_domain_block
+group by
+  severity;
+```
+

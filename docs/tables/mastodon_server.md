@@ -20,9 +20,9 @@ select
   created_at,
   username,
   content
-from 
+from
   mastodon_toot_home
-where 
+where
   server = ( select server  from mastodon_server)
 limit 20;
 ```

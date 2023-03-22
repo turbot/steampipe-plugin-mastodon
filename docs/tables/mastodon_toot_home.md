@@ -4,7 +4,7 @@ Represents a toot on your home timeline.
 
 ## Examples
 
-### Get newest 30 toots on the home timeline
+### Get recent toots on the home timeline
 
 ```sql
 select
@@ -14,7 +14,7 @@ select
   content
 from
   mastodon_toot_home
-limit 
+limit
   30;
 ```
 
@@ -33,13 +33,9 @@ select
   end as toot,
   to_char(created_at, 'YYYY-MM-DD HH24:MI') as created_at,
   case
-    when reblog is not null then 'boosted'
-    else ''
-  end as boosted,
-  case
     when
       in_reply_to_account_id is not null
-    then 
+    then
       ' in-reply-to ' || ( select acct from mastodon_account where id = in_reply_to_account_id )
     else ''
   end as in_reply_to,
@@ -58,6 +54,8 @@ select
   reblog
 from
   mastodon_toot_home
+where
+  reblog is not null
 limit
   30;
 ```
