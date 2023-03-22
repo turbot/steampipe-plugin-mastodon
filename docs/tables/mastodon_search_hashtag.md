@@ -73,7 +73,7 @@ on
   r.feed_link = d.feed_link
 order by
   r.published desc
-limit 10
+limit 10;
 ```
 
 Note: This example joins with the `rss_item` column provided by the [RSS](https://hub.steampipe.io/plugins/turbot/rss) plugin.

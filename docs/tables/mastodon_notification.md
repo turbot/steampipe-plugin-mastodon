@@ -82,5 +82,5 @@ from
   notifications n
   join mastodon_relationship r on r.id = n.account_id
 order by
-  n.created_at desc
+  n.created_at desc;
 ```

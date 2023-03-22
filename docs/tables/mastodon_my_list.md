@@ -74,5 +74,5 @@ toots_for_list as (
 select
   *
 from
-  toots_for_list
+  toots_for_list;
 ```

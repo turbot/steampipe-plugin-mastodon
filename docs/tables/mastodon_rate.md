@@ -25,6 +25,5 @@ select
 from
   mastodon_rate
 where
-  _ctx ->> 'connection_name' = 'fosstodon'
+  _ctx ->> 'connection_name' = 'fosstodon';
 ```
-

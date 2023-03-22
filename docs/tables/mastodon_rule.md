@@ -13,7 +13,7 @@ select
 from
   mastodon_rule
 order by
-  id::int
+  id::int;
 ```
 
 ### Query rules for another server
