@@ -42,6 +42,6 @@ from
 join
   mastodon_account a
 on
-  a.id = t.in_reply_to_account_id
+  a.id = t.in_reply_to_account_id;
 ```
 
