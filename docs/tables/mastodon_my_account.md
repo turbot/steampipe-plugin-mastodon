@@ -34,5 +34,5 @@ from
   feed_link f
 join
    rss_item r
-using (feed_link)
+using (feed_link);
 ```
