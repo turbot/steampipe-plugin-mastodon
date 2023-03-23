@@ -14,26 +14,18 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
-### Go Patch ###
-/vendor/
-/Godeps/
+# Ignore JetBrains files
+.idea
 
-### VisualStudioCode ###
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-*.code-workspace
+# Ignore swap files
+*.swo
+*.swp
 
-### VisualStudioCode Patch ###
-# Ignore all local history of files
-.history
-.ionide
+# Ignore Desktop Services Store files
+.DS_Store
 
-# Output Binary
-steampipe-plugin-freshservice
-steampipe-plugin-freshservice.plugin
+# Ignore node dependencies
+node_modules
 
-# Goland
-.idea/
+# Ignore file types
+.vscode/
