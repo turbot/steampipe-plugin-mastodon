@@ -16,7 +16,7 @@ steampipe plugin install mastodon
 
 | Item        | Description                                                                                                                                                                                                             |
 |-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Credentials | Mastodon requires an [Access token](https://docs.joinmastodon.org/client/token/). |
+| Credentials | All API requests require a Mastodon [Access Token](https://docs.joinmastodon.org/client/token/).                                                                                                                        |
 | Permissions | API tokens have the same permissions as the user who creates them, and if the user permissions change, the API token permissions also change.                                                                           |
 | Radius      | Each connection represents a single Mastodon installation.                                                                                                                                                              |
 | Resolution  | 1. Credentials explicitly set in a steampipe config file (`~/.steampipe/config/mastodon.spc`)<br />                                                                                                                     |
@@ -45,7 +45,7 @@ connection "mastodon" {
 }
 ```
 
-- `access_token` - The API key to access the Mastodon API. This is required while querying all the tables except `mastodon_rule`, `mastodon_peer`, `mastodon_server`, `mastodon_weekly_activity`, and `mastodon_domain_block` tables.
+- `access_token` - The token to access the Mastodon APIs. This is required while querying all the tables except `mastodon_rule`, `mastodon_peer`, `mastodon_server`, `mastodon_weekly_activity`, and `mastodon_domain_block` tables.
 
 ## Developing
 

@@ -56,9 +56,9 @@ steampipe plugin install mastodon
 
 | Item        | Description                                                                                                                                                                                                             |
 |-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Credentials | Mastodon requires an [API token](https://docs.joinmastodon.org/client/token/) for most of the tables, except mastodon_rule, mastodon_peer, mastodon_server, mastodon_weekly_activity, and mastodon_domain_block tables. |
+| Credentials | All API requests require a Mastodon [Access Token](https://docs.joinmastodon.org/client/token/).                                                                                                                        |
 | Permissions | API tokens have the same permissions as the user who creates them, and if the user permissions change, the API token permissions also change.                                                                           |
-| Radius      | Each connection represents a single Mastodon Installation.                                                                                                                                                              |
+| Radius      | Each connection represents a single Mastodon installation.                                                                                                                                                              |
 | Resolution  | 1. Credentials explicitly set in a steampipe config file (`~/.steampipe/config/mastodon.spc`)<br />                                                                                                                     |
 
 ### Configuration
@@ -74,7 +74,7 @@ connection "mastodon" {
 
     # `access_token` (required) - Get your access token by going to your Mastodon server, then: Settings -> Development -> New Application
     # Refer to this page for more details: https://docs.joinmastodon.org/client/token
-    # access_token = "FK1_gBrl7b2sPOSADhx61-uvagzv9EDuMrXuc5AlcNU"
+    # access_token = "FK1_gBrl7b9sPOSADhx61-uvagzv9EDuMrXuc1AlcNU"
 
     # `app` (optional) - Allows you to follow links to Elk instead of stock client
     # app = "elk.zone"
@@ -84,6 +84,8 @@ connection "mastodon" {
     # max_toots = 1000
 }
 ```
+
+- `access_token` - The token to access the Mastodon APIs. This is required while querying all the tables except `mastodon_rule`, `mastodon_peer`, `mastodon_server`, `mastodon_weekly_activity`, and `mastodon_domain_block` tables.
 
 ## Get involved
 
