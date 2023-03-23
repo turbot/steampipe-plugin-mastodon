@@ -2,24 +2,16 @@ package mastodon
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"net/http"
 
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-type mastodonRule struct {
-	Server string `json:"server"`
-	ID     string `json:"id"`
-	Text   string `json:"text"`
-}
-
 func tableMastodonRule() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_rule",
+		Name:        "mastodon_rule",
+		Description: "Represents a rule that server users should follow.",
 		List: &plugin.ListConfig{
 			Hydrate: listRule,
 			KeyColumns: []*plugin.KeyColumn{
@@ -39,6 +31,7 @@ func ruleColumns() []*plugin.Column {
 			Name:        "server",
 			Type:        proto.ColumnType_STRING,
 			Description: "Server to which rules apply.",
+			Transform:   transform.FromQual("server"),
 		},
 		{
 			Name:        "id",
@@ -55,35 +48,21 @@ func ruleColumns() []*plugin.Column {
 }
 
 func listRule(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	config := GetConfig(d.Connection)
-	server := *config.Server
-	serverQual := d.EqualsQualString("server")
-	if serverQual != "" {
-		server = serverQual
-	}
-	client := &http.Client{}
-	url := fmt.Sprintf("%s/api/v1/instance/rules", server)
-	plugin.Logger(ctx).Debug("listRule", "url", url)
-	req, _ := http.NewRequest("GET", url, nil)
-	res, err := client.Do(req)
+	logger := plugin.Logger(ctx)
+
+	client, err := connect(ctx, d)
 	if err != nil {
-		return nil, nil
+		logger.Error("mastodon_rule.listMastodonRule", "connect_error", err)
+		return nil, err
 	}
-	var rules []mastodonRule
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
-	err = decoder.Decode(&rules)
+
+	rules, err := client.GetRules(ctx)
 	if err != nil {
-		plugin.Logger(ctx).Error(err.Error())
-		return nil, nil
+		logger.Error("mastodon_rule.listMastodonRule", "query_error", err)
+		return nil, err
 	}
 	for _, rule := range rules {
-		r := mastodonRule{
-			Server: server,
-			ID:     rule.ID,
-			Text:   rule.Text,
-		}
-		d.StreamListItem(ctx, r)
+		d.StreamListItem(ctx, rule)
 	}
 
 	return nil, nil

@@ -7,31 +7,111 @@ import (
 	"strings"
 
 	"github.com/mattn/go-mastodon"
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 func tableMastodonAccount() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_account",
+		Name:        "mastodon_account",
+		Description: "Represents mastodon accounts.",
 		List: &plugin.ListConfig{
-			Hydrate:    listAccount,
+			Hydrate:    getAccount,
 			KeyColumns: plugin.SingleColumn("id"),
 		},
 		Columns: accountColumns(),
 	}
 }
 
-func listAccount(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func baseAccountColumns() []*plugin.Column {
+	return []*plugin.Column{
+		{
+			Name:        "acct",
+			Type:        proto.ColumnType_STRING,
+			Description: "username@server for the account.",
+		},
+		{
+			Name:        "created_at",
+			Type:        proto.ColumnType_TIMESTAMP,
+			Description: "Timestamp when the account was created.",
+		},
+		{
+			Name:        "url",
+			Type:        proto.ColumnType_STRING,
+			Description: "URL for the account.",
+		},
+		{
+			Name:        "instance_qualified_account_url",
+			Type:        proto.ColumnType_STRING,
+			Description: "Account URL prefixed with my instance.",
+			Transform:   transform.FromValue().Transform(instanceQualifiedAccountUrl),
+		},
+		{
+			Name:        "username",
+			Type:        proto.ColumnType_STRING,
+			Description: "Username for the account.",
+		},
+		{
+			Name:        "server",
+			Type:        proto.ColumnType_STRING,
+			Description: "Server for the account.",
+			Transform:   transform.FromValue().Transform(accountServerFromAccount),
+		},
+		{
+			Name:        "display_name",
+			Type:        proto.ColumnType_STRING,
+			Description: "Display name for the account.",
+		},
+		{
+			Name:        "followers_count",
+			Type:        proto.ColumnType_INT,
+			Description: "Number of followers for the account.",
+		},
+		{
+			Name:        "following_count",
+			Type:        proto.ColumnType_INT,
+			Description: "Number of accounts this account follows.",
+		},
+		{
+			Name:        "statuses_count",
+			Type:        proto.ColumnType_INT,
+			Description: "Toots from this account.",
+		},
+		{
+			Name:        "note",
+			Type:        proto.ColumnType_STRING,
+			Description: "Description of the account.",
+			Transform:   transform.FromValue().Transform(sanitizeNote),
+		},
+	}
+}
+
+func accountColumns() []*plugin.Column {
+	additionalColumns := []*plugin.Column{
+		{
+			Name:        "id",
+			Type:        proto.ColumnType_STRING,
+			Description: "ID of the account.",
+		},
+	}
+	return append(additionalColumns, baseAccountColumns()...)
+}
+
+func getAccount(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+
 	client, err := connect(ctx, d)
 	if err != nil {
-		return nil, fmt.Errorf("unable to establish a connection: %v", err)
+		logger.Error("mastodon_account.getAccount", "connect_error", err)
+		return nil, err
 	}
 
 	id := d.EqualsQualString("id")
 
 	account, err := client.GetAccount(ctx, mastodon.ID(id))
 	if err != nil {
+		logger.Error("mastodon_account.getAccount", "query_error", err)
 		return nil, err
 	}
 	d.StreamListItem(ctx, account)

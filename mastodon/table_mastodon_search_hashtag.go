@@ -2,8 +2,8 @@ package mastodon
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
@@ -11,7 +11,8 @@ import (
 
 func tableMastodonSearchHashtag() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_search_hashtag",
+		Name:        "mastodon_search_hashtag",
+		Description: "Represents a hashtag matching a search term.",
 		List: &plugin.ListConfig{
 			Hydrate:    listHashtag,
 			KeyColumns: plugin.SingleColumn("query"),
@@ -47,26 +48,51 @@ func hashtagColumns() []*plugin.Column {
 }
 
 func searchHashtag(query string, ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
 	client, err := connect(ctx, d)
 	if err != nil {
-		return nil, fmt.Errorf("unable to establish a connection: %v", err)
-	}
-
-	results, err := client.Search(ctx, query, true)
-	if err != nil {
+		logger.Error("mastodon_search_hashtag.listHashtag", "connect_error", err)
 		return nil, err
 	}
 
-	hashtags := results.Hashtags
-	for _, activity := range hashtags {
-		d.StreamListItem(ctx, activity)
+	offset := 0
+	limit := 20
+	if d.QueryContext.Limit != nil {
+		pgLimit := int(*d.QueryContext.Limit)
+		if pgLimit < limit {
+			limit = pgLimit
+		}
 	}
 
+	for {
+		results, err := client.Search(ctx, query, "hashtags", false, false, "", false, &mastodon.Pagination{
+			Limit:  int64(limit),
+			Offset: int64(offset),
+		})
+		if err != nil {
+			logger.Error("mastodon_search_hashtag.listHashtag", "query_error", err)
+			return nil, err
+		}
+
+		hashtags := results.Hashtags
+		for _, activity := range hashtags {
+			d.StreamListItem(ctx, activity)
+			if d.RowsRemaining(ctx) == 0 {
+				return nil, nil
+			}
+		}
+
+		if len(hashtags) == 0 {
+			break
+		}
+		offset += limit
+	}
 	return nil, nil
 }
 
 func listHashtag(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
 	query := d.EqualsQualString("query")
-	plugin.Logger(ctx).Debug("searchHashtag", "quals", d.Quals, "query", query)
+	logger.Debug("mastodon_search_hashtag.searchHashtag", "quals", d.Quals, "query", query)
 	return searchHashtag(query, ctx, d, h)
 }

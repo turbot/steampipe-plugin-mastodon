@@ -2,18 +2,15 @@ package mastodon
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"net/http"
 
-	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
 
 func tableMastodonRelationship() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_relationship",
+		Name:        "mastodon_relationship",
+		Description: "Represents the relationship between accounts.",
 		List: &plugin.ListConfig{
 			Hydrate:    listRelationships,
 			KeyColumns: plugin.SingleColumn("id"),
@@ -77,43 +74,24 @@ func relationshipColumns() []*plugin.Column {
 	}
 }
 
-// This is a workaround for the upstream SDK's https://pkg.go.dev/github.com/mattn/go-mastodon#Client.GetAccountRelationships
-//
-//  It seems that although the URL for multiple IDS is correctly formed as `id[]=1&id[]=2` only the first item
-//  is returned. For my purposes, I only need one at at time so I could use the SDK function, but this is here because
-//  I originally had a version that takes and returns multiple and might need it again.
-
 func listRelationships(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	config := GetConfig(d.Connection)
-	token := *config.AccessToken
-	server := *config.Server
+	logger := plugin.Logger(ctx)
+
+	client, err := connect(ctx, d)
+	if err != nil {
+		logger.Error("mastodon_relationship.listRelationships", "connect_error", err)
+		return nil, err
+	}
 
 	id := d.EqualsQualString("id")
-	plugin.Logger(ctx).Debug("relationships", "id", id)
-
-	url := fmt.Sprintf("%s/api/v1/accounts/relationships?id[]=%s", server, id)
-	plugin.Logger(ctx).Debug("relationships", "url", url)
-	httpClient := &http.Client{}
-	req, err := http.NewRequest("GET", url, nil)
+	relationships, err := client.GetAccountRelationships(ctx, []string{id})
 	if err != nil {
-		fmt.Println(err)
+		logger.Error("mastodon_relationship.listRelationships", "query_error", err)
+		return nil, err
 	}
-	req.Header.Set("Authorization", "Bearer "+token)
-	res, err := httpClient.Do(req)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
-	var relationships []mastodon.Relationship
-	err = decoder.Decode(&relationships)
-	if err != nil {
-		fmt.Println(err)
-	}
-	plugin.Logger(ctx).Debug("relationships", "id", id, "relationship", relationships)
-	if len(relationships) > 0 {
-		d.StreamListItem(ctx, relationships[0])
+	for _, relationship := range relationships {
+		d.StreamListItem(ctx, relationship)
 	}
 
-	return nil, nil
+	return relationships, nil
 }

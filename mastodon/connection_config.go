@@ -11,7 +11,10 @@ type PluginConfig struct {
 	Server      *string `cty:"server"`
 	AccessToken *string `cty:"access_token"`
 	App         *string `cty:"app"`
+	MaxToots    *int    `cty:"max_toots"`
 }
+
+var default_max_toots = 1000
 
 var ConfigSchema = map[string]*schema.Attribute{
 	"server": {
@@ -22,6 +25,9 @@ var ConfigSchema = map[string]*schema.Attribute{
 	},
 	"app": {
 		Type: schema.TypeString,
+	},
+	"max_toots": {
+		Type: schema.TypeInt,
 	},
 }
 
@@ -35,9 +41,15 @@ func GetConfig(connection *plugin.Connection) PluginConfig {
 	}
 
 	config, _ := connection.Config.(PluginConfig)
+
+	if config.MaxToots == nil {
+		config.MaxToots = &default_max_toots
+	}
+
 	if homeServer == "" {
 		homeServer = *config.Server
 		schemelessHomeServer = strings.ReplaceAll(homeServer, "https://", "")
+
 		if config.App != nil {
 			app = *config.App
 		} else {

@@ -2,14 +2,16 @@ package mastodon
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 func tableMastodonSearchAccount() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_search_account",
+		Name:        "mastodon_search_account",
+		Description: "Represents an account matching a search term.",
 		List: &plugin.ListConfig{
 			Hydrate: listSearchAccount,
 			KeyColumns: []*plugin.KeyColumn{
@@ -19,30 +21,66 @@ func tableMastodonSearchAccount() *plugin.Table {
 				},
 			},
 		},
-		Columns: accountColumns(),
+		Columns: accountSearchColumns(),
 	}
 }
 
+func accountSearchColumns() []*plugin.Column {
+	additionalColumns := []*plugin.Column{
+		{
+			Name:        "query",
+			Type:        proto.ColumnType_STRING,
+			Description: "Query used to search hashtags.",
+			Transform:   transform.FromQual("query"),
+		},
+	}
+	return append(accountColumns(), additionalColumns...)
+}
+
 func searchAccount(query string, ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
+
 	client, err := connect(ctx, d)
 	if err != nil {
-		return nil, fmt.Errorf("unable to establish a connection: %v", err)
-	}
-
-	results, err := client.Search(ctx, query, true)
-	if err != nil {
+		logger.Error("mastodon_search_account.listSearchAccount", "connect_error", err)
 		return nil, err
 	}
 
-	for _, activity := range results.Accounts {
-		d.StreamListItem(ctx, activity)
+	offset := 0
+	limit := 40
+	if d.QueryContext.Limit != nil {
+		pgLimit := int(*d.QueryContext.Limit)
+		if pgLimit < limit {
+			limit = pgLimit
+		}
+	}
+
+	for {
+		accounts, err := client.AccountsSearch(ctx, query, int64(limit), int64(offset), false, false)
+		if err != nil {
+			logger.Error("mastodon_search_account.listSearchAccount", "query_error", err)
+			return nil, err
+		}
+
+		for _, account := range accounts {
+			d.StreamListItem(ctx, account)
+			if d.RowsRemaining(ctx) == 0 {
+				return nil, nil
+			}
+		}
+
+		if len(accounts) == 0 {
+			break
+		}
+		offset += limit
 	}
 
 	return nil, nil
 }
 
 func listSearchAccount(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
 	query := d.EqualsQualString("query")
-	plugin.Logger(ctx).Debug("searchAccount", "quals", d.Quals, "query", query)
+	logger.Debug("mastodon_search_account.searchAccount", "quals", d.Quals, "query", query)
 	return searchAccount(query, ctx, d, h)
 }

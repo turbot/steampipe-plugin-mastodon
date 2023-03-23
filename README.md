@@ -1,14 +1,58 @@
 # Mastodon plugin for Steampipe
 
-Use SQL to instantly query Mastodon timelines and more. Open source CLI. No DB  required.
+Use SQL to instantly query Mastodon timelines, accounts, followers and more. Open source CLI. No DB  required.
 
 ## Quick start
+
+### Install
+
+Download and install the latest Mastodon plugin:
+
+```bash
+steampipe plugin install mastodon
+```
+
+### Credentials
+
+| Item        | Description                                                                                                                                                                                                             |
+|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Credentials | Mastodon requires an [API token](https://docs.joinmastodon.org/client/token/). |
+| Permissions | API tokens have the same permissions as the user who creates them, and if the user permissions change, the API token permissions also change.                                                                           |
+| Radius      | Each connection represents a single Mastodon Installation.                                                                                                                                                              |
+| Resolution  | 1. Credentials explicitly set in a steampipe config file (`~/.steampipe/config/mastodon.spc`)<br />                                                                                                                     |
+
+### Configuration
+
+Installing the latest mastodon plugin will create a config file (`~/.steampipe/config/mastodon.spc`) with a single connection named `mastodon`:
+
+```hcl
+connection "mastodon" {
+    plugin = "mastodon"
+
+    # `server` (required) - The federated server your account lives. Ex: mastodon.social, nerdculture.de, etc
+    # server = "https://myserver.social"
+
+    # `access_token` (required) - Get your access token by going to your Mastodon server, then: Settings -> Development -> New Application
+    # Refer to this page for more details: https://docs.joinmastodon.org/client/token
+    # access_token = "FK1_gBrl7b2sPOSADhx61-uvagzv9EDuMrXuc5AlcNU"
+
+    # `app` (optional) - Allows you to follow links to Elk instead of stock client
+    # app = "elk.zone"
+
+    # `max_toots` (optional) - Defines the maximum number of toots to list in the mastodon toot tables.
+    # If not set, the default is 1000. To avoid limiting, set max_toots = -1
+    # max_toots = 1000
+}
+```
+
+- `access_token` - The API key to access the Mastodon API. This is required while querying all the tables except `mastodon_rule`, `mastodon_peer`, `mastodon_server`, `mastodon_weekly_activity`, and `mastodon_domain_block` tables.
+
+## Developing
 
 Prerequisites:
 
 - [Steampipe](https://steampipe.io/downloads)
 - [Golang](https://golang.org/doc/install)
-- An account on a Mastodon server
 
 Clone:
 
@@ -27,33 +71,26 @@ Configure the plugin:
 
 ```
 cp config/* ~/.steampipe/config
+vi ~/.steampipe/config/mastodon.spc
 ```
 
-Then edit `~/.steampipe/config/mastodon.spc`, add your server's URL and the access token from the Mastodon app you created.
-
-```
-connection "myserver_social" {
-    plugin = "mastodon"
-    server = "https://myserver.social"    # my_server is mastodon.social, nerdculture.de, etc
-    access_token = "ABC...mytoken...XYZ"  # find token at https://myserver.social/settings/applications
-}
-```
-
-View available tables:
+Try it!
 
 ```
 steampipe query
 > .inspect mastodon
 ```
 
-Try some sample queries.
-
-- [mastodon_toot](./docs/tables/mastodon_toot.md)
-- [mastodon_list](./docs/tables/mastodon_list.md)
-- [mastodon_following](./docs/tables/mastodon_following.md)
-- [mastodon_notification](./docs/tables/mastodon_notification.md)
-
 Further reading:
 
 - [Writing plugins](https://steampipe.io/docs/develop/writing-plugins)
 - [Writing your first table](https://steampipe.io/docs/develop/writing-your-first-table)
+
+## Contributing
+
+Please see the [contribution guidelines](https://github.com/turbot/steampipe/blob/main/CONTRIBUTING.md) and our [code of conduct](https://github.com/turbot/steampipe/blob/main/CODE_OF_CONDUCT.md). All contributions are subject to the [Apache 2.0 open source license](https://github.com/turbot/steampipe-plugin-mastodon/blob/main/LICENSE).
+
+`help wanted` issues:
+
+- [Steampipe](https://github.com/turbot/steampipe/labels/help%20wanted)
+- [Mastodon Plugin](https://github.com/turbot/steampipe-plugin-mastodon/labels/help%20wanted)

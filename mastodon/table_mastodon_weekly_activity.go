@@ -2,9 +2,6 @@ package mastodon
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"net/http"
 	"strconv"
 	"time"
 
@@ -15,7 +12,8 @@ import (
 
 func tableMastodonWeeklyActivity() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_weekly_activity",
+		Name:        "mastodon_weekly_activity",
+		Description: "Represents a weekly activity stats of a Mastodon server.",
 		List: &plugin.ListConfig{
 			Hydrate: listWeeklyActivity,
 			KeyColumns: []*plugin.KeyColumn{
@@ -29,20 +27,13 @@ func tableMastodonWeeklyActivity() *plugin.Table {
 	}
 }
 
-type mastodonWeeklyActivity struct {
-	Server        string `json:"server"`
-	Week          string `json:"week"`
-	Statuses      string `json:"statuses"`
-	Logins        string `json:"logins"`
-	Registrations string `json:"registrations"`
-}
-
 func weeklyActivityColumns() []*plugin.Column {
 	return []*plugin.Column{
 		{
 			Name:        "server",
 			Type:        proto.ColumnType_STRING,
 			Description: "Server whose activity is reported.",
+			Transform:   transform.FromQual("server"),
 		},
 		{
 			Name:        "week",
@@ -69,35 +60,22 @@ func weeklyActivityColumns() []*plugin.Column {
 }
 
 func listWeeklyActivity(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	config := GetConfig(d.Connection)
-	server := *config.Server
-	serverQual := d.EqualsQualString("server")
-	if serverQual != "" {
-		server = serverQual
-	}
-	client := &http.Client{}
-	url := fmt.Sprintf("%s/api/v1/instance/activity", server)
-	plugin.Logger(ctx).Debug("listWeeklyActivity", "url", url)
-	req, _ := http.NewRequest("GET", url, nil)
-	res, _ := client.Do(req)
-	var activities []mastodonWeeklyActivity
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
-	err := decoder.Decode(&activities)
+	logger := plugin.Logger(ctx)
+
+	client, err := connect(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error(err.Error())
-	}
-	for _, activity := range activities {
-		a := mastodonWeeklyActivity{
-			Server:        server,
-			Week:          activity.Week,
-			Statuses:      activity.Statuses,
-			Logins:        activity.Logins,
-			Registrations: activity.Registrations,
-		}
-		d.StreamListItem(ctx, a)
+		logger.Error("mastodon_rule.listWeeklyActivity", "connect_error", err)
+		return nil, err
 	}
 
+	activities, err := client.GetInstanceActivity(ctx)
+	if err != nil {
+		logger.Error("mastodon_rule.listWeeklyActivity", "query_error", err)
+		return nil, err
+	}
+	for _, rule := range activities {
+		d.StreamListItem(ctx, rule)
+	}
 	return nil, nil
 }
 

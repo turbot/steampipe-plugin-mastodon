@@ -2,22 +2,16 @@ package mastodon
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"net/http"
 
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
-type mastodonPeer struct {
-	Server string `json:"server"`
-	Name   string `json:"peer"`
-}
-
-func tablemastodonPeer() *plugin.Table {
+func tableMastodonPeer() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_peer",
+		Name:        "mastodon_peer",
+		Description: "Represents a neighbor Mastodon server that your server is connected to.",
 		List: &plugin.ListConfig{
 			Hydrate: listPeers,
 			KeyColumns: []*plugin.KeyColumn{
@@ -37,40 +31,33 @@ func peerColumns() []*plugin.Column {
 			Name:        "server",
 			Type:        proto.ColumnType_STRING,
 			Description: "Server that is the peer origin.",
+			Transform:   transform.FromQual("server"),
 		},
 		{
 			Name:        "peer",
 			Type:        proto.ColumnType_STRING,
 			Description: "Domain of a Mastodon peer.",
+			Transform:   transform.FromValue(),
 		},
 	}
 }
 
 func listPeers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	config := GetConfig(d.Connection)
-	server := *config.Server
-	serverQual := d.EqualsQualString("server")
-	if serverQual != "" {
-		server = serverQual
-	}
-	client := &http.Client{}
-	url := fmt.Sprintf("%s/api/v1/instance/peers", server)
-	plugin.Logger(ctx).Debug("listPeers", "url", url)
-	req, _ := http.NewRequest("GET", url, nil)
-	res, _ := client.Do(req)
-	var peers []string
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
-	err := decoder.Decode(&peers)
+	logger := plugin.Logger(ctx)
+
+	client, err := connect(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error(err.Error())
+		logger.Error("mastodon_peer.listPeers", "connect_error", err)
+		return nil, err
+	}
+
+	peers, err := client.GetInstancePeers(ctx)
+	if err != nil {
+		logger.Error("mastodon_peer.listPeers", "query_error", err)
+		return nil, err
 	}
 	for _, peer := range peers {
-		p := mastodonPeer{
-			Server: server,
-			Name:   peer,
-		}
-		d.StreamListItem(ctx, p)
+		d.StreamListItem(ctx, peer)
 	}
 
 	return nil, nil

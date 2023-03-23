@@ -1,17 +1,38 @@
 # Table: mastodon_relationship
 
-List relationship details for Mastodon accounts
+Represents the relationship between accounts.
+
+The `mastodon_relationship` table can be used to query information about any account relationship, and **you must specify the id** in the where or join clause using the `id` column.
 
 ## Examples
 
-### Relationship details for accounts I follow
+### My relationships to a particular account ID
+
+```sql
+select
+  following,
+  followed_by,
+  showing_reblogs,
+  blocking,
+  muting,
+  muting_notifications,
+  requested,
+  domain_blocking,
+  endorsed
+from
+  mastodon_relationship
+where
+  id = '1';
+```
+
+### Relationship details for the earliest accounts I follow
 
 ```sql
 with following as (
   select
     *
   from
-    mastodon_following
+    mastodon_my_following
   where
     created_at < date('2017-01-01')
 )
@@ -27,5 +48,5 @@ join
 on
   f.id = m.id
 order by
-  created_at
+  created_at;
 ```

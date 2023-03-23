@@ -2,40 +2,69 @@ package mastodon
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/mattn/go-mastodon"
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 func tableMastodonListAccount() *plugin.Table {
 	return &plugin.Table{
-		Name: "mastodon_list_account",
+		Name:        "mastodon_list_account",
+		Description: "Represents an account of a list of yours.",
 		List: &plugin.ListConfig{
-			Hydrate:    listListAccount,
+			Hydrate:    listListAccounts,
 			KeyColumns: plugin.SingleColumn("list_id"),
 		},
-		Columns: accountColumns(),
+		Columns: listAccountColumns(),
 	}
 }
 
-func listListAccount(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	plugin.Logger(ctx).Debug("listListAccount")
+func listAccountColumns() []*plugin.Column {
+	additionalColumns := []*plugin.Column{
+		{
+			Name:        "list_id",
+			Type:        proto.ColumnType_STRING,
+			Description: "List ID for account.",
+			Transform:   transform.FromQual("list_id"),
+		},
+	}
+	return append(accountColumns(), additionalColumns...)
+}
+
+func listListAccounts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
 	client, err := connect(ctx, d)
 	if err != nil {
-		return nil, fmt.Errorf("unable to establish a connection: %v", err)
+		logger.Error("mastodon_list_account.listListAccounts", "connect_error", err)
+		return nil, err
 	}
 
 	listId := d.EqualsQualString("list_id")
 
-	accounts, err := client.GetListAccounts(ctx, mastodon.ID(listId))
-	if err != nil {
-		return nil, err
-	}
+	pg := mastodon.Pagination{}
+	for {
+		accounts, err := client.GetListAccounts(ctx, mastodon.ID(listId), &pg)
+		if err != nil {
+			logger.Error("mastodon_list_account.listListAccounts", "query_error", err)
+			return nil, err
+		}
 
-	for i, account := range accounts {
-		plugin.Logger(ctx).Debug("listListAccount", "i", i, "account", account)
-		d.StreamListItem(ctx, account)
+		for _, account := range accounts {
+			d.StreamListItem(ctx, account)
+		}
+
+		if pg.MaxID == "" {
+			break
+		}
+
+		// Set next page
+		maxId := pg.MaxID
+		logger.Warn("maxId", maxId)
+		pg = mastodon.Pagination{
+			MaxID: maxId,
+		}
 	}
 
 	return nil, nil
