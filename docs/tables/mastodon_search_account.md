@@ -2,6 +2,8 @@
 
 Represents an account matching a search term.
 
+The `mastodon_search_account` table can be used to query information about any search account, and **you must specify the query** in the where or join clause using the `query` column.
+
 ## Examples
 
 ### Search for accounts matching `alice`

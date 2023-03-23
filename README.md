@@ -4,25 +4,48 @@ Use SQL to instantly query Mastodon timelines, accounts, followers and more. Ope
 
 ## Quick start
 
-Install the plugin with [Steampipe](https://steampipe.io):
+### Install
 
-```shell
+Download and install the latest Mastodon plugin:
+
+```bash
 steampipe plugin install mastodon
 ```
 
-Run a query:
+### Credentials
 
-```sql
-select
-    created_at,
-    username,
-    url,
-    content
-from
-    mastodon_toot_home
-limit 
-    30;
+| Item        | Description                                                                                                                                                                                                             |
+|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Credentials | Mastodon requires an [API token](https://docs.joinmastodon.org/client/token/). |
+| Permissions | API tokens have the same permissions as the user who creates them, and if the user permissions change, the API token permissions also change.                                                                           |
+| Radius      | Each connection represents a single Mastodon Installation.                                                                                                                                                              |
+| Resolution  | 1. Credentials explicitly set in a steampipe config file (`~/.steampipe/config/mastodon.spc`)<br />                                                                                                                     |
+
+### Configuration
+
+Installing the latest mastodon plugin will create a config file (`~/.steampipe/config/mastodon.spc`) with a single connection named `mastodon`:
+
+```hcl
+connection "mastodon" {
+    plugin = "mastodon"
+
+    # `server` (required) - The federated server your account lives. Ex: mastodon.social, nerdculture.de, etc
+    # server = "https://myserver.social"
+
+    # `access_token` (required) - Get your access token by going to your Mastodon server, then: Settings -> Development -> New Application
+    # Refer to this page for more details: https://docs.joinmastodon.org/client/token
+    # access_token = "FK1_gBrl7b2sPOSADhx61-uvagzv9EDuMrXuc5AlcNU"
+
+    # `app` (optional) - Allows you to follow links to Elk instead of stock client
+    # app = "elk.zone"
+
+    # `max_toots` (optional) - Defines the maximum number of toots to list in the mastodon toot tables.
+    # If not set, the default is 1000. To avoid limiting, set max_toots = -1
+    # max_toots = 1000
+}
 ```
+
+- `access_token` - The API key to access the Mastodon API. This is required while querying all the tables except `mastodon_rule`, `mastodon_peer`, `mastodon_server`, `mastodon_weekly_activity`, and `mastodon_domain_block` tables.
 
 ## Developing
 

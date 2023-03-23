@@ -1,6 +1,6 @@
 # Table: mastodon_weekly_activity
 
-Represents a weekly activity stats of a Mastodon server.
+Represents weekly activity stats of a Mastodon server.
 
 ## Examples
 
@@ -33,4 +33,3 @@ where
 order by
   week;
 ```
-

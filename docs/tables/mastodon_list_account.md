@@ -2,6 +2,8 @@
 
 Represents an account of a list of yours.
 
+The `mastodon_list_account` table can be used to query information about any account, and **you must specify the list_id** in the where or join clause using the `list_id` column.
+
 ## Examples
 
 ### List members of a Mastodon list
@@ -25,13 +27,12 @@ select
   a.display_name,
   a.server,
   a.followers_count,
-  a.following_count
+  a.following_count 
 from
-  mastodon_my_list l
-join
-  mastodon_list_account a
-on
-  l.id = a.list_id;
+  mastodon_my_list l 
+  join
+    mastodon_list_account a 
+    on l.id = a.list_id;
 ```
 
 ### Count how many of the accounts I follow are assigned (and not assigned) to lists
@@ -53,7 +54,7 @@ list_account_follows as (
     left join list_account using (id)
 )
 select
-  'follows listed' as label,
+  'Follows listed' as label,
   count(*)
 from
   list_account_follows
@@ -61,7 +62,7 @@ where
   list is not null
 union
 select
-  'follows unlisted' as label,
+  'Follows unlisted' as label,
   count(*)
 from
   list_account_follows

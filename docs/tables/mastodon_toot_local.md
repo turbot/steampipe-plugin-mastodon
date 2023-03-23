@@ -20,25 +20,24 @@ limit
 
 Note: Always use `limit` or the query will try to read the whole timeline (until `max_items` is reached).
 
-
 ### Hashtag frequency for recent toots on the local timeline
 
 ```sql
-with data as (
-   select
-      regexp_matches(content, '(#[^#\s]+)', 'g') as hashtag
-    from
-    mastodon_toot_local
-    limit 100
+with data as 
+(
+  select
+    regexp_matches(content, '(#[^#\s]+)', 'g') as hashtag 
+  from
+    mastodon_toot_local limit 100 
 )
 select
   hashtag,
-  count(*)
+  count(*) 
 from
-  data
+  data 
 group by
-  hashtag
+  hashtag 
 order by
-  count desc, hashtag;
+  count desc,
+  hashtag;
 ```
-

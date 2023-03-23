@@ -16,7 +16,6 @@ og_image: "/images/plugins/turbot/mastodon-social-graphic.png"
 
 [Steampipe](https://steampipe.io/) is an open source CLI for querying cloud APIs using SQL.
 
-
 For example:
 
 ```sql
@@ -43,7 +42,7 @@ where
 
 - **[Table definitions & examples →](/plugins/turbot/mastodon/tables)**
 
-## Get started
+## Quick start
 
 ### Install
 
@@ -71,11 +70,11 @@ connection "mastodon" {
     plugin = "mastodon"
 
     # `server` (required) - The federated server your account lives. Ex: mastodon.social, nerdculture.de, etc
-    server = "https://myserver.social"
+    # server = "https://myserver.social"
 
     # `access_token` (required) - Get your access token by going to your Mastodon server, then: Settings -> Development -> New Application
     # Refer to this page for more details: https://docs.joinmastodon.org/client/token
-    access_token = "FK1_gBrl7b2sPOSADhx61-uvagzv9EDuMrXuc5AlcNU"
+    # access_token = "FK1_gBrl7b2sPOSADhx61-uvagzv9EDuMrXuc5AlcNU"
 
     # `app` (optional) - Allows you to follow links to Elk instead of stock client
     # app = "elk.zone"

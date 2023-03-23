@@ -2,6 +2,8 @@
 
 Represents a hashtag matching a search term.
 
+The `mastodon_search_hashtag` table can be used to query information about any hashtag, and **you must specify the query** in the where or join clause using the `query` column.
+
 ## Examples
 
 ### Search for the hashtag `steampipe`
@@ -46,34 +48,43 @@ with data as (
 ### Enrich a hashtag search with details from the hashtag's RSS feed
 
 ```sql
-with data as (
+with data as 
+(
   select
     name,
-    url || '.rss' as feed_link
+    url || '.rss' as feed_link 
   from
-    mastodon_search_hashtag
+    mastodon_search_hashtag 
   where
-    query = 'python'
-  limit 1
+    query = 'python' limit 1 
 )
 select
   to_char(r.published, 'YYYY-MM-DD') as published,
   d.name as tag,
   (
-    select string_agg(trim(JsonString::text, '"'), ', ')
-    from jsonb_array_elements(r.categories) JsonString
-  ) as categories,
+    select
+      string_agg(trim(JsonString::text, '"'), ', ') 
+    from
+      jsonb_array_elements(r.categories) JsonString 
+  )
+  as categories,
   r.guid as link,
-  ( select content as toot from mastodon_search_toot where query = r.guid ) as content
+  (
+    select
+      content as toot 
+    from
+      mastodon_search_toot 
+    where
+      query = r.guid 
+  )
+  as content 
 from
-  data d
-join
-  rss_item r
-on
-  r.feed_link = d.feed_link
+  data d 
+  join
+    rss_item r 
+    on r.feed_link = d.feed_link 
 order by
-  r.published desc
-limit 10;
+  r.published desc limit 10;
 ```
 
 Note: This example joins with the `rss_item` column provided by the [RSS](https://hub.steampipe.io/plugins/turbot/rss) plugin.

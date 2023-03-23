@@ -2,6 +2,8 @@
 
 Represents a toot matching a search term.
 
+The `mastodon_search_toot` table can be used to query information about any hashtag, and **you must specify the query** in the where or join clause using the `query` column.
+
 ## Examples
 
 ### Search for 'twitter'

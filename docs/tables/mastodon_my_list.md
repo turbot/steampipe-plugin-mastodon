@@ -37,7 +37,7 @@ on
   l.id = a.list_id;
 ```
 
-### Lists toots by members of a list
+### List toots by members of a list
 
 ```sql
 with list_id as (

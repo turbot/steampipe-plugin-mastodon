@@ -1,6 +1,6 @@
 # Table: mastodon_peer
 
-Represents a neighbor Mastodon server your server is connected to.
+Represents a neighbor Mastodon server that your server is connected to.
 
 ## Examples
 
@@ -17,6 +17,7 @@ limit 10;
 ```
 
 ### Query peers of another Mastodon server
+
 ```sql
 select
   server,

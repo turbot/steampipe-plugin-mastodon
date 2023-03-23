@@ -46,6 +46,7 @@ order by
 ```
 
 ### Count my recent toots by day
+
 ```sql
 with data as (
   select

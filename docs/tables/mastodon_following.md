@@ -1,6 +1,8 @@
 # Table: mastodon_following
 
-Represents a user of Mastodon an account is following.
+Represents a user of Mastodon that an account is following.
+
+The `mastodon_following` table can be used to query information about any follower, and **you must specify the following_account_id** in the where or join clause using the `following_account_id` column.
 
 ## Examples
 

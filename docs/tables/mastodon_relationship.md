@@ -2,9 +2,11 @@
 
 Represents the relationship between accounts.
 
+The `mastodon_relationship` table can be used to query information about any account relationship, and **you must specify the id** in the where or join clause using the `id` column.
+
 ## Examples
 
-### My relationships to an `account_id`
+### My relationships to a particular account ID
 
 ```sql
 select

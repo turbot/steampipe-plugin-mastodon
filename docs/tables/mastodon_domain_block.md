@@ -1,6 +1,6 @@
 # Table: mastodon_domain_block
 
-Represents a domain blocked by a Mastodon server.
+Represents a domain that has been blocked by a Mastodon server.
 
 ## Examples
 
@@ -39,4 +39,3 @@ from
 group by
   severity;
 ```
-
