@@ -12,7 +12,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 	p := &plugin.Plugin{
 		Name:                     "steampipe-plugin-mastodon",
 		DefaultTransform:         transform.FromJSONTag(),
-		DefaultShouldIgnoreError: isNotFoundError([]string{"404"}),
+		DefaultShouldIgnoreError: isNotFoundError([]string{"403","404"}),
 		ConnectionConfigSchema: &plugin.ConnectionConfigSchema{
 			NewInstance: ConfigInstance,
 			Schema:      ConfigSchema,
