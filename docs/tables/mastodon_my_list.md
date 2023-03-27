@@ -19,9 +19,11 @@ from
 ```sql
 with author_ids as (
   select
-    acct ->> 'id'
+    account ->> 'id'
   from
     mastodon_toot_home
+  limit
+    40
 )
 select
   l.title,
