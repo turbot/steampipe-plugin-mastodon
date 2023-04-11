@@ -17,13 +17,14 @@ from
 ### Show lists associated with toot authors
 
 ```sql
-with author_ids as (
+with account_ids as (
   select
-    acct ->> 'id'
+    account ->> 'id' as id
   from
     mastodon_toot_home
+  limit 100
 )
-select
+select distinct
   l.title,
   a.display_name,
   a.server,
@@ -32,9 +33,9 @@ select
 from
   mastodon_my_list l
 join
-  mastodon_list_account a
-on
-  l.id = a.list_id;
+  mastodon_list_account a on l.id = a.list_id
+join
+  account_ids i on i.id = a.id;
 ```
 
 ### List toots by members of a list
