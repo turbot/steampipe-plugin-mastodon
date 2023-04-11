@@ -123,7 +123,12 @@ func accountServerFromAccount(ctx context.Context, input *transform.TransformDat
 	account := input.Value.(*mastodon.Account)
 	re := regexp.MustCompile(`https://(.+)/`)
 	matches := re.FindStringSubmatch(account.URL)
-	return matches[1], nil
+	if len(matches) > 0 {
+		return matches[1], nil
+	} else {
+		plugin.Logger(ctx).Debug("accountServerFromAccount fail", "account", account, "url", account.URL)
+		return "unknown", nil
+	}
 }
 
 func qualifiedAccountUrl(ctx context.Context, url string) string {
