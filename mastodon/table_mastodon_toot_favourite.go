@@ -69,13 +69,13 @@ func tootColumns() []*plugin.Column {
 		},
 		{
 			Name:        "followers",
-			Type:        proto.ColumnType_JSON,
+			Type:        proto.ColumnType_INT,
 			Description: "Follower count for toot author.",
 			Transform:   transform.FromField("Account.FollowersCount"),
 		},
 		{
 			Name:        "following",
-			Type:        proto.ColumnType_JSON,
+			Type:        proto.ColumnType_INT,
 			Description: "Following count for toot author.",
 			Transform:   transform.FromField("Account.FollowingCount"),
 		},
