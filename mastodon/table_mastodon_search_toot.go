@@ -101,7 +101,7 @@ func instanceQualifiedStatusUrl(ctx context.Context, input *transform.TransformD
 
 func instanceQualifiedReblogUrl(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	status := input.Value.(*mastodon.Status)
-	plugin.Logger(ctx).Debug("qualifiedReblogUrl", "status.Reblog", status.Reblog)
+	//plugin.Logger(ctx).Debug("qualifiedReblogUrl", "status.Reblog", status.Reblog)
 	if status.Reblog == nil {
 		return "", nil
 	}

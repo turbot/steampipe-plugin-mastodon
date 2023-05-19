@@ -45,25 +45,25 @@ func sanitizeContent(ctx context.Context, input *transform.TransformData) (inter
 }
 
 func qualifiedStatusUrl(ctx context.Context, url string, id string) (interface{}, error) {
-	logger := plugin.Logger(ctx)
+	//logger := plugin.Logger(ctx)
 
 	schemeLessStatusUrl := strings.ReplaceAll(url, "https://", "")
-	logger.Debug("qualifiedStatusUrl", "url", url)
+	//logger.Debug("qualifiedStatusUrl", "url", url)
 	if strings.HasPrefix(url, homeServer) {
 		if app == "" {
 			qualifiedStatusUrl := url
-			logger.Debug("qualifiedStatusUrl", "home server, no app, returning...", qualifiedStatusUrl)
+			//logger.Debug("qualifiedStatusUrl", "home server, no app, returning...", qualifiedStatusUrl)
 			return qualifiedStatusUrl, nil
 		} else {
 			qualifiedStatusUrl := fmt.Sprintf("https://%s/%s/", app, schemeLessStatusUrl)
-			logger.Debug("qualifiedStatusUrl", "home server, app, returning...", qualifiedStatusUrl)
+			//logger.Debug("qualifiedStatusUrl", "home server, app, returning...", qualifiedStatusUrl)
 			return qualifiedStatusUrl, nil
 		}
 	}
 	re := regexp.MustCompile(`https://([^/]+)/@(.+)/`)
 	matches := re.FindStringSubmatch(url)
 	if len(matches) == 0 {
-		logger.Debug("qualifiedStatusUrl", "no match for status.URL, returning", url)
+		//logger.Debug("qualifiedStatusUrl", "no match for status.URL, returning", url)
 		return url, nil
 	}
 	server := matches[1]
@@ -74,7 +74,7 @@ func qualifiedStatusUrl(ctx context.Context, url string, id string) (interface{}
 	} else {
 		qualifiedStatusUrl = fmt.Sprintf("https://%s/%s/@%s@%s/%s", app, schemelessHomeServer, person, server, id)
 	}
-	logger.Debug("qualifiedStatusUrl", "homeServer", homeServer, "server", server, "person", person, "id", id, "qualifiedStatusUrl", qualifiedStatusUrl)
+	//logger.Debug("qualifiedStatusUrl", "homeServer", homeServer, "server", server, "person", person, "id", id, "qualifiedStatusUrl", qualifiedStatusUrl)
 	return qualifiedStatusUrl, nil
 }
 
@@ -88,4 +88,81 @@ func isNotFoundError(notFoundErrors []string) plugin.ErrorPredicate {
 		}
 		return false
 	}
+}
+
+const (
+	TimelineHome int = iota
+	TimelineLocal
+)
+
+
+func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client, timelineType int, args ...interface{}) error {
+	var toots []*mastodon.Status
+	logger := plugin.Logger(ctx)
+
+	postgresLimit := d.QueryContext.GetLimit()
+	apiMaxPerPage := int64(40)
+	initialLimit := apiMaxPerPage
+	if postgresLimit > 0 && postgresLimit < apiMaxPerPage {
+		initialLimit = postgresLimit
+	}
+
+	pg := mastodon.Pagination{Limit: int64(initialLimit)}
+
+	maxToots := GetConfig(d.Connection).MaxToots
+
+	logger.Debug("paginate", "maxToots", *maxToots, "postgresLimit", postgresLimit, "initialLimit", initialLimit)
+
+	rowCount := 0
+	page := 0
+	var err error
+
+	for {
+		page++
+		logger.Debug("paginate", "pg", fmt.Sprintf("%+v", pg), "page", page)
+		switch timelineType {
+		case TimelineHome:
+			logger.Debug("paginate", "GetTimeLineHome", "call")
+			toots, err = client.GetTimelineHome(ctx, &pg)
+		case TimelineLocal:
+			isLocal := args[0].(bool)
+			logger.Debug("paginate", "GetTimeLinePublic", "call", "isLocal", isLocal)
+			toots, err = client.GetTimelinePublic(ctx, isLocal, &pg)
+		}
+		if err != nil {
+			logger.Error("paginate", "apiCall error", err)
+			return err
+		}
+		logger.Debug("paginate", "toots", len(toots))
+
+		for _, toot := range toots {
+			d.StreamListItem(ctx, toot)
+			rowCount++
+			if *maxToots > 0 && rowCount >= *maxToots {
+				logger.Debug("paginate", "max_toots limit reached", *maxToots)
+				return nil
+			}
+			// Context can be cancelled due to manual cancellation or the limit has been hit
+			if d.RowsRemaining(ctx) == 0 {
+				logger.Debug("paginate", "manual cancelation or limit hit, rows streamed: ", rowCount)
+				return nil
+			}
+		}
+
+		// Stop if last page
+		if int64(len(toots)) < apiMaxPerPage {
+			logger.Debug("paginate", "len(toots)) < apiMaxPerPage", rowCount)
+			break
+		}
+
+		// Set next page
+		maxId := pg.MaxID
+		pg = mastodon.Pagination{
+			Limit: int64(apiMaxPerPage),
+			MaxID: maxId,
+		}
+	}
+
+	logger.Debug("paginate", "done with rowCount", rowCount)
+	return nil
 }

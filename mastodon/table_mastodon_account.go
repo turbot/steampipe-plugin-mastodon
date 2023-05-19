@@ -131,12 +131,12 @@ func qualifiedAccountUrl(ctx context.Context, url string) string {
 	matches := re.FindStringSubmatch(url)
 	schemelessUrl := strings.ReplaceAll(url, "https://", "")
 	if len(matches) == 0 && app == "" {
-		plugin.Logger(ctx).Debug("qualifiedAccountUrl: no match, no app, returning", "url", url)
+		//plugin.Logger(ctx).Debug("qualifiedAccountUrl: no match, no app, returning", "url", url)
 		return url
 	}
 	if len(matches) == 0 && app != "" {
 		url = fmt.Sprintf("https://%s%s", app, schemelessUrl)
-		plugin.Logger(ctx).Debug("qualifiedAccountUrl: no match, app, returning", "url", url)
+		//plugin.Logger(ctx).Debug("qualifiedAccountUrl: no match, app, returning", "url", url)
 		return url
 	}
 	server := matches[1]
@@ -147,7 +147,7 @@ func qualifiedAccountUrl(ctx context.Context, url string) string {
 	}
 	qualifiedAccountUrl := fmt.Sprintf("https://%s/@%s@%s", prefixedSchemelessHomeServer, person, server)
 	qualifiedAccountUrl = strings.ReplaceAll(qualifiedAccountUrl, "@"+schemelessHomeServer, "")
-	plugin.Logger(ctx).Debug("qualifiedAccountUrl", "person", person, "server", server, "schemelessUrl", schemelessUrl, "schemelessHomeServer", schemelessHomeServer, "prefixedSchemelessHomeServer", prefixedSchemelessHomeServer, "qualifiedAccountUrl", qualifiedAccountUrl)
+	//plugin.Logger(ctx).Debug("qualifiedAccountUrl", "person", person, "server", server, "schemelessUrl", schemelessUrl, "schemelessHomeServer", schemelessHomeServer, "prefixedSchemelessHomeServer", prefixedSchemelessHomeServer, "qualifiedAccountUrl", qualifiedAccountUrl)
 	return qualifiedAccountUrl
 }
 
