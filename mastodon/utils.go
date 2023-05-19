@@ -119,14 +119,14 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 
 	for {
 		page++
-		logger.Debug("paginate", "pg", fmt.Sprintf("%+v", pg), "page", page)
+		logger.Debug("paginate", "pg", fmt.Sprintf("%+v", pg), "args", args, "page", page)
 		switch timelineType {
 		case TimelineHome:
 			logger.Debug("paginate", "GetTimeLineHome", "call")
 			toots, err = client.GetTimelineHome(ctx, &pg)
 		case TimelineLocal:
+			logger.Debug("paginate", "GetTimeLinePublic", "call")
 			isLocal := args[0].(bool)
-			logger.Debug("paginate", "GetTimeLinePublic", "call", "isLocal", isLocal)
 			toots, err = client.GetTimelinePublic(ctx, isLocal, &pg)
 		}
 		if err != nil {
