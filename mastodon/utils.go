@@ -91,27 +91,13 @@ func isNotFoundError(notFoundErrors []string) plugin.ErrorPredicate {
 }
 
 const (
-	TimelineHome int = iota
-	TimelineLocal
-	TimelineFederated
-	TimelineDirect
+	TimelineHome = "home"
+	TimelineLocal = "local"
+	TimelineFederated = "federated"
+	TimelineDirect = "direct"
 )
 
-func getTimelineName(timelineType int) string {
-	switch timelineType {
-	case TimelineHome:
-			return "Home"
-	case TimelineLocal:
-			return "Local"
-	case TimelineFederated:
-			return "Federated"
-	case TimelineDirect:
-			return "Direct"
-	}
-	return "Unknown timelineType"
-}
-
-func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client, timelineType int, args ...interface{}) error {
+func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client, timelineType string, args ...interface{}) error {
 	var toots []*mastodon.Status
 	logger := plugin.Logger(ctx)
 
@@ -126,7 +112,7 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 
 	maxToots := GetConfig(d.Connection).MaxToots
 
-	logger.Debug("paginate", "timelineType", getTimelineName(timelineType), "maxToots", *maxToots, "postgresLimit", postgresLimit, "initialLimit", initialLimit)
+	logger.Debug("paginate", "timelineType", timelineType, "maxToots", *maxToots, "postgresLimit", postgresLimit, "initialLimit", initialLimit)
 
 	rowCount := 0
 	page := 0
