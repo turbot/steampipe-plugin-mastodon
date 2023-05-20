@@ -91,16 +91,19 @@ func isNotFoundError(notFoundErrors []string) plugin.ErrorPredicate {
 }
 
 const (
-	TimelineMy = "my"
-	TimelineHome = "home"
-	TimelineLocal = "local"
-	TimelineFederated = "federated"
-	TimelineDirect = "direct"
-	TimelineFavourite = "favourite"
+	TimelineMy          = "my"
+	TimelineHome        = "home"
+	TimelineLocal       = "local"
+	TimelineFederated   = "federated"
+	TimelineDirect      = "direct"
+	TimelineFavourite   = "favourite"
+	TimelineMyFollowing = "my_following"
 )
 
-func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client, timelineType string, args ...interface{}) error {
+func paginateStatus(ctx context.Context, d *plugin.QueryData, client *mastodon.Client, timelineType string, args ...interface{}) error {
+
 	var toots []*mastodon.Status
+
 	logger := plugin.Logger(ctx)
 
 	postgresLimit := d.QueryContext.GetLimit()
@@ -117,7 +120,7 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 		*maxToots = int(postgresLimit)
 	}
 
-	logger.Debug("paginate", "timelineType", timelineType, "maxToots", *maxToots, "postgresLimit", postgresLimit, "initialLimit", initialLimit)
+	logger.Debug("paginateStatus", "timelineType", timelineType, "maxToots", *maxToots, "postgresLimit", postgresLimit, "initialLimit", initialLimit)
 
 	rowCount := 0
 	page := 0
@@ -125,53 +128,53 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 
 	for {
 		page++
-		logger.Debug("paginate", "pg", fmt.Sprintf("%+v", pg), "args", args, "page", page, "rowCount", rowCount)
+		logger.Debug("paginateStatus", "pg", fmt.Sprintf("%+v", pg), "args", args, "page", page, "rowCount", rowCount)
 		switch timelineType {
 		case TimelineHome:
-			logger.Debug("paginate", "GetTimeLineHome", "call")
+			logger.Debug("paginateStatus", "GetTimeLineHome", "call")
 			toots, err = client.GetTimelineHome(ctx, &pg)
 		case TimelineLocal:
-			logger.Debug("paginate", "GetTimeLinePublic", "call")
+			logger.Debug("paginateStatus", "GetTimeLinePublic", "call")
 			isLocal := args[0].(bool)
 			toots, err = client.GetTimelinePublic(ctx, isLocal, &pg)
 		case TimelineFederated:
-			logger.Debug("paginate", "GetTimeLinePublic", "call")
+			logger.Debug("paginateStatus", "GetTimeLinePublic", "call")
 			isLocal := args[0].(bool)
 			toots, err = client.GetTimelinePublic(ctx, isLocal, &pg)
 		case TimelineDirect:
-			logger.Debug("paginate", "GetTimeLineDirect", "call")
+			logger.Debug("paginateStatus", "GetTimeLineDirect", "call")
 			toots, err = client.GetTimelineDirect(ctx, &pg)
 		case TimelineFavourite:
-			logger.Debug("paginate", "GetFavourites", "call")
+			logger.Debug("paginateStatus", "GetFavourites", "call")
 			toots, err = client.GetFavourites(ctx, &pg)
 		case TimelineMy:
-			logger.Debug("paginate", "GetAccountStatuses", "call")
+			logger.Debug("paginateStatus", "GetAccountStatuses", "call")
 			account, _ := getAccountCurrentUser(ctx, client)
 			toots, err = client.GetAccountStatuses(ctx, account.ID, &pg)
 		}
 		if err != nil {
-			logger.Error("paginate", "error", err)
+			logger.Error("paginateStatus", "error", err)
 			return err
 		}
-		logger.Debug("paginate", "toots", len(toots))
+		logger.Debug("paginateStatus", "toots", len(toots))
 
 		for _, toot := range toots {
 			d.StreamListItem(ctx, toot)
 			rowCount++
 			if *maxToots > 0 && rowCount >= *maxToots {
-				logger.Debug("paginate", "max_toots limit reached", *maxToots)
+				logger.Debug("paginateStatus", "max_toots limit reached", *maxToots)
 				return nil
 			}
 			// Context can be cancelled due to manual cancellation or the limit has been hit
 			if d.RowsRemaining(ctx) == 0 {
-				logger.Debug("paginate", "manual cancelation or limit hit, rows streamed: ", rowCount)
+				logger.Debug("paginateStatus", "manual cancelation or limit hit, rows streamed: ", rowCount)
 				return nil
 			}
 		}
 
 		// Stop if last page
 		if int64(len(toots)) < apiMaxPerPage {
-			logger.Debug("paginate", "len(toots)) < apiMaxPerPage", rowCount)
+			logger.Debug("paginateStatus", "len(toots)) < apiMaxPerPage", rowCount)
 			break
 		}
 
@@ -183,14 +186,14 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 		}
 	}
 
-	logger.Debug("paginate", "done with rowCount", rowCount)
+	logger.Debug("paginateStatus", "done with rowCount", rowCount)
 	return nil
 }
 
 func getAccountCurrentUser(ctx context.Context, client *mastodon.Client) (*mastodon.Account, error) {
 	account, err := client.GetAccountCurrentUser(ctx)
 	if err != nil {
-		plugin.Logger(ctx).Error("getAccountCurrentUser", "error", err)
+		plugin.Logger(ctx).Error("getAccountCurrentUser", "error")
 		return nil, err
 	} else {
 		return account, nil

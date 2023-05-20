@@ -170,7 +170,7 @@ func listTootsFavourite(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 		return nil, err
 	}
 
-	err = paginate(ctx, d, client, TimelineFavourite)
+	err = paginateStatus(ctx, d, client, TimelineFavourite)
 	if err != nil {
 		return nil, err
 	}

@@ -26,11 +26,10 @@ func listTootsFederated(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 		return nil, err
 	}
 
-	err = paginate(ctx, d, client, TimelineFederated, false)
+	err = paginateStatus(ctx, d, client, TimelineFederated, false)
 	if err != nil {
 		return nil, err
 	}
 
 	return nil, nil
 }
-
