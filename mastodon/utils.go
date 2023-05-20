@@ -91,6 +91,7 @@ func isNotFoundError(notFoundErrors []string) plugin.ErrorPredicate {
 }
 
 const (
+	TimelineMy = "my"
 	TimelineHome = "home"
 	TimelineLocal = "local"
 	TimelineFederated = "federated"
@@ -112,6 +113,9 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 	pg := mastodon.Pagination{Limit: int64(initialLimit)}
 
 	maxToots := GetConfig(d.Connection).MaxToots
+	if postgresLimit > int64(*maxToots) {
+		*maxToots = int(postgresLimit)
+	}
 
 	logger.Debug("paginate", "timelineType", timelineType, "maxToots", *maxToots, "postgresLimit", postgresLimit, "initialLimit", initialLimit)
 
@@ -121,7 +125,7 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 
 	for {
 		page++
-		logger.Debug("paginate", "pg", fmt.Sprintf("%+v", pg), "args", args, "page", page)
+		logger.Debug("paginate", "pg", fmt.Sprintf("%+v", pg), "args", args, "page", page, "rowCount", rowCount)
 		switch timelineType {
 		case TimelineHome:
 			logger.Debug("paginate", "GetTimeLineHome", "call")
@@ -138,8 +142,16 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 			logger.Debug("paginate", "GetTimeLineDirect", "call")
 			toots, err = client.GetTimelineDirect(ctx, &pg)
 		case TimelineFavourite:
-			logger.Debug("paginate", "GetTimeLineFavourite", "call")
+			logger.Debug("paginate", "GetFavourites", "call")
 			toots, err = client.GetFavourites(ctx, &pg)
+		case TimelineMy:
+			logger.Debug("paginate", "GetAccountStatuses", "call")
+			account, accountErr := client.GetAccountCurrentUser(ctx)
+			if accountErr != nil {
+				logger.Error("paginate", "GetAccountCurrentUser", accountErr)
+				return accountErr
+			}
+			toots, err = client.GetAccountStatuses(ctx, account.ID, &pg)
 		}
 		if err != nil {
 			logger.Error("paginate", "error", err)
