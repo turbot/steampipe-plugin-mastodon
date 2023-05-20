@@ -95,6 +95,7 @@ const (
 	TimelineLocal = "local"
 	TimelineFederated = "federated"
 	TimelineDirect = "direct"
+	TimelineFavourite = "favourite"
 )
 
 func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client, timelineType string, args ...interface{}) error {
@@ -136,6 +137,9 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 		case TimelineDirect:
 			logger.Debug("paginate", "GetTimeLineDirect", "call")
 			toots, err = client.GetTimelineDirect(ctx, &pg)
+		case TimelineFavourite:
+			logger.Debug("paginate", "GetTimeLineFavourite", "call")
+			toots, err = client.GetFavourites(ctx, &pg)
 		}
 		if err != nil {
 			logger.Error("paginate", "error", err)
