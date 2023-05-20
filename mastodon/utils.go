@@ -97,6 +97,7 @@ const (
 	TimelineFederated   = "federated"
 	TimelineDirect      = "direct"
 	TimelineFavourite   = "favourite"
+	TimelineList 	  		= "list"
 )
 
 func paginateStatus(ctx context.Context, d *plugin.QueryData, client *mastodon.Client, timelineType string, args ...interface{}) error {
@@ -150,6 +151,10 @@ func paginateStatus(ctx context.Context, d *plugin.QueryData, client *mastodon.C
 			logger.Debug("paginateStatus", "GetAccountStatuses", "call")
 			account, _ := getAccountCurrentUser(ctx, client)
 			toots, err = client.GetAccountStatuses(ctx, account.ID, &pg)
+		case TimelineList:
+			list_id := d.EqualsQualString("list_id")
+			logger.Debug("paginateStatus", "GetTimelineList", "call", "list_id", list_id)
+			toots, err = client.GetTimelineList(ctx, mastodon.ID(list_id), &pg)
 		}
 		if err != nil {
 			logger.Error("paginateStatus", "error", err)
