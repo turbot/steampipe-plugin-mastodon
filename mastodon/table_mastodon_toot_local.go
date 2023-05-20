@@ -23,7 +23,7 @@ func listTootsLocal(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateD
 
 	client, err := connect(ctx, d)
 	if err != nil {
-		logger.Error("mastodon_toot_home.listTootLocal", "connect_error", err)
+		logger.Error("mastodon_toot_local.listTootLocal", "connect_error", err)
 		return nil, err
 	}
 

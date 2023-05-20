@@ -12,18 +12,18 @@ func tableMastodonTootHome() *plugin.Table {
 		Name:        "mastodon_toot_home",
 		Description: "Represents a toot on your home timeline.",
 		List: &plugin.ListConfig{
-			Hydrate: listTootHome,
+			Hydrate: listTootsHome,
 		},
 		Columns: tootColumns(),
 	}
 }
 
-func listTootHome(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listTootsHome(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
 	client, err := connect(ctx, d)
 	if err != nil {
-		logger.Error("mastodon_toot_home.listTootHome", "connect_error", err)
+		logger.Error("mastodon_toot_home.listTootsHome", "connect_error", err)
 		return nil, err
 	}
 
