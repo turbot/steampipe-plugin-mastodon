@@ -146,11 +146,7 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 			toots, err = client.GetFavourites(ctx, &pg)
 		case TimelineMy:
 			logger.Debug("paginate", "GetAccountStatuses", "call")
-			account, accountErr := client.GetAccountCurrentUser(ctx)
-			if accountErr != nil {
-				logger.Error("paginate", "GetAccountCurrentUser", accountErr)
-				return accountErr
-			}
+			account, _ := getAccountCurrentUser(ctx, client)
 			toots, err = client.GetAccountStatuses(ctx, account.ID, &pg)
 		}
 		if err != nil {
@@ -189,4 +185,14 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 
 	logger.Debug("paginate", "done with rowCount", rowCount)
 	return nil
+}
+
+func getAccountCurrentUser(ctx context.Context, client *mastodon.Client) (*mastodon.Account, error) {
+	account, err := client.GetAccountCurrentUser(ctx)
+	if err != nil {
+		plugin.Logger(ctx).Error("getAccountCurrentUser", "error", err)
+		return nil, err
+	} else {
+		return account, nil
+	}
 }
