@@ -97,7 +97,6 @@ const (
 	TimelineFederated   = "federated"
 	TimelineDirect      = "direct"
 	TimelineFavourite   = "favourite"
-	TimelineMyFollowing = "my_following"
 )
 
 func paginateStatus(ctx context.Context, d *plugin.QueryData, client *mastodon.Client, timelineType string, args ...interface{}) error {
@@ -187,6 +186,79 @@ func paginateStatus(ctx context.Context, d *plugin.QueryData, client *mastodon.C
 	}
 
 	logger.Debug("paginateStatus", "done with rowCount", rowCount)
+	return nil
+}
+
+const (
+  TimelineMyFollowing = "my_following"
+  TimelineMyFollower = "my_follower"
+)
+
+func paginateAccount(ctx context.Context, d *plugin.QueryData, client *mastodon.Client, timelineType string, args ...interface{}) error {
+
+	var accounts []*mastodon.Account
+
+	logger := plugin.Logger(ctx)
+
+	postgresLimit := d.QueryContext.GetLimit()
+	apiMaxPerPage := int64(40)
+	initialLimit := apiMaxPerPage
+	if postgresLimit > 0 && postgresLimit < apiMaxPerPage {
+		initialLimit = postgresLimit
+	}
+
+	pg := mastodon.Pagination{Limit: int64(initialLimit)}
+
+	logger.Debug("paginateAccount", "timelineType", timelineType, "postgresLimit", postgresLimit, "initialLimit", initialLimit)
+
+	rowCount := 0
+	page := 0
+	var err error
+
+	for {
+		page++
+		logger.Debug("paginateAccount", "pg", fmt.Sprintf("%+v", pg), "args", args, "page", page, "rowCount", rowCount)
+		switch timelineType {
+		case TimelineMyFollowing:
+			logger.Debug("paginateAccount", "GetAccountFollowing", "call")
+			account, _ := getAccountCurrentUser(ctx, client)
+			accounts, err = client.GetAccountFollowing(ctx, account.ID, &pg)
+		case TimelineMyFollower:
+			logger.Debug("paginateAccount", "GetAccountFollower", "call")
+			account, _ := getAccountCurrentUser(ctx, client)
+			accounts, err = client.GetAccountFollowers(ctx, account.ID, &pg)
+		}
+		if err != nil {
+			logger.Error("paginateAccount", "error", err)
+			return err
+		}
+		logger.Debug("paginateAccount", "accounts", len(accounts))
+
+		for _, account := range accounts {
+			d.StreamListItem(ctx, account)
+			rowCount++
+			// Context can be cancelled due to manual cancellation or the limit has been hit
+			if d.RowsRemaining(ctx) == 0 {
+				logger.Debug("paginateAccount", "manual cancelation or limit hit, rows streamed: ", rowCount)
+				return nil
+			}
+		}
+
+		// Stop if last page
+		if int64(len(accounts)) < apiMaxPerPage {
+			logger.Debug("paginateAccount", "len(accounts)) < apiMaxPerPage", rowCount)
+			break
+		}
+
+		// Set next page
+		maxId := pg.MaxID
+		pg = mastodon.Pagination{
+			Limit: int64(apiMaxPerPage),
+			MaxID: maxId,
+		}
+	}
+
+	logger.Debug("paginateAccount", "done with rowCount", rowCount)
 	return nil
 }
 
