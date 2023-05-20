@@ -192,6 +192,8 @@ func paginateStatus(ctx context.Context, d *plugin.QueryData, client *mastodon.C
 const (
   TimelineMyFollowing = "my_following"
   TimelineMyFollower = "my_follower"
+  TimelineFollowing = "following"
+  TimelineFollower = "follower"
 )
 
 func paginateAccount(ctx context.Context, d *plugin.QueryData, client *mastodon.Client, timelineType string, args ...interface{}) error {
@@ -227,6 +229,14 @@ func paginateAccount(ctx context.Context, d *plugin.QueryData, client *mastodon.
 			logger.Debug("paginateAccount", "GetAccountFollower", "call")
 			account, _ := getAccountCurrentUser(ctx, client)
 			accounts, err = client.GetAccountFollowers(ctx, account.ID, &pg)
+		case TimelineFollowing:
+			logger.Debug("paginateAccount", "GetAccountFollowing", "call")
+			following_account_id := args[0].(string)
+			accounts, err = client.GetAccountFollowing(ctx, mastodon.ID(following_account_id), &pg)
+		case TimelineFollower:
+			logger.Debug("paginateAccount", "GetAccountFollowing", "call")
+			followed_account_id := args[0].(string)
+			accounts, err = client.GetAccountFollowing(ctx, mastodon.ID(followed_account_id), &pg)
 		}
 		if err != nil {
 			logger.Error("paginateAccount", "error", err)
