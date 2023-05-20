@@ -93,6 +93,7 @@ func isNotFoundError(notFoundErrors []string) plugin.ErrorPredicate {
 const (
 	TimelineHome int = iota
 	TimelineLocal
+	TimelineFederated
 )
 
 
@@ -128,9 +129,13 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 			logger.Debug("paginate", "GetTimeLinePublic", "call")
 			isLocal := args[0].(bool)
 			toots, err = client.GetTimelinePublic(ctx, isLocal, &pg)
+		case TimelineFederated:
+			logger.Debug("paginate", "GetTimeLinePublic", "call")
+			isLocal := args[0].(bool)
+			toots, err = client.GetTimelinePublic(ctx, isLocal, &pg)
 		}
 		if err != nil {
-			logger.Error("paginate", "apiCall error", err)
+			logger.Error("paginate", "error", err)
 			return err
 		}
 		logger.Debug("paginate", "toots", len(toots))
