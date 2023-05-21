@@ -27,7 +27,7 @@ func listTootsHome(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 		return nil, err
 	}
 
-	err = paginateStatus(ctx, d, client, TimelineHome)
+	err = paginate(ctx, d, client, fetchStatuses, TimelineHome)
 	if err != nil {
 		return nil, err
 	}

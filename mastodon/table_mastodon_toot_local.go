@@ -3,7 +3,6 @@ package mastodon
 import (
 	"context"
 
-	//"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
 
@@ -27,7 +26,7 @@ func listTootsLocal(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateD
 		return nil, err
 	}
 
-	err = paginateStatus(ctx, d, client, TimelineLocal, true)
+	err = paginate(ctx, d, client, fetchStatuses, TimelineLocal, true)
 	if err != nil {
 		return nil, err
 	}
