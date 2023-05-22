@@ -103,55 +103,18 @@ func listNotifications(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 
 	client, err := connect(ctx, d)
 	if err != nil {
-		logger.Error("mastodon_notification.listNotifications", "connect_error", err)
+		logger.Error("mastodon_notification", "connect_error", err)
 		return nil, err
 	}
 
-	postgresLimit := d.QueryContext.GetLimit()
-	logger.Debug("notifications", "limit", postgresLimit)
-
-	page := 0
-	apiMaxPerPage := 15
-	total := int64(0)
-	pg := mastodon.Pagination{Limit: int64(apiMaxPerPage)}
-
-	for {
-		page++
-		logger.Debug("listNotifications", "page", page, "pg", pg, "minID", pg.MinID, "maxID", pg.MaxID)
-		notifications, err := client.GetNotifications(ctx, &pg)
-		if err != nil {
-			logger.Error("mastodon_notification.listNotifications", "query_error", err)
-			return nil, err
-		}
-
-		notificationsReceived := len(notifications)
-
-		logger.Debug("listNotifications", "notifications received", notificationsReceived)
-
-		if postgresLimit == -1 && notificationsReceived < apiMaxPerPage {
-			logger.Debug("listToots outer loop: got fewer than apiMaxPerPage, setting postgresLimit")
-			postgresLimit = total + int64(notificationsReceived)
-		}
-
-		for _, notification := range notifications {
-			total++
-			logger.Debug("listNotifications", "total", total, "postgresLimit", postgresLimit)
-			d.StreamListItem(ctx, notification)
-			if postgresLimit != -1 && total >= postgresLimit {
-				logger.Debug("listNotifications: break: inner loop reached postgres limit")
-				break
-			}
-		}
-		if postgresLimit != -1 && total >= postgresLimit {
-			logger.Debug("listNotifications: break: outer loop reached postgres limit")
-			break
-		}
-
-		pg.MinID = ""
+	err = paginate(ctx, d, client, fetchNotifications, TimelineNotification)
+	if err != nil {
+		return nil, err
 	}
 
 	return nil, nil
 }
+
 
 func getNotification(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)

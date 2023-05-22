@@ -90,6 +90,7 @@ func isNotFoundError(notFoundErrors []string) plugin.ErrorPredicate {
 	}
 }
 
+// Timeline types that return []*mastodon.Status
 const (
 	TimelineMy        = "my"
 	TimelineHome      = "home"
@@ -100,6 +101,7 @@ const (
 	TimelineList      = "list"
 )
 
+// Timeline types that return []*mastodon.Account
 const (
 	TimelineMyFollowing = "my_following"
 	TimelineMyFollower  = "my_follower"
@@ -107,6 +109,12 @@ const (
 	TimelineFollower    = "follower"
 	TimelineListAccount = "list_account"
 )
+
+// Timeline types that return []*mastodon.Notification
+const (
+	TimelineNotification = "notification"
+)
+
 
 func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client, fetchFunc func(context.Context, *plugin.QueryData, string, *mastodon.Client, *mastodon.Pagination, ...interface{}) (interface{}, error), timelineType string, args ...interface{}) error {
 
@@ -155,6 +163,15 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 					return nil
 				}
 			}
+		case []*mastodon.Notification:
+			for _, item := range v {
+				d.StreamListItem(ctx, item)
+				rowCount++
+				if d.RowsRemaining(ctx) == 0 {
+					logger.Debug("paginate", "manual cancellation or limit hit, rows streamed: ", rowCount)
+					return nil
+				}
+			}
 		}
 
 		switch v := items.(type) {
@@ -165,6 +182,11 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 			}
 		case []*mastodon.Account:
 			if int64(len(items.([]*mastodon.Account))) < apiMaxPerPage {
+				logger.Debug("paginate", "v", v, "stopping at", rowCount)
+				break
+			}
+		case []*mastodon.Notification:
+			if int64(len(items.([]*mastodon.Notification))) < apiMaxPerPage {
 				logger.Debug("paginate", "v", v, "stopping at", rowCount)
 				break
 			}
@@ -247,6 +269,22 @@ func fetchAccounts(ctx context.Context, d *plugin.QueryData, timelineType string
 	logger.Debug("fetchAccounts", "count", len(accounts))
 
 	return accounts, err
+}
+
+func fetchNotifications(ctx context.Context, d *plugin.QueryData, timelineType string, client *mastodon.Client, pg *mastodon.Pagination, args ...interface{}) (interface{}, error) {
+	var notifications []*mastodon.Notification
+	var err error
+	logger := plugin.Logger(ctx)
+	logger.Debug("fetchNotifications", "timelineType", timelineType)
+
+	switch timelineType {
+	case TimelineNotification:
+		notifications, err = client.GetNotifications(ctx, pg)
+	}
+
+	logger.Debug("fetchNotifications", "count", len(notifications))
+
+	return notifications, err
 }
 
 func getAccountCurrentUser(ctx context.Context, client *mastodon.Client) (*mastodon.Account, error) {
