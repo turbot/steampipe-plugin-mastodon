@@ -47,13 +47,10 @@ func listFollowers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 		return nil, err
 	}
 
-	followed_account_id := d.EqualsQualString("followed_account_id")
-
-	err = paginateAccount(ctx, d, client, TimelineFollowing, followed_account_id)
+	err = paginate(ctx, d, client, fetchAccounts, TimelineFollower)
 	if err != nil {
 		return nil, err
 	}
 
 	return nil, nil
 }
-

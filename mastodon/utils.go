@@ -91,120 +91,24 @@ func isNotFoundError(notFoundErrors []string) plugin.ErrorPredicate {
 }
 
 const (
-	TimelineMy          = "my"
-	TimelineHome        = "home"
-	TimelineLocal       = "local"
-	TimelineFederated   = "federated"
-	TimelineDirect      = "direct"
-	TimelineFavourite   = "favourite"
-	TimelineList 	  		= "list"
+	TimelineMy        = "my"
+	TimelineHome      = "home"
+	TimelineLocal     = "local"
+	TimelineFederated = "federated"
+	TimelineDirect    = "direct"
+	TimelineFavourite = "favourite"
+	TimelineList      = "list"
 )
 
-func paginateStatus(ctx context.Context, d *plugin.QueryData, client *mastodon.Client, timelineType string, args ...interface{}) error {
-
-	var toots []*mastodon.Status
-
-	logger := plugin.Logger(ctx)
-
-	postgresLimit := d.QueryContext.GetLimit()
-	apiMaxPerPage := int64(40)
-	initialLimit := apiMaxPerPage
-	if postgresLimit > 0 && postgresLimit < apiMaxPerPage {
-		initialLimit = postgresLimit
-	}
-
-	pg := mastodon.Pagination{Limit: int64(initialLimit)}
-
-	maxToots := GetConfig(d.Connection).MaxToots
-	if postgresLimit > int64(*maxToots) {
-		*maxToots = int(postgresLimit)
-	}
-
-	logger.Debug("paginateStatus", "timelineType", timelineType, "maxToots", *maxToots, "postgresLimit", postgresLimit, "initialLimit", initialLimit)
-
-	rowCount := 0
-	page := 0
-	var err error
-
-	for {
-		page++
-		logger.Debug("paginateStatus", "pg", fmt.Sprintf("%+v", pg), "args", args, "page", page, "rowCount", rowCount)
-		switch timelineType {
-		case TimelineHome:
-			logger.Debug("paginateStatus", "GetTimeLineHome", "call")
-			toots, err = client.GetTimelineHome(ctx, &pg)
-		case TimelineLocal:
-			logger.Debug("paginateStatus", "GetTimeLinePublic", "call")
-			isLocal := args[0].(bool)
-			toots, err = client.GetTimelinePublic(ctx, isLocal, &pg)
-		case TimelineFederated:
-			logger.Debug("paginateStatus", "GetTimeLinePublic", "call")
-			isLocal := args[0].(bool)
-			toots, err = client.GetTimelinePublic(ctx, isLocal, &pg)
-		case TimelineDirect:
-			logger.Debug("paginateStatus", "GetTimeLineDirect", "call")
-			toots, err = client.GetTimelineDirect(ctx, &pg)
-		case TimelineFavourite:
-			logger.Debug("paginateStatus", "GetFavourites", "call")
-			toots, err = client.GetFavourites(ctx, &pg)
-		case TimelineMy:
-			logger.Debug("paginateStatus", "GetAccountStatuses", "call")
-			account, _ := getAccountCurrentUser(ctx, client)
-			toots, err = client.GetAccountStatuses(ctx, account.ID, &pg)
-		case TimelineList:
-			list_id := d.EqualsQualString("list_id")
-			logger.Debug("paginateStatus", "GetTimelineList", "call", "list_id", list_id)
-			toots, err = client.GetTimelineList(ctx, mastodon.ID(list_id), &pg)
-		}
-		if err != nil {
-			logger.Error("paginateStatus", "error", err)
-			return err
-		}
-		logger.Debug("paginateStatus", "toots", len(toots))
-
-		for _, toot := range toots {
-			d.StreamListItem(ctx, toot)
-			rowCount++
-			if *maxToots > 0 && rowCount >= *maxToots {
-				logger.Debug("paginateStatus", "max_toots limit reached", *maxToots)
-				return nil
-			}
-			// Context can be cancelled due to manual cancellation or the limit has been hit
-			if d.RowsRemaining(ctx) == 0 {
-				logger.Debug("paginateStatus", "manual cancelation or limit hit, rows streamed: ", rowCount)
-				return nil
-			}
-		}
-
-		// Stop if last page
-		if int64(len(toots)) < apiMaxPerPage {
-			logger.Debug("paginateStatus", "len(toots)) < apiMaxPerPage", rowCount)
-			break
-		}
-
-		// Set next page
-		maxId := pg.MaxID
-		pg = mastodon.Pagination{
-			Limit: int64(apiMaxPerPage),
-			MaxID: maxId,
-		}
-	}
-
-	logger.Debug("paginateStatus", "done with rowCount", rowCount)
-	return nil
-}
-
 const (
-  TimelineMyFollowing = "my_following"
-  TimelineMyFollower = "my_follower"
-  TimelineFollowing = "following"
-  TimelineFollower = "follower"
+	TimelineMyFollowing = "my_following"
+	TimelineMyFollower  = "my_follower"
+	TimelineFollowing   = "following"
+	TimelineFollower    = "follower"
 	TimelineListAccount = "list_account"
 )
 
-func paginateAccount(ctx context.Context, d *plugin.QueryData, client *mastodon.Client, timelineType string, args ...interface{}) error {
-
-	var accounts []*mastodon.Account
+func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client, fetchFunc func(context.Context, *plugin.QueryData, string, *mastodon.Client, *mastodon.Pagination, ...interface{}) (interface{}, error), timelineType string, args ...interface{}) error {
 
 	logger := plugin.Logger(ctx)
 
@@ -213,84 +117,6 @@ func paginateAccount(ctx context.Context, d *plugin.QueryData, client *mastodon.
 	initialLimit := apiMaxPerPage
 	if postgresLimit > 0 && postgresLimit < apiMaxPerPage {
 		initialLimit = postgresLimit
-	}
-
-	pg := mastodon.Pagination{Limit: int64(initialLimit)}
-
-	logger.Debug("paginateAccount", "timelineType", timelineType, "postgresLimit", postgresLimit, "initialLimit", initialLimit)
-
-	rowCount := 0
-	page := 0
-	var err error
-
-	for {
-		page++
-		logger.Debug("paginateAccount", "pg", fmt.Sprintf("%+v", pg), "args", args, "page", page, "rowCount", rowCount)
-		switch timelineType {
-		case TimelineMyFollowing:
-			logger.Debug("paginateAccount", "GetAccountFollowing", "call")
-			account, _ := getAccountCurrentUser(ctx, client)
-			accounts, err = client.GetAccountFollowing(ctx, account.ID, &pg)
-		case TimelineMyFollower:
-			logger.Debug("paginateAccount", "GetAccountFollower", "call")
-			account, _ := getAccountCurrentUser(ctx, client)
-			accounts, err = client.GetAccountFollowers(ctx, account.ID, &pg)
-		case TimelineFollowing:
-			logger.Debug("paginateAccount", "GetAccountFollowing", "call")
-			following_account_id := args[0].(string)
-			accounts, err = client.GetAccountFollowing(ctx, mastodon.ID(following_account_id), &pg)
-		case TimelineFollower:
-			logger.Debug("paginateAccount", "GetAccountFollowing", "call")
-			followed_account_id := args[0].(string)
-			accounts, err = client.GetAccountFollowing(ctx, mastodon.ID(followed_account_id), &pg)
-		case TimelineListAccount:
-			listId := d.EqualsQualString("list_id")
-			logger.Debug("paginateAccount", "GetListAccounts", "call", "list_id", listId)
-			accounts, err = client.GetListAccounts(ctx, mastodon.ID(listId), &pg)
-		}
-		if err != nil {
-			logger.Error("paginateAccount", "error", err)
-			return err
-		}
-		logger.Debug("paginateAccount", "accounts", len(accounts))
-
-		for _, account := range accounts {
-			d.StreamListItem(ctx, account)
-			rowCount++
-			// Context can be cancelled due to manual cancellation or the limit has been hit
-			if d.RowsRemaining(ctx) == 0 {
-				logger.Debug("paginateAccount", "manual cancelation or limit hit, rows streamed: ", rowCount)
-				return nil
-			}
-		}
-
-		// Stop if last page
-		if int64(len(accounts)) < apiMaxPerPage {
-			logger.Debug("paginateAccount", "len(accounts)) < apiMaxPerPage", rowCount)
-			break
-		}
-
-		// Set next page
-		maxId := pg.MaxID
-		pg = mastodon.Pagination{
-			Limit: int64(apiMaxPerPage),
-			MaxID: maxId,
-		}
-	}
-
-	logger.Debug("paginateAccount", "done with rowCount", rowCount)
-	return nil
-}
-
-func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client, fetchFunc func(context.Context, string, *mastodon.Client, *mastodon.Pagination, ...interface{}) (interface{}, error), timelineType string, args ...interface{}) error {
-
-	logger := plugin.Logger(ctx)
-
-	postgresLimit := d.QueryContext.GetLimit()
-	apiMaxPerPage := int64(40)
-	initialLimit := apiMaxPerPage
-	if postgresLimit > 0 && postgresLimit < apiMaxPerPage {
-			initialLimit = postgresLimit
 	}
 
 	pg := mastodon.Pagination{Limit: int64(initialLimit)}
@@ -301,59 +127,127 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 	page := 0
 
 	for {
-			page++
-			logger.Debug("paginate", "pg", fmt.Sprintf("%+v", pg), "args", args, "page", page, "rowCount", rowCount)
+		page++
+		logger.Debug("paginate", "pg", fmt.Sprintf("%+v", pg), "args", args, "page", page, "rowCount", rowCount)
 
-			items, err := fetchStatuses(ctx, timelineType, client, &pg, args...)
-			if err != nil {
-					logger.Error("paginate", "error", err)
-					return err
+		items, err := fetchFunc(ctx, d, timelineType, client, &pg, args...)
+		if err != nil {
+			logger.Error("paginate", "error", err)
+			return err
+		}
+
+		switch v := items.(type) {
+		case []*mastodon.Status:
+			for _, item := range v {
+				d.StreamListItem(ctx, item)
+				rowCount++
+				if d.RowsRemaining(ctx) == 0 {
+					logger.Debug("paginate", "manual cancellation or limit hit, rows streamed: ", rowCount)
+					return nil
+				}
 			}
-
-			for _, item := range items.([]*mastodon.Status) {
-					d.StreamListItem(ctx, item)
-					rowCount++
-					if d.RowsRemaining(ctx) == 0 {
-							logger.Debug("paginate", "manual cancelation or limit hit, rows streamed: ", rowCount)
-							return nil
-					}
+		case []*mastodon.Account:
+			for _, item := range v {
+				d.StreamListItem(ctx, item)
+				rowCount++
+				if d.RowsRemaining(ctx) == 0 {
+					logger.Debug("paginate", "manual cancellation or limit hit, rows streamed: ", rowCount)
+					return nil
+				}
 			}
+		}
 
-			// Stop if last page
+		switch v := items.(type) {
+		case []*mastodon.Status:
 			if int64(len(items.([]*mastodon.Status))) < apiMaxPerPage {
-					logger.Debug("paginate", "len(items) < apiMaxPerPage", rowCount)
-					break
+				logger.Debug("paginate", "v", v, "stopping at", rowCount)
+				break
 			}
+		case []*mastodon.Account:
+			if int64(len(items.([]*mastodon.Account))) < apiMaxPerPage {
+				logger.Debug("paginate", "v", v, "stopping at", rowCount)
+				break
+			}
+		}
 
-			// Set next page
-			maxId := pg.MaxID
-			pg = mastodon.Pagination{
-					Limit: int64(apiMaxPerPage),
-					MaxID: maxId,
-			}
+		// Set next page
+		maxId := pg.MaxID
+		pg = mastodon.Pagination{
+			Limit: int64(apiMaxPerPage),
+			MaxID: maxId,
+		}
 	}
 
-	logger.Debug("paginate", "done with rowCount", rowCount)
-	return nil
 }
 
-func fetchStatuses(ctx context.Context, timelineType string, client *mastodon.Client, pg *mastodon.Pagination, args ...interface{}) (interface{}, error) {
+func fetchStatuses(ctx context.Context, d *plugin.QueryData, timelineType string, client *mastodon.Client, pg *mastodon.Pagination, args ...interface{}) (interface{}, error) {
 	var statuses []*mastodon.Status
 	var err error
 	logger := plugin.Logger(ctx)
+	logger.Debug("fetchAccounts", "timelineType", timelineType)
 
 	switch timelineType {
 	case TimelineHome:
-		logger.Debug("paginateStatus", "GetTimeLineHome", "call")
 		statuses, err = client.GetTimelineHome(ctx, pg)
-		case TimelineLocal:
-			logger.Debug("paginateStatus", "GetTimeLinePublic", "call")
-			isLocal := args[0].(bool)
-			statuses, err = client.GetTimelinePublic(ctx, isLocal, pg)
+	case TimelineLocal:
+		isLocal := args[0].(bool)
+		statuses, err = client.GetTimelinePublic(ctx, isLocal, pg)
+		logger.Debug("fetchStatuses", "isLocal", isLocal)
+	case TimelineFederated:
+		isLocal := args[0].(bool)
+		statuses, err = client.GetTimelinePublic(ctx, isLocal, pg)
+	case TimelineDirect:
+		statuses, err = client.GetTimelineDirect(ctx, pg)
+	case TimelineFavourite:
+		statuses, err = client.GetFavourites(ctx, pg)
+	case TimelineMy:
+		account, _ := getAccountCurrentUser(ctx, client)
+		logger.Debug("fetchStatuses", "account", account)
+		statuses, err = client.GetAccountStatuses(ctx, account.ID, pg)
+	case TimelineList:
+		listId := d.EqualsQualString("list_id")
+		logger.Debug("fetchStatuses", "listId", listId)
+		statuses, err = client.GetTimelineList(ctx, mastodon.ID(listId), pg)
 	}
+
+	logger.Debug("fetchStatuses", "count", len(statuses))
+
 	return statuses, err
 }
 
+func fetchAccounts(ctx context.Context, d *plugin.QueryData, timelineType string, client *mastodon.Client, pg *mastodon.Pagination, args ...interface{}) (interface{}, error) {
+	var accounts []*mastodon.Account
+	var err error
+	logger := plugin.Logger(ctx)
+	logger.Debug("fetchAccounts", "timelineType", timelineType)
+
+	switch timelineType {
+	case TimelineMyFollowing:
+		account, _ := getAccountCurrentUser(ctx, client)
+		logger.Debug("fetchAccounts", "account", account)
+		accounts, err = client.GetAccountFollowing(ctx, account.ID, pg)
+	case TimelineMyFollower:
+		account, _ := getAccountCurrentUser(ctx, client)
+		logger.Debug("fetchAccounts", "account", account)
+		accounts, err = client.GetAccountFollowers(ctx, account.ID, pg)
+	case TimelineFollowing:
+		followingAccountId := d.EqualsQualString("following_account_id")
+		logger.Debug("fetchAccounts", "followingAccountId", followingAccountId)
+		accounts, err = client.GetAccountFollowing(ctx, mastodon.ID(followingAccountId), pg)
+	case TimelineFollower:
+		followedAccountId := d.EqualsQualString("followed_account_id")
+		logger.Debug("fetchAccounts", "followedAccountId", followedAccountId)
+		accounts, err = client.GetAccountFollowers(ctx, mastodon.ID(followedAccountId), pg)
+	case TimelineListAccount:
+		listId := d.EqualsQualString("list_id")
+		logger.Debug("paginateAccount", "GetListAccounts", "call", "listId", listId)
+		accounts, err = client.GetListAccounts(ctx, mastodon.ID(listId), pg)
+	}
+
+	logger.Debug("fetchAccounts", "count", len(accounts))
+
+	return accounts, err
+}
 
 func getAccountCurrentUser(ctx context.Context, client *mastodon.Client) (*mastodon.Account, error) {
 	account, err := client.GetAccountCurrentUser(ctx)

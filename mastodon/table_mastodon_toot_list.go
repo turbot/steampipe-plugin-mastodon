@@ -32,12 +32,10 @@ func listTootsList(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 		return nil, err
 	}
 
-	err = paginateAccount(ctx, d, client, TimelineList)
+	err = paginate(ctx, d, client, fetchStatuses, TimelineList)
 	if err != nil {
 		return nil, err
 	}
 
 	return nil, nil
 }
-
-
