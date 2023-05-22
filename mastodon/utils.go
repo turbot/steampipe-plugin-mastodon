@@ -136,7 +136,7 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 
 	for {
 		page++
-		logger.Debug("paginate", "pg", fmt.Sprintf("%+v", pg), "args", args, "page", page, "rowCount", rowCount)
+		logger.Debug("paginate", "pg", pg, "args", args, "page", page, "rowCount", rowCount)
 
 		items, err := fetchFunc(ctx, d, timelineType, client, &pg, args...)
 		if err != nil {
@@ -178,17 +178,17 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 		case []*mastodon.Status:
 			if int64(len(items.([]*mastodon.Status))) < apiMaxPerPage {
 				logger.Debug("paginate", "v", v, "stopping at", rowCount)
-				break
+				return nil
 			}
 		case []*mastodon.Account:
 			if int64(len(items.([]*mastodon.Account))) < apiMaxPerPage {
 				logger.Debug("paginate", "v", v, "stopping at", rowCount)
-				break
+				return nil
 			}
 		case []*mastodon.Notification:
 			if int64(len(items.([]*mastodon.Notification))) < apiMaxPerPage {
 				logger.Debug("paginate", "v", v, "stopping at", rowCount)
-				break
+				return nil
 			}
 		}
 
@@ -224,7 +224,7 @@ func fetchStatuses(ctx context.Context, d *plugin.QueryData, timelineType string
 		statuses, err = client.GetFavourites(ctx, pg)
 	case TimelineMy:
 		account, _ := getAccountCurrentUser(ctx, client)
-		logger.Debug("fetchStatuses", "account", account)
+		//logger.Debug("fetchStatuses", "account", account)
 		statuses, err = client.GetAccountStatuses(ctx, account.ID, pg)
 	case TimelineList:
 		listId := d.EqualsQualString("list_id")
@@ -246,23 +246,23 @@ func fetchAccounts(ctx context.Context, d *plugin.QueryData, timelineType string
 	switch timelineType {
 	case TimelineMyFollowing:
 		account, _ := getAccountCurrentUser(ctx, client)
-		logger.Debug("fetchAccounts", "account", account)
+		//logger.Debug("fetchAccounts", "account", account)
 		accounts, err = client.GetAccountFollowing(ctx, account.ID, pg)
 	case TimelineMyFollower:
 		account, _ := getAccountCurrentUser(ctx, client)
-		logger.Debug("fetchAccounts", "account", account)
+		//logger.Debug("fetchAccounts", "account", account)
 		accounts, err = client.GetAccountFollowers(ctx, account.ID, pg)
 	case TimelineFollowing:
 		followingAccountId := d.EqualsQualString("following_account_id")
-		logger.Debug("fetchAccounts", "followingAccountId", followingAccountId)
+		//logger.Debug("fetchAccounts", "followingAccountId", followingAccountId)
 		accounts, err = client.GetAccountFollowing(ctx, mastodon.ID(followingAccountId), pg)
 	case TimelineFollower:
 		followedAccountId := d.EqualsQualString("followed_account_id")
-		logger.Debug("fetchAccounts", "followedAccountId", followedAccountId)
+		//logger.Debug("fetchAccounts", "followedAccountId", followedAccountId)
 		accounts, err = client.GetAccountFollowers(ctx, mastodon.ID(followedAccountId), pg)
 	case TimelineListAccount:
 		listId := d.EqualsQualString("list_id")
-		logger.Debug("paginateAccount", "GetListAccounts", "call", "listId", listId)
+		//logger.Debug("paginateAccount", "GetListAccounts", "call", "listId", listId)
 		accounts, err = client.GetListAccounts(ctx, mastodon.ID(listId), pg)
 	}
 
