@@ -26,7 +26,7 @@ func listMyFollowers(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 		return nil, err
 	}
 
-	err = paginate(ctx, d, client, fetchAccounts, TimelineMyFollowing)
+	err = paginate(ctx, d, client, fetchAccounts, TimelineMyFollower)
 	if err != nil {
 		return nil, err
 	}
