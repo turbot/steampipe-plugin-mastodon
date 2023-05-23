@@ -174,20 +174,20 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 			}
 		}
 
-		switch v := items.(type) {
+		switch items.(type) {
 		case []*mastodon.Status:
 			if int64(len(items.([]*mastodon.Status))) < apiMaxPerPage {
-				logger.Debug("paginate", "v", v, "stopping at", rowCount)
+				logger.Debug("paginate", "stopping at", rowCount)
 				return nil
 			}
 		case []*mastodon.Account:
 			if int64(len(items.([]*mastodon.Account))) < apiMaxPerPage {
-				logger.Debug("paginate", "v", v, "stopping at", rowCount)
+				logger.Debug("paginate", "stopping at", rowCount)
 				return nil
 			}
 		case []*mastodon.Notification:
 			if int64(len(items.([]*mastodon.Notification))) < apiMaxPerPage {
-				logger.Debug("paginate", "v", v, "stopping at", rowCount)
+				logger.Debug("paginate", "stopping at", rowCount)
 				return nil
 			}
 		}
