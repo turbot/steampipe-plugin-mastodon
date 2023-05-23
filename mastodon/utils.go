@@ -130,6 +130,7 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 
 	logger.Debug("paginate", "timelineType", timelineType, "postgresLimit", postgresLimit, "initialLimit", initialLimit)
 
+	maxToots := GetConfig(d.Connection).MaxToots
 	rowCount := 0
 	page := 0
 
@@ -150,6 +151,10 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 			for _, item := range v {
 				d.StreamListItem(ctx, item)
 				rowCount++
+				if *maxToots > 0 && rowCount >= *maxToots {
+					logger.Debug("paginate", "maxToots hit", *maxToots)
+					return nil
+				}
 				if d.RowsRemaining(ctx) == 0 {
 					logger.Debug("paginate", cancelOrLimitMsg, rowCount)
 					return nil
