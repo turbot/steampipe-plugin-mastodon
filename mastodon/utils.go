@@ -115,7 +115,6 @@ const (
 	TimelineNotification = "notification"
 )
 
-
 func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client, fetchFunc func(context.Context, *plugin.QueryData, string, *mastodon.Client, *mastodon.Pagination, ...interface{}) (interface{}, error), timelineType string, args ...interface{}) error {
 
 	logger := plugin.Logger(ctx)
@@ -144,13 +143,15 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 			return err
 		}
 
+		cancelOrLimitMsg := "manual cancellation or limit hit, rows streamed: "
+
 		switch v := items.(type) {
 		case []*mastodon.Status:
 			for _, item := range v {
 				d.StreamListItem(ctx, item)
 				rowCount++
 				if d.RowsRemaining(ctx) == 0 {
-					logger.Debug("paginate", "manual cancellation or limit hit, rows streamed: ", rowCount)
+					logger.Debug("paginate", cancelOrLimitMsg, rowCount)
 					return nil
 				}
 			}
@@ -159,7 +160,7 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 				d.StreamListItem(ctx, item)
 				rowCount++
 				if d.RowsRemaining(ctx) == 0 {
-					logger.Debug("paginate", "manual cancellation or limit hit, rows streamed: ", rowCount)
+					logger.Debug("paginate", cancelOrLimitMsg, rowCount)
 					return nil
 				}
 			}
@@ -168,7 +169,7 @@ func paginate(ctx context.Context, d *plugin.QueryData, client *mastodon.Client,
 				d.StreamListItem(ctx, item)
 				rowCount++
 				if d.RowsRemaining(ctx) == 0 {
-					logger.Debug("paginate", "manual cancellation or limit hit, rows streamed: ", rowCount)
+					logger.Debug("paginate", cancelOrLimitMsg, rowCount)
 					return nil
 				}
 			}

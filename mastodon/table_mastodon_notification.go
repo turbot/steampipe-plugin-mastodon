@@ -115,7 +115,6 @@ func listNotifications(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 	return nil, nil
 }
 
-
 func getNotification(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
