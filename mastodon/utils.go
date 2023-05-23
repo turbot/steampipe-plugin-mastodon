@@ -247,23 +247,18 @@ func fetchAccounts(ctx context.Context, d *plugin.QueryData, timelineType string
 	switch timelineType {
 	case TimelineMyFollowing:
 		account, _ := getAccountCurrentUser(ctx, client)
-		//logger.Debug("fetchAccounts", "account", account)
 		accounts, err = client.GetAccountFollowing(ctx, account.ID, pg)
 	case TimelineMyFollower:
 		account, _ := getAccountCurrentUser(ctx, client)
-		//logger.Debug("fetchAccounts", "account", account)
 		accounts, err = client.GetAccountFollowers(ctx, account.ID, pg)
 	case TimelineFollowing:
 		followingAccountId := d.EqualsQualString("following_account_id")
-		//logger.Debug("fetchAccounts", "followingAccountId", followingAccountId)
 		accounts, err = client.GetAccountFollowing(ctx, mastodon.ID(followingAccountId), pg)
 	case TimelineFollower:
 		followedAccountId := d.EqualsQualString("followed_account_id")
-		//logger.Debug("fetchAccounts", "followedAccountId", followedAccountId)
 		accounts, err = client.GetAccountFollowers(ctx, mastodon.ID(followedAccountId), pg)
 	case TimelineListAccount:
 		listId := d.EqualsQualString("list_id")
-		//logger.Debug("paginateAccount", "GetListAccounts", "call", "listId", listId)
 		accounts, err = client.GetListAccounts(ctx, mastodon.ID(listId), pg)
 	}
 
