@@ -2,8 +2,8 @@
 
 _Bug fixes_
 
-- Fixed `followers` and `following` columns in `mastodon_toot_favourite` table to be of `bigint` datatype. ([#16](https://github.com/turbot/steampipe-plugin-mastodon/pull/16))
-- Fixed example query in `mastodon_my_list` table doc. ([#17](https://github.com/turbot/steampipe-plugin-mastodon/pull/17))
+- Fixed the `followers` and the `following` columns in `mastodon_toot_favourite` table to be of `INT` datatype instead of `JSON`. ([#16](https://github.com/turbot/steampipe-plugin-mastodon/pull/16))
+- Fixed the example queries in `mastodon_my_list` table doc. ([#17](https://github.com/turbot/steampipe-plugin-mastodon/pull/17))
 
 ## v0.0.1 [2023-03-23]
 
