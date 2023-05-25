@@ -3,7 +3,7 @@
 _Bug fixes_
 
 - Fixed `followers` and `following` columns in `mastodon_toot_favourite` table to be of int datatype. ([#16](https://github.com/turbot/steampipe-plugin-mastodon/pull/16))
-- Fixed the example query in the doc for `mastodon_my_list` table. ([#17](https://github.com/turbot/steampipe-plugin-mastodon/pull/17))
+- Fixed example query in `mastodon_my_list` table doc. ([#17](https://github.com/turbot/steampipe-plugin-mastodon/pull/17))
 
 ## v0.0.1 [2023-03-23]
 
