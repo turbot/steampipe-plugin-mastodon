@@ -1,8 +1,15 @@
+## v0.1.0 [2023-05-25]
+
+_Bug fixes_
+
+- Fixed `followers` and `following` columns in `mastodon_toot_favourite` table to be of int datatype. ([#16](https://github.com/turbot/steampipe-plugin-mastodon/pull/16))
+- Fixed the example query in the doc for `mastodon_my_list` table. ([#17](https://github.com/turbot/steampipe-plugin-mastodon/pull/17))
+
 ## v0.0.1 [2023-03-23]
 
 _What's new?_
 
-- New tables added 
+- New tables added
   - [mastodon_account](https://hub.steampipe.io/plugins/turbot/mastodon/tables/mastodon_account)
   - [mastodon_domain_block](https://hub.steampipe.io/plugins/turbot/mastodon/tables/mastodon_domain_block)
   - [mastodon_follower](https://hub.steampipe.io/plugins/turbot/mastodon/tables/mastodon_follower)
@@ -29,4 +36,3 @@ _What's new?_
   - [mastodon_toot_list](https://hub.steampipe.io/plugins/turbot/mastodon/tables/mastodon_toot_list)
   - [mastodon_toot_local](https://hub.steampipe.io/plugins/turbot/mastodon/tables/mastodon_toot_local)
   - [mastodon_weekly_activity](https://hub.steampipe.io/plugins/turbot/mastodon/tables/mastodon_weekly_activity)
-  
