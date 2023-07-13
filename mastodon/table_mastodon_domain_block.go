@@ -14,6 +14,9 @@ func tableMastodonDomainBlock() *plugin.Table {
 		Description: "Represents a domain blocked by a Mastodon server.",
 		List: &plugin.ListConfig{
 			Hydrate: listDomainBlocks,
+			IgnoreConfig: &plugin.IgnoreConfig{
+				ShouldIgnoreErrorFunc: shouldIgnoreErrors([]string{"403","404"}),
+			},
 			KeyColumns: []*plugin.KeyColumn{
 				{
 					Name:    "server",
@@ -70,4 +73,16 @@ func listDomainBlocks(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 	}
 
 	return nil, nil
+}
+
+func shouldIgnoreErrors(errorCodes []string) plugin.ErrorPredicateWithContext {
+	return func(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData, err error) bool {
+			for _, code := range errorCodes {
+				plugin.Logger(ctx).Debug("shouldIgnoreErrors", "code", code)
+				if code == "403" || code == "404" {
+					return true
+				}
+			}
+		  return false
+		}
 }
