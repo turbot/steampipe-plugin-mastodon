@@ -8,10 +8,11 @@ import (
 )
 
 type PluginConfig struct {
-	Server      *string `cty:"server"`
-	AccessToken *string `cty:"access_token"`
-	App         *string `cty:"app"`
-	MaxToots    *int    `cty:"max_toots"`
+	Server           *string  `cty:"server"`
+	AccessToken      *string  `cty:"access_token"`
+	App              *string  `cty:"app"`
+	MaxToots         *int     `cty:"max_toots"`
+	IgnoreErrorCodes []string `cty:"ignore_error_codes"`
 }
 
 var default_max_toots = 1000
@@ -28,6 +29,10 @@ var ConfigSchema = map[string]*schema.Attribute{
 	},
 	"max_toots": {
 		Type: schema.TypeInt,
+	},
+	"ignore_error_codes": {
+		Type: schema.TypeList,
+		Elem: &schema.Attribute{Type: schema.TypeString},
 	},
 }
 

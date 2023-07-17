@@ -14,4 +14,9 @@ connection "mastodon" {
     # `max_toots` (optional) - Defines the maximum number of toots to list in the mastodon toot tables.
     # If not set, the default is 1000. To avoid limiting, set max_toots = -1
     # max_toots = 1000
+
+    # List of additional Mastodon error codes to ignore for all queries.
+    # When encountering these errors, the API call will not be retried and empty results will be returned.
+    # By default, common not found error codes are ignored and will still be ignored even if this argument is not set.
+    # ignore_error_codes = ["403", "AccessDeniedException", "NotAuthorized", "UnauthorizedOperation", "UnrecognizedClientException", "AuthorizationError"]
 }
