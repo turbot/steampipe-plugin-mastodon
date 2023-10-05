@@ -6,7 +6,7 @@ replace github.com/mattn/go-mastodon => github.com/turbot/go-mastodon v0.0.1
 
 require (
 	github.com/mattn/go-mastodon v0.0.6
-	github.com/microcosm-cc/bluemonday v1.0.23
+	github.com/microcosm-cc/bluemonday v1.0.25
 	github.com/turbot/steampipe-plugin-sdk/v5 v5.6.2
 )
 
