@@ -41,7 +41,7 @@ func listListAccounts(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 		return nil, err
 	}
 
-	err = paginate(ctx, d, client, fetchAccounts, TimelineList)
+	err = paginate(ctx, d, client, fetchAccounts, TimelineListAccount)
 	if err != nil {
 		return nil, err
 	}
