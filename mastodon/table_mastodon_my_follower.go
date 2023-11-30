@@ -22,7 +22,7 @@ func listMyFollowers(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 
 	client, err := connect(ctx, d)
 	if err != nil {
-		logger.Error("mastodon_my_followerg.listMyFollowers", "connect_error", err)
+		logger.Error("mastodon_my_follower.listMyFollowers", "connect_error", err)
 		return nil, err
 	}
 
