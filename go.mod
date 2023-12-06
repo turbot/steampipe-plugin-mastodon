@@ -1,4 +1,4 @@
-module steampipe-plugin-mastodon
+module github.com/turbot/steampipe-plugin-mastodon
 
 go 1.21
 
