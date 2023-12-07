@@ -16,14 +16,3 @@ order by
 limit 10;
 ```
 
-### Query peers of another Mastodon server
-
-```sql
-select
-  server,
-  peer
-from
-  mastodon_peer
-where
-  server = 'https://nerdculture.de';
-```

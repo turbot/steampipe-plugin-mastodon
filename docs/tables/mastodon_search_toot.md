@@ -18,18 +18,27 @@ from
   mastodon_search_toot
 where
   query = 'twitter';
+limit
+  100
 ```
 
 ### Search for a toot
 
 ```sql
+with my_toot as (
+  select url from mastodon_my_toot limit 1
+)
 select
   created_at,
   username,
-  url,
+  m.url,
   content
 from
-  mastodon_search_toot
+  mastodon_search_toot s
+join
+  my_toot m
+on
+  m.url = s.url
 where
-  query = 'https://mastodon.social/@Ronkjeffries/109915239922151298';
+  query = m.url
 ```

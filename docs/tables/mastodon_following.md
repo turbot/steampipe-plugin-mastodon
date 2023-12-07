@@ -26,22 +26,19 @@ limit 10;
 ### Count follows by month of account creation
 
 ```sql
-with data as (
-  select
-    to_char(created_at, 'YYYY-MM') as created
-  from
-    mastodon_following
-  where
-    following_account_id = '108216972189391481'
+with my_account_id as (
+  select id::text from mastodon_my_account limit 1
 )
 select
-  created,
+  to_char(mf.created_at, 'yyyy-mm') as created,
   count(*)
 from
-  data
+  mastodon_following mf
+join
+  my_account_id mai on mf.following_account_id::text = mai.id
 group by
   created
 order by
-  created;
+  created
 ```
 

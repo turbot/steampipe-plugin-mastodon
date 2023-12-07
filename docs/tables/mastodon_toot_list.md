@@ -9,24 +9,31 @@ The `mastodon_toot_list` table can be used to query information about any toot o
 ### Get recent toots on a list's timeline
 
 ```sql
+with list_info as (
+  select id from mastodon_my_list limit 1
+)
 select
   created_at,
   username,
   url,
   content
 from
-  mastodon_toot_list
-where
-  list_id = '42994'
+  mastodon_toot_list m
+join
+  list_info l
+on
+  m.list_id = l.id
 limit
-  30;
+  10
 ```
 
 ### Get recent original toots on a list's timeline, at most one per person per day
 
 ```sql
-with data as 
-(
+with list_info as (
+  select id from mastodon_my_list limit 1
+),
+data as (
   select
     list_id,
     to_char(created_at, 'YYYY-MM-DD') as day,
@@ -42,10 +49,13 @@ with data as
   from
     1 for 200) as toot 
   from
-    mastodon_toot_list 
+    mastodon_toot_list m
+  join
+    list_info l
+  on
+    m.list_id = l.id
   where
-    list_id = '42994' 
-    and reblog -> 'url' is null -- only original posts
+    reblog -> 'url' is null -- only original posts
     and in_reply_to_account_id is null -- only original posts
     limit 40 
 )

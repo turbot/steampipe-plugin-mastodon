@@ -9,14 +9,19 @@ The `mastodon_list_account` table can be used to query information about any acc
 ### List members of a Mastodon list
 
 ```sql
+with list_id as (
+  select id from mastodon_my_list limit 1
+)
 select
   url,
   username,
   display_name
 from
-  mastodon_list_account
-where
-  list_id = '42994';
+  mastodon_list_account a
+join
+  list_id l
+on
+  a.list_id = l.id
 ```
 
 ### List details for members of all my Mastodon lists
@@ -27,11 +32,11 @@ select
   a.display_name,
   a.server,
   a.followers_count,
-  a.following_count 
+  a.following_count
 from
-  mastodon_my_list l 
+  mastodon_my_list l
   join
-    mastodon_list_account a 
+    mastodon_list_account a
     on l.id = a.list_id;
 ```
 
