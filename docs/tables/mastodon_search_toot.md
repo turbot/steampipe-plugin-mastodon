@@ -11,6 +11,9 @@ Mastodon is a decentralized, open-source social network. A Toot in Mastodon is e
 
 The `mastodon_search_toot` table provides insights into Toots within Mastodon. As a data analyst or social media manager, explore Toot-specific details through this table, including content, media attachments, and associated metadata. Utilize it to uncover trends, such as popular topics, sentiment analysis, and the reach and impact of specific posts or users.
 
+**Important Notes**
+- You must specify the `query` column in the `where` or `join` clause to query this table.
+
 ## Examples
 
 ### Search for 'twitter'

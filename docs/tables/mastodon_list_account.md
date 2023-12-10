@@ -11,6 +11,9 @@ Mastodon is a decentralized, open source social network. It is a part of the wid
 
 The `mastodon_list_account` table provides insights into List Accounts within Mastodon. As a social media manager or a digital marketer, explore account-specific details through this table, including account metadata, list associations, and other related information. Utilize it to uncover information about accounts, such as those with certain characteristics, the relationships between accounts, and the verification of metadata.
 
+**Important Notes**
+- You must specify the `list_id` column in the `where` or `join` clause to query this table.
+
 ## Examples
 
 ### List members of a Mastodon list

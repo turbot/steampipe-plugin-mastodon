@@ -11,6 +11,9 @@ Mastodon is an open-source, decentralized social networking service that allows 
 
 The `mastodon_search_hashtag` table provides insights into the popular and recent hashtags used in the Mastodon social network. As a data analyst or social media manager, explore hashtag-specific details through this table, including their popularity, recency, and associated metadata. Utilize it to uncover information about trending topics, user engagement, and the overall behavior of users on the Mastodon platform.
 
+**Important Notes**
+- You must specify the `query` column in the `where` or `join` clause to query this table.
+
 ## Examples
 
 ### Search for the hashtag `steampipe`

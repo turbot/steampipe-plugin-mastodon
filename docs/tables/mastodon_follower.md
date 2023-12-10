@@ -11,6 +11,9 @@ Mastodon is a free and open-source self-hosted social networking service. It all
 
 The `mastodon_follower` table provides insights into follower relationships within the Mastodon social network. As a social media analyst, explore follower-specific details through this table, including follower and followed account details, and associated metadata. Utilize it to uncover information about followers, such as their relationships with other accounts, and the growth of their networks.
 
+**Important Notes**
+- You must specify the `followed_account_id` column in the `where` or `join` clause to query this table.
+
 ## Examples
 
 ### List followers

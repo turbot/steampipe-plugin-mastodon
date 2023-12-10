@@ -11,6 +11,9 @@ Mastodon is a decentralized social network service. It allows users to create th
 
 The `mastodon_account` table provides insights into account details within the Mastodon social network. As a social media analyst, explore account-specific details through this table, including username, display name, followers count, following count, statuses count, and more. Utilize it to uncover information about accounts, such as those with high follower counts, the ratio between followers and following, and the frequency of statuses.
 
+**Important Notes**
+- You must specify the `id` column in the `where` clause to query this table.
+
 ## Examples
 
 ### Details for an account

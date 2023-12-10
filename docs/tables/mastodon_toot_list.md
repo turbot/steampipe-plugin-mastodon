@@ -11,6 +11,9 @@ Mastodon is a free and open-source self-hosted social networking service. It all
 
 The `mastodon_toot_list` table provides insights into the 'toots' or posts made by users on the Mastodon platform. As a data analyst or social media manager, explore toot-specific details through this table, including content, timestamps, and associated metadata. Utilize it to uncover information about toots, such as their reach, the interactions they have generated, and the context of their creation.
 
+**Important Notes**
+- You must specify the `list_id` column in the `where` or `join` clause to query this table.
+
 ## Examples
 
 ### Get recent toots on a list's timeline

@@ -11,6 +11,9 @@ Mastodon is a federated social network, with similar features to Twitter, but ba
 
 The `mastodon_relationship` table provides insights into the relationship status between the authenticated user and other accounts on Mastodon. As a social media analyst or a community moderator, you can use this table to explore and monitor the relationship statuses, including whether the authenticated user is following or blocking a given account, or if a follow request has been made. This can be utilized to better understand the interaction patterns and community dynamics within your Mastodon instance.
 
+**Important Notes**
+- You must specify the `id` column in the `where` or `join` clause to query this table.
+
 ## Examples
 
 ### My relationships to a particular account ID

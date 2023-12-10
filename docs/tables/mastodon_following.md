@@ -11,6 +11,9 @@ Mastodon is a decentralized, open-source social network. A Mastodon Following is
 
 The `mastodon_following` table provides insights into the accounts a user is following within Mastodon. As a social media analyst, explore following-specific details through this table, including the status of following, follower counts, and associated metadata. Utilize it to understand user behavior, such as their interest patterns, the connections between users, and the dynamics of user interactions.
 
+**Important Notes**
+- You must specify the `following_account_id` column in the `where` or `join` clause to query this table.
+
 ## Examples
 
 ### List following

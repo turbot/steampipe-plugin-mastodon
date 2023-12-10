@@ -11,6 +11,9 @@ Mastodon is a free and open-source self-hosted social networking service. It all
 
 The `mastodon_search_account` table provides insights into Mastodon Accounts. As a social media analyst, explore account-specific details through this table, including username, display name, created at date, followers count, following count, statuses count and more. Utilize it to uncover information about accounts, such as those with high followers count, the activity level of accounts, and the verification of account details.
 
+**Important Notes**
+- You must specify the `query` column in the `where` or `join` clause to query this table.
+
 ## Examples
 
 ### Search for accounts matching `alice`
