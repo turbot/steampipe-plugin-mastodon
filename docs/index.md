@@ -88,7 +88,4 @@ connection "mastodon" {
 
 - `access_token` - The token to access the Mastodon APIs. This is required while querying all the tables except `mastodon_rule`, `mastodon_peer`, `mastodon_server`, `mastodon_weekly_activity`, and `mastodon_domain_block` tables.
 
-## Get involved
 
-* Open source: https://github.com/turbot/steampipe-plugin-mastodon
-* Community: [Discussion forums](https://github.com/turbot/steampipe/discussions)
