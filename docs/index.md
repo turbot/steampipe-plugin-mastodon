@@ -8,6 +8,7 @@ name: mastodon
 description: Use SQL to instantly query Mastodon timelines, accounts, followers and more.
 og_description: Query Mastodon with SQL! Open source CLI. No DB required.
 og_image: "/images/plugins/turbot/mastodon-social-graphic.png"
+engines: ["steampipe", "sqlite", "postgres", "export"]
 ---
 
 # Mastodon + Steampipe
