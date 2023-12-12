@@ -13,9 +13,9 @@ engines: ["steampipe", "sqlite", "postgres", "export"]
 
 # Mastodon + Steampipe
 
-[Mastodon](https://joinmastodon.org/) is a federated social network similar to Twitter.
+[Steampipe](https://steampipe.io) is an open-source zero-ETL engine to instantly query cloud APIs using SQL.
 
-[Steampipe](https://steampipe.io/) is an open source CLI for querying cloud APIs using SQL.
+[Mastodon](https://joinmastodon.org/) is a federated social network similar to Twitter.
 
 For example:
 
