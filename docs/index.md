@@ -8,13 +8,14 @@ name: mastodon
 description: Use SQL to instantly query Mastodon timelines, accounts, followers and more.
 og_description: Query Mastodon with SQL! Open source CLI. No DB required.
 og_image: "/images/plugins/turbot/mastodon-social-graphic.png"
+engines: ["steampipe", "sqlite", "postgres", "export"]
 ---
 
 # Mastodon + Steampipe
 
-[Mastodon](https://joinmastodon.org/) is a federated social network similar to Twitter.
+[Steampipe](https://steampipe.io) is an open-source zero-ETL engine to instantly query cloud APIs using SQL.
 
-[Steampipe](https://steampipe.io/) is an open source CLI for querying cloud APIs using SQL.
+[Mastodon](https://joinmastodon.org/) is a federated social network similar to Twitter.
 
 For example:
 
@@ -87,7 +88,4 @@ connection "mastodon" {
 
 - `access_token` - The token to access the Mastodon APIs. This is required while querying all the tables except `mastodon_rule`, `mastodon_peer`, `mastodon_server`, `mastodon_weekly_activity`, and `mastodon_domain_block` tables.
 
-## Get involved
 
-* Open source: https://github.com/turbot/steampipe-plugin-mastodon
-* Community: [Discussion forums](https://github.com/turbot/steampipe/discussions)
