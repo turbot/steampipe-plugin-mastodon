@@ -15,7 +15,6 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		DefaultShouldIgnoreError: isNotFoundError([]string{"404"}),
 		ConnectionConfigSchema: &plugin.ConnectionConfigSchema{
 			NewInstance: ConfigInstance,
-			Schema:      ConfigSchema,
 		},
 		TableMap: map[string]*plugin.Table{
 			"mastodon_account":         tableMastodonAccount(),
