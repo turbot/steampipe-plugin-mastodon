@@ -15,7 +15,7 @@ func tableMastodonRelationship() *plugin.Table {
 			Hydrate:    listRelationships,
 			KeyColumns: plugin.SingleColumn("id"),
 		},
-		Columns: relationshipColumns(),
+		Columns: commonAccountColumns(relationshipColumns()),
 	}
 }
 

@@ -22,7 +22,7 @@ func tableMastodonSearchToot() *plugin.Table {
 				},
 			},
 		},
-		Columns: tootColumns(),
+		Columns: commonAccountColumns(tootColumns()),
 	}
 }
 

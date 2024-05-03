@@ -13,22 +13,16 @@ func tableMastodonMyAccount() *plugin.Table {
 		List: &plugin.ListConfig{
 			Hydrate: getMyAccount,
 		},
-		Columns: accountColumns(),
+		Columns: commonAccountColumns(accountColumns()),
 	}
 }
 
 func getMyAccount(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 
-	client, err := connect(ctx, d)
+	account, err := getAccountInfo(ctx, d, h)
 	if err != nil {
 		logger.Error("mastodon_my_account.getMyAccount", "connect_error", err)
-		return nil, err
-	}
-
-	account, err := client.GetAccountCurrentUser(ctx)
-	if err != nil {
-		logger.Error("mastodon_my_account.getMyAccount", "query_error", err)
 		return nil, err
 	}
 	d.StreamListItem(ctx, account)

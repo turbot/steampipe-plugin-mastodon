@@ -14,7 +14,7 @@ func tableMastodonTootFederated() *plugin.Table {
 		List: &plugin.ListConfig{
 			Hydrate: listTootsFederated,
 		},
-		Columns: tootColumns(),
+		Columns: commonAccountColumns(tootColumns()),
 	}
 }
 

@@ -14,7 +14,7 @@ func tableMastodonTootHome() *plugin.Table {
 		List: &plugin.ListConfig{
 			Hydrate: listTootHome,
 		},
-		Columns: tootColumns(),
+		Columns: commonAccountColumns(tootColumns()),
 	}
 }
 

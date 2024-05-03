@@ -20,7 +20,7 @@ func tableMastodonServer() *plugin.Table {
 		List: &plugin.ListConfig{
 			Hydrate: getServer,
 		},
-		Columns: serverColumns(),
+		Columns: commonAccountColumns(serverColumns()),
 	}
 }
 

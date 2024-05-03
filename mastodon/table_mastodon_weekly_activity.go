@@ -23,7 +23,7 @@ func tableMastodonWeeklyActivity() *plugin.Table {
 				},
 			},
 		},
-		Columns: weeklyActivityColumns(),
+		Columns: commonAccountColumns(weeklyActivityColumns()),
 	}
 }
 

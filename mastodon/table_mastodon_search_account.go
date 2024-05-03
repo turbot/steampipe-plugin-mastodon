@@ -21,7 +21,7 @@ func tableMastodonSearchAccount() *plugin.Table {
 				},
 			},
 		},
-		Columns: accountSearchColumns(),
+		Columns: commonAccountColumns(accountSearchColumns()),
 	}
 }
 
