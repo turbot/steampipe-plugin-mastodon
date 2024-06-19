@@ -13,6 +13,12 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		Name:                     "steampipe-plugin-mastodon",
 		DefaultTransform:         transform.FromJSONTag(),
 		DefaultShouldIgnoreError: isNotFoundError([]string{"404"}),
+		ConnectionKeyColumns: []plugin.ConnectionKeyColumn{
+			{
+				Name:    "account_id",
+				Hydrate: getAccountId,
+			},
+		},
 		ConnectionConfigSchema: &plugin.ConnectionConfigSchema{
 			NewInstance: ConfigInstance,
 		},

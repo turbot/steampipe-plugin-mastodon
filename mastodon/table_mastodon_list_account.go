@@ -17,7 +17,7 @@ func tableMastodonListAccount() *plugin.Table {
 			Hydrate:    listListAccounts,
 			KeyColumns: plugin.SingleColumn("list_id"),
 		},
-		Columns: listAccountColumns(),
+		Columns: commonAccountColumns(listAccountColumns()),
 	}
 }
 

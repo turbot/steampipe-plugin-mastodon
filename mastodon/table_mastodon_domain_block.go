@@ -21,7 +21,7 @@ func tableMastodonDomainBlock() *plugin.Table {
 				},
 			},
 		},
-		Columns: domainColumns(),
+		Columns: commonAccountColumns(domainColumns()),
 	}
 }
 

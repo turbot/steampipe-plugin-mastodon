@@ -20,7 +20,7 @@ func tableMastodonTootList() *plugin.Table {
 				},
 			},
 		},
-		Columns: tootColumns(),
+		Columns: commonAccountColumns(tootColumns()),
 	}
 }
 

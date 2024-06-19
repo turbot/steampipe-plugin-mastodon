@@ -21,7 +21,7 @@ func tableMastodonPeer() *plugin.Table {
 				},
 			},
 		},
-		Columns: peerColumns(),
+		Columns: commonAccountColumns(peerColumns()),
 	}
 }
 
