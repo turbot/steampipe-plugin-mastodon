@@ -1,15 +1,15 @@
 module github.com/turbot/steampipe-plugin-mastodon
 
-go 1.21.0
+go 1.22.4
 
-toolchain go1.21.1
+toolchain go1.22.6
 
 replace github.com/mattn/go-mastodon => github.com/turbot/go-mastodon v0.0.1
 
 require (
 	github.com/mattn/go-mastodon v0.0.6
 	github.com/microcosm-cc/bluemonday v1.0.23
-	github.com/turbot/steampipe-plugin-sdk/v5 v5.10.1
+	github.com/turbot/steampipe-plugin-sdk/v5 v5.10.3
 )
 
 require (
