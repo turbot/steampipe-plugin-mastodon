@@ -9,7 +9,7 @@ replace github.com/mattn/go-mastodon => github.com/turbot/go-mastodon v0.0.1
 require (
 	github.com/mattn/go-mastodon v0.0.6
 	github.com/microcosm-cc/bluemonday v1.0.23
-	github.com/turbot/steampipe-plugin-sdk/v5 v5.10.3
+	github.com/turbot/steampipe-plugin-sdk/v5 v5.10.4
 )
 
 require (
@@ -55,7 +55,7 @@ require (
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.19.1 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
-	github.com/hashicorp/go-getter v1.7.4 // indirect
+	github.com/hashicorp/go-getter v1.7.5 // indirect
 	github.com/hashicorp/go-hclog v1.6.2 // indirect
 	github.com/hashicorp/go-plugin v1.6.0 // indirect
 	github.com/hashicorp/go-safetemp v1.0.0 // indirect
