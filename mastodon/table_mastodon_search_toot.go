@@ -73,6 +73,13 @@ func accountServerFromStatus(ctx context.Context, input *transform.TransformData
 	status := input.Value.(*mastodon.Status)
 	re := regexp.MustCompile(`https://(.+)/`)
 	matches := re.FindStringSubmatch(status.Account.URL)
+	if len(matches) == 0 {
+		plugin.Logger(ctx).Debug("accountServerFromStatus: no match, returning ", "status.Account.URL", status.Account.URL)
+		return status.Account.URL, nil
+	} else {
+		return matches[1], nil
+	}
+
 	return matches[1], nil
 }
 
