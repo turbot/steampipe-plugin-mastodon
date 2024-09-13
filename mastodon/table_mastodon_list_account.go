@@ -43,7 +43,7 @@ func listListAccounts(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 
 	err = paginate(ctx, d, client, fetchAccounts, TimelineListAccount)
 	if err != nil {
-		logger.Error("mastodon_list_account.listListAccounts", "api_error", err)
+		logger.Error("mastodon_list_account.listListAccounts", "query_error", err)
 		return nil, err
 	}
 

@@ -28,7 +28,7 @@ func listTootsMy(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData
 
 	err = paginate(ctx, d, client, fetchStatuses, TimelineMy)
 	if err != nil {
-		logger.Error("mastodon_my_toot.listMyTootsMy", "api_error", err)
+		logger.Error("mastodon_my_toot.listMyTootsMy", "query_error", err)
 		return nil, err
 	}
 

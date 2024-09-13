@@ -109,7 +109,7 @@ func listNotifications(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 
 	err = paginate(ctx, d, client, fetchNotifications, TimelineNotification)
 	if err != nil {
-		logger.Error("mastodon_notification.listNotifications", "api_error", err)
+		logger.Error("mastodon_notification.listNotifications", "query_error", err)
 		return nil, err
 	}
 

@@ -172,7 +172,7 @@ func listTootsFavourite(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 
 	err = paginate(ctx, d, client, fetchStatuses, TimelineFavourite)
 	if err != nil {
-		logger.Error("mastodon_toot_favourite.listTootsFavourite", "api_error", err)
+		logger.Error("mastodon_toot_favourite.listTootsFavourite", "query_error", err)
 		return nil, err
 	}
 
