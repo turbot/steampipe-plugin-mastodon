@@ -3,7 +3,6 @@ package mastodon
 import (
 	"context"
 
-	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
@@ -48,29 +47,11 @@ func listFollowing(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 		return nil, err
 	}
 
-	following_account_id := d.EqualsQualString("following_account_id")
-
-	pg := mastodon.Pagination{}
-	for {
-		follows, err := client.GetAccountFollowing(ctx, mastodon.ID(following_account_id), &pg)
-		if err != nil {
-			logger.Error("mastodon_following.listFollowing", "query_error", err)
-			return nil, err
-		}
-
-		for _, follow := range follows {
-			d.StreamListItem(ctx, follow)
-		}
-
-		if pg.MaxID == "" {
-			break
-		}
-
-		// Set next page
-		maxId := pg.MaxID
-		pg = mastodon.Pagination{
-			MaxID: maxId,
-		}
+	err = paginate(ctx, d, client, fetchAccounts, TimelineFollowing)
+	if err != nil {
+		logger.Error("mastodon_following.listFollowing", "query_error", err)
+		return nil, err
 	}
+
 	return nil, nil
 }

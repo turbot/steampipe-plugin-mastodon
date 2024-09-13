@@ -123,7 +123,13 @@ func accountServerFromAccount(ctx context.Context, input *transform.TransformDat
 	account := input.Value.(*mastodon.Account)
 	re := regexp.MustCompile(`https://(.+)/`)
 	matches := re.FindStringSubmatch(account.URL)
-	return matches[1], nil
+	if len(matches) == 0 {
+		plugin.Logger(ctx).Debug("accountServerFromAccount: no match, returning ", "account.URL", account.URL)
+		return account.URL, nil
+	} else {
+		return matches[1], nil
+	}
+
 }
 
 func qualifiedAccountUrl(ctx context.Context, url string) string {
@@ -147,7 +153,6 @@ func qualifiedAccountUrl(ctx context.Context, url string) string {
 	}
 	qualifiedAccountUrl := fmt.Sprintf("https://%s/@%s@%s", prefixedSchemelessHomeServer, person, server)
 	qualifiedAccountUrl = strings.ReplaceAll(qualifiedAccountUrl, "@"+schemelessHomeServer, "")
-	plugin.Logger(ctx).Debug("qualifiedAccountUrl", "person", person, "server", server, "schemelessUrl", schemelessUrl, "schemelessHomeServer", schemelessHomeServer, "prefixedSchemelessHomeServer", prefixedSchemelessHomeServer, "qualifiedAccountUrl", qualifiedAccountUrl)
 	return qualifiedAccountUrl
 }
 

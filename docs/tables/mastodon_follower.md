@@ -55,43 +55,35 @@ limit 10;
 Explore the growth of followers over time by counting the number of new followers added each month. This can help to understand the effectiveness of social media strategies and identify periods of significant growth or decline.
 
 ```sql+postgres
-with data as 
-(
-  select
-    to_char(created_at, 'YYYY-MM') as created 
-  from
-    mastodon_follower 
-  where
-    followed_account_id = '108216972189391481' 
+with my_account_id as (
+  select id::text from mastodon_my_account limit 1
 )
 select
-  created,
-  count(*) 
+  to_char(mf.created_at, 'yyyy-mm') as created,
+  count(*)
 from
-  data 
+  mastodon_follower mf
+join
+  my_account_id mai on mf.followed_account_id::text = mai.id
 group by
-  created 
+  created
 order by
-  created;
+  created
 ```
 
 ```sql+sqlite
-with data as 
-(
-  select
-    strftime('%Y-%m', created_at) as created 
-  from
-    mastodon_follower 
-  where
-    followed_account_id = '108216972189391481' 
+with my_account_id as (
+  select cast(id as text) as id from mastodon_my_account limit 1
 )
 select
-  created,
-  count(*) 
+  strftime('%Y-%m', mf.created_at) as created,
+  count(*)
 from
-  data 
+  mastodon_follower mf
+join
+  my_account_id mai on cast(mf.followed_account_id as text) = mai.id
 group by
-  created 
+  created
 order by
   created;
 ```

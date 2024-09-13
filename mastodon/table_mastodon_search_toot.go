@@ -73,6 +73,11 @@ func accountServerFromStatus(ctx context.Context, input *transform.TransformData
 	status := input.Value.(*mastodon.Status)
 	re := regexp.MustCompile(`https://(.+)/`)
 	matches := re.FindStringSubmatch(status.Account.URL)
+	if len(matches) == 0 {
+		plugin.Logger(ctx).Debug("accountServerFromStatus: no match, returning ", "status.Account.URL", status.Account.URL)
+		return status.Account.URL, nil
+	}
+
 	return matches[1], nil
 }
 
@@ -101,7 +106,6 @@ func instanceQualifiedStatusUrl(ctx context.Context, input *transform.TransformD
 
 func instanceQualifiedReblogUrl(ctx context.Context, input *transform.TransformData) (interface{}, error) {
 	status := input.Value.(*mastodon.Status)
-	plugin.Logger(ctx).Debug("qualifiedReblogUrl", "status.Reblog", status.Reblog)
 	if status.Reblog == nil {
 		return "", nil
 	}

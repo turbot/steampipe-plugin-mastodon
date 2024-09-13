@@ -20,25 +20,35 @@ The `mastodon_list_account` table provides insights into List Accounts within Ma
 Explore which members belong to a specific Mastodon list, gaining insights into their usernames and display names for better user management and communication strategies.
 
 ```sql+postgres
+with list_id as (
+  select id from mastodon_my_list limit 1
+)
 select
   url,
   username,
   display_name
 from
-  mastodon_list_account
-where
-  list_id = '42994';
+  mastodon_list_account a
+join
+  list_id l
+on
+  a.list_id = l.id
 ```
 
 ```sql+sqlite
+with list_id as (
+  select id from mastodon_my_list limit 1
+)
 select
-  url,
-  username,
-  display_name
+  a.url,
+  a.username,
+  a.display_name
 from
-  mastodon_list_account
-where
-  list_id = '42994';
+  mastodon_list_account a
+join
+  list_id l
+on
+  a.list_id = l.id;
 ```
 
 ### List details for members of all my Mastodon lists
@@ -50,11 +60,11 @@ select
   a.display_name,
   a.server,
   a.followers_count,
-  a.following_count 
+  a.following_count
 from
-  mastodon_my_list l 
+  mastodon_my_list l
   join
-    mastodon_list_account a 
+    mastodon_list_account a
     on l.id = a.list_id;
 ```
 
@@ -64,11 +74,11 @@ select
   a.display_name,
   a.server,
   a.followers_count,
-  a.following_count 
+  a.following_count
 from
-  mastodon_my_list l 
+  mastodon_my_list l
   join
-    mastodon_list_account a 
+    mastodon_list_account a
     on l.id = a.list_id;
 ```
 

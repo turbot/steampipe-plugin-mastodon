@@ -13,7 +13,7 @@ type PluginConfig struct {
 	MaxToots    *int    `hcl:"max_toots"`
 }
 
-var default_max_toots = 1000
+var defaultMaxToots = 1000
 
 func ConfigInstance() interface{} {
 	return &PluginConfig{}
@@ -27,7 +27,7 @@ func GetConfig(connection *plugin.Connection) PluginConfig {
 	config, _ := connection.Config.(PluginConfig)
 
 	if config.MaxToots == nil {
-		config.MaxToots = &default_max_toots
+		config.MaxToots = &defaultMaxToots
 	}
 
 	if homeServer == "" {

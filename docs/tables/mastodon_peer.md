@@ -36,25 +36,3 @@ order by
 limit 10;
 ```
 
-### Query peers of another Mastodon server
-Explore which servers are connected to a specific Mastodon server. This is useful for understanding the network of servers your chosen server interacts with.
-
-```sql+postgres
-select
-  server,
-  peer
-from
-  mastodon_peer
-where
-  server = 'https://nerdculture.de';
-```
-
-```sql+sqlite
-select
-  server,
-  peer
-from
-  mastodon_peer
-where
-  server = 'https://nerdculture.de';
-```

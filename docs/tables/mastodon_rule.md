@@ -26,39 +26,3 @@ order by
   id::int;
 ```
 
-```sql+sqlite
-select
-  id as "#",
-  rule
-from
-  mastodon_rule
-order by
-  cast(id as integer);
-```
-
-### Query rules for another server
-Explore the rules applicable for a specific server in the Mastodon social network. This can help in understanding the server's operational guidelines and ensure compliance with its policies.
-
-```sql+postgres
-select
-  id as "#",
-  rule
-from
-  mastodon_rule
-where
-  server = 'https://fosstodon.org'
-order by
-  id::int;
-```
-
-```sql+sqlite
-select
-  id as "#",
-  rule
-from
-  mastodon_rule
-where
-  server = 'https://fosstodon.org'
-order by
-  CAST(id AS INTEGER);
-```
