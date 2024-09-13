@@ -45,25 +45,20 @@ func sanitizeContent(ctx context.Context, input *transform.TransformData) (inter
 }
 
 func qualifiedStatusUrl(ctx context.Context, url string, id string) (interface{}, error) {
-	//logger := plugin.Logger(ctx)
 
 	schemeLessStatusUrl := strings.ReplaceAll(url, "https://", "")
-	//logger.Debug("qualifiedStatusUrl", "url", url)
 	if strings.HasPrefix(url, homeServer) {
 		if app == "" {
 			qualifiedStatusUrl := url
-			//logger.Debug("qualifiedStatusUrl", "home server, no app, returning...", qualifiedStatusUrl)
 			return qualifiedStatusUrl, nil
 		} else {
 			qualifiedStatusUrl := fmt.Sprintf("https://%s/%s/", app, schemeLessStatusUrl)
-			//logger.Debug("qualifiedStatusUrl", "home server, app, returning...", qualifiedStatusUrl)
 			return qualifiedStatusUrl, nil
 		}
 	}
 	re := regexp.MustCompile(`https://([^/]+)/@(.+)/`)
 	matches := re.FindStringSubmatch(url)
 	if len(matches) == 0 {
-		//logger.Debug("qualifiedStatusUrl", "no match for status.URL, returning", url)
 		return url, nil
 	}
 	server := matches[1]
@@ -74,7 +69,6 @@ func qualifiedStatusUrl(ctx context.Context, url string, id string) (interface{}
 	} else {
 		qualifiedStatusUrl = fmt.Sprintf("https://%s/%s/@%s@%s/%s", app, schemelessHomeServer, person, server, id)
 	}
-	//logger.Debug("qualifiedStatusUrl", "homeServer", homeServer, "server", server, "person", person, "id", id, "qualifiedStatusUrl", qualifiedStatusUrl)
 	return qualifiedStatusUrl, nil
 }
 
@@ -230,7 +224,6 @@ func fetchStatuses(ctx context.Context, d *plugin.QueryData, timelineType string
 		statuses, err = client.GetFavourites(ctx, pg)
 	case TimelineMy:
 		account, _ := getAccountCurrentUser(ctx, client)
-		//logger.Debug("fetchStatuses", "account", account)
 		statuses, err = client.GetAccountStatuses(ctx, account.ID, pg)
 	case TimelineList:
 		listId := d.EqualsQualString("list_id")

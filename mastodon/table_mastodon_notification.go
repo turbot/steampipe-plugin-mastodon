@@ -103,12 +103,13 @@ func listNotifications(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 
 	client, err := connect(ctx, d)
 	if err != nil {
-		logger.Error("mastodon_notification", "connect_error", err)
+		logger.Error("mastodon_notification.listNotifications", "connect_error", err)
 		return nil, err
 	}
 
 	err = paginate(ctx, d, client, fetchNotifications, TimelineNotification)
 	if err != nil {
+		logger.Error("mastodon_notification.listNotifications", "api_error", err)
 		return nil, err
 	}
 

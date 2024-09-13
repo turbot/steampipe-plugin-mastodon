@@ -49,6 +49,7 @@ func listFollowing(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 
 	err = paginate(ctx, d, client, fetchAccounts, TimelineFollowing)
 	if err != nil {
+		logger.Error("mastodon_following.listFollowing", "api_error", err)
 		return nil, err
 	}
 

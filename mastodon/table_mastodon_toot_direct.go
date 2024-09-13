@@ -28,6 +28,7 @@ func listTootsDirect(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 
 	err = paginate(ctx, d, client, fetchStatuses, TimelineDirect)
 	if err != nil {
+		logger.Error("mastodon_toot_direct.listTootsDirect", "api_error", err)
 		return nil, err
 	}
 

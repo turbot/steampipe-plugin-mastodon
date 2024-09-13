@@ -3,7 +3,6 @@ package mastodon
 import (
 	"context"
 
-	//	"github.com/mattn/go-mastodon"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
 
@@ -29,6 +28,7 @@ func listTootsHome(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateDa
 
 	err = paginate(ctx, d, client, fetchStatuses, TimelineHome)
 	if err != nil {
+		logger.Error("mastodon_toot_home.listTootsHome", "api_error", err)
 		return nil, err
 	}
 

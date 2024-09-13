@@ -28,6 +28,7 @@ func listTootsFederated(ctx context.Context, d *plugin.QueryData, h *plugin.Hydr
 
 	err = paginate(ctx, d, client, fetchStatuses, TimelineFederated, false)
 	if err != nil {
+		logger.Error("mastodon_toot_federated.listTootsFederated", "api_error", err)
 		return nil, err
 	}
 

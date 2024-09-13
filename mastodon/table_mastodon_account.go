@@ -153,7 +153,6 @@ func qualifiedAccountUrl(ctx context.Context, url string) string {
 	}
 	qualifiedAccountUrl := fmt.Sprintf("https://%s/@%s@%s", prefixedSchemelessHomeServer, person, server)
 	qualifiedAccountUrl = strings.ReplaceAll(qualifiedAccountUrl, "@"+schemelessHomeServer, "")
-	//plugin.Logger(ctx).Debug("qualifiedAccountUrl", "person", person, "server", server, "schemelessUrl", schemelessUrl, "schemelessHomeServer", schemelessHomeServer, "prefixedSchemelessHomeServer", prefixedSchemelessHomeServer, "qualifiedAccountUrl", qualifiedAccountUrl)
 	return qualifiedAccountUrl
 }
 
