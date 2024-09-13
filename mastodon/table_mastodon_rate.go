@@ -14,7 +14,7 @@ func tableMastodonRate() *plugin.Table {
 		List: &plugin.ListConfig{
 			Hydrate: listRateLimit,
 		},
-		Columns: rateColumns(),
+		Columns: commonAccountColumns(rateColumns()),
 	}
 }
 

@@ -20,7 +20,7 @@ func tableMastodonAccount() *plugin.Table {
 			Hydrate:    getAccount,
 			KeyColumns: plugin.SingleColumn("id"),
 		},
-		Columns: accountColumns(),
+		Columns: commonAccountColumns(accountColumns()),
 	}
 }
 

@@ -16,7 +16,7 @@ func tableMastodonFollowing() *plugin.Table {
 			Hydrate:    listFollowing,
 			KeyColumns: plugin.SingleColumn("following_account_id"),
 		},
-		Columns: followingColumns(),
+		Columns: commonAccountColumns(followingColumns()),
 	}
 }
 

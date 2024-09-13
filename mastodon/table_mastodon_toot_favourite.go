@@ -15,7 +15,7 @@ func tableMastodonTootFavourite() *plugin.Table {
 		List: &plugin.ListConfig{
 			Hydrate: listTootsFavourite,
 		},
-		Columns: tootColumns(),
+		Columns: commonAccountColumns(tootColumns()),
 	}
 }
 

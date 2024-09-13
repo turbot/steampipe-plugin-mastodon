@@ -21,7 +21,7 @@ func tableMastodonRule() *plugin.Table {
 				},
 			},
 		},
-		Columns: ruleColumns(),
+		Columns: commonAccountColumns(ruleColumns()),
 	}
 }
 

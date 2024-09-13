@@ -17,7 +17,7 @@ func tableMastodonSearchHashtag() *plugin.Table {
 			Hydrate:    listHashtag,
 			KeyColumns: plugin.SingleColumn("query"),
 		},
-		Columns: hashtagColumns(),
+		Columns: commonAccountColumns(hashtagColumns()),
 	}
 }
 
