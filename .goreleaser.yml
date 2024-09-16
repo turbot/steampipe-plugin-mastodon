@@ -1,5 +1,5 @@
 # This is an example goreleaser.yaml file with some sane defaults.
-# Makefile sure to check the documentation at http://goreleaser.com
+# Make sure to check the documentation at http://goreleaser.com
 before:
   hooks:
     - go mod tidy
@@ -11,12 +11,15 @@ builds:
     goos:
       - linux
       - darwin
+
     goarch:
       - amd64
       - arm64
 
     id: "steampipe"
     binary: "{{ .ProjectName }}.plugin"
+    flags:
+      - -tags=netgo
 
 archives:
   - format: gz
