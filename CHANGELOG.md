@@ -1,3 +1,19 @@
+## v0.3.0 [2024-09-16]
+
+_Enhancements_
+
+- The Plugin and the Steampipe Anywhere binaries are now built with the `netgo` package.
+- Added the `version` flag to the plugin's Export tool. ([#65](https://github.com/turbot/steampipe-export/pull/65))
+
+_Bug fixes_
+
+- Fixed pagination across all the `mastodon_*` tables. ([#34](https://github.com/turbot/steampipe-plugin-mastodon/pull/34))
+
+_Dependencies_
+
+- Recompiled plugin with Go version `1.22`. ([#43](https://github.com/turbot/steampipe-plugin-mastodon/pull/43))
+- Recompiled plugin with [steampipe-plugin-sdk v5.10.4](https://github.com/turbot/steampipe-plugin-sdk/blob/develop/CHANGELOG.md#v5104-2024-08-29) that fixes logging in the plugin export tool. ([#43](https://github.com/turbot/steampipe-plugin-mastodon/pull/43))
+
 ## v0.2.0 [2023-12-12]
 
 _What's new?_
