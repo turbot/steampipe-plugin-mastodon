@@ -16,8 +16,32 @@ func tableMastodonFollower() *plugin.Table {
 			Hydrate:    listFollowers,
 			KeyColumns: plugin.SingleColumn("followed_account_id"),
 		},
-		Columns: commonAccountColumns(followerColumns()),
+		Columns: commonAccountColumns(followerColumnsWithFullAccount()),
 	}
+}
+
+func followerColumnsWithFullAccount() []*plugin.Column {
+	additionalColumns := []*plugin.Column{
+		{
+			Name:        "followed_account_id",
+			Type:        proto.ColumnType_STRING,
+			Description: "ID of the account who is being followed.",
+			Transform:   transform.FromQual("followed_account_id"),
+		},
+		{
+			Name:        "follower_account_id",
+			Type:        proto.ColumnType_STRING,
+			Description: "ID of the follower account.",
+			Transform:   transform.FromField("ID"),
+		},
+		{
+			Name:        "account",
+			Type:        proto.ColumnType_JSON,
+			Description: "Full account information for the account.",
+			Transform:   transform.FromValue(),
+		},
+	}
+	return append(additionalColumns, baseAccountColumns()...)
 }
 
 func followerColumns() []*plugin.Column {
@@ -33,6 +57,18 @@ func followerColumns() []*plugin.Column {
 			Type:        proto.ColumnType_STRING,
 			Description: "ID of the follower account.",
 			Transform:   transform.FromField("ID"),
+		},
+		{
+			Name:        "account",
+			Type:        proto.ColumnType_JSON,
+			Description: "Full account information for the follower.",
+			Transform:   transform.FromValue(),
+		},
+		{
+			Name:        "instance_qualified_account_url",
+			Type:        proto.ColumnType_STRING,
+			Description: "Account URL prefixed with my instance",
+			Transform:   transform.FromValue().Transform(instanceQualifiedAccountUrl),
 		},
 	}
 	return append(additionalColumns, baseAccountColumns()...)
