@@ -31,24 +31,6 @@ func accountColumnsWithFullAccount() []*plugin.Column {
 	return append(additionalColumns, accountColumns()...)
 }
 
-func myFollowerColumns() []*plugin.Column {
-	additionalColumns := []*plugin.Column{
-		{
-			Name:        "account",
-			Type:        proto.ColumnType_JSON,
-			Description: "Full account information for the follower.",
-			Transform:   transform.FromValue(),
-		},
-		{
-			Name:        "instance_qualified_account_url",
-			Type:        proto.ColumnType_STRING,
-			Description: "Account URL prefixed with my instance",
-			Transform:   transform.FromValue().Transform(instanceQualifiedAccountUrl),
-		},
-	}
-	return append(additionalColumns, accountColumns()...)
-}
-
 func listMyFollowers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 

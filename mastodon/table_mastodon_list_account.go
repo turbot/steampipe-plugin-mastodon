@@ -38,30 +38,6 @@ func listAccountColumnsWithFullAccount() []*plugin.Column {
 	return append(accountColumns(), additionalColumns...)
 }
 
-func listAccountColumns() []*plugin.Column {
-	additionalColumns := []*plugin.Column{
-		{
-			Name:        "list_id",
-			Type:        proto.ColumnType_STRING,
-			Description: "List ID for account.",
-			Transform:   transform.FromQual("list_id"),
-		},
-		{
-			Name:        "account",
-			Type:        proto.ColumnType_JSON,
-			Description: "Full account information for the account in the list.",
-			Transform:   transform.FromValue(),
-		},
-		{
-			Name:        "instance_qualified_account_url",
-			Type:        proto.ColumnType_STRING,
-			Description: "Account URL prefixed with my instance",
-			Transform:   transform.FromValue().Transform(instanceQualifiedAccountUrl),
-		},
-	}
-	return append(accountColumns(), additionalColumns...)
-}
-
 func listListAccounts(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 

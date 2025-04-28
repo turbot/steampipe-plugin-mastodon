@@ -44,36 +44,6 @@ func followingColumnsWithFullAccount() []*plugin.Column {
 	return append(additionalColumns, baseAccountColumns()...)
 }
 
-func followingColumns() []*plugin.Column {
-	additionalColumns := []*plugin.Column{
-		{
-			Name:        "following_account_id",
-			Type:        proto.ColumnType_STRING,
-			Description: "ID of the account who is following.",
-			Transform:   transform.FromQual("following_account_id"),
-		},
-		{
-			Name:        "followed_account_id",
-			Type:        proto.ColumnType_STRING,
-			Description: "ID of the follower account.",
-			Transform:   transform.FromField("ID"),
-		},
-		{
-			Name:        "account",
-			Type:        proto.ColumnType_JSON,
-			Description: "Full account information for the followed account.",
-			Transform:   transform.FromValue(),
-		},
-		{
-			Name:        "instance_qualified_account_url",
-			Type:        proto.ColumnType_STRING,
-			Description: "Account URL prefixed with my instance",
-			Transform:   transform.FromValue().Transform(instanceQualifiedAccountUrl),
-		},
-	}
-	return append(additionalColumns, baseAccountColumns()...)
-}
-
 func listFollowing(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	logger := plugin.Logger(ctx)
 

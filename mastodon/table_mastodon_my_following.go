@@ -3,9 +3,7 @@ package mastodon
 import (
 	"context"
 
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 func tableMastodonMyFollowing() *plugin.Table {
@@ -17,24 +15,6 @@ func tableMastodonMyFollowing() *plugin.Table {
 		},
 		Columns: commonAccountColumns(accountColumnsWithFullAccount()),
 	}
-}
-
-func myFollowingColumns() []*plugin.Column {
-	additionalColumns := []*plugin.Column{
-		{
-			Name:        "account",
-			Type:        proto.ColumnType_JSON,
-			Description: "Full account information for the followed account.",
-			Transform:   transform.FromValue(),
-		},
-		{
-			Name:        "instance_qualified_account_url",
-			Type:        proto.ColumnType_STRING,
-			Description: "Account URL prefixed with my instance",
-			Transform:   transform.FromValue().Transform(instanceQualifiedAccountUrl),
-		},
-	}
-	return append(additionalColumns, accountColumns()...)
 }
 
 func listMyFollowing(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
