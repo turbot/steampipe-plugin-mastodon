@@ -13,7 +13,7 @@ func tableMastodonMyFollowing() *plugin.Table {
 		List: &plugin.ListConfig{
 			Hydrate: listMyFollowing,
 		},
-		Columns: commonAccountColumns(accountColumns()),
+		Columns: commonAccountColumns(accountColumnsWithFullAccount()),
 	}
 }
 

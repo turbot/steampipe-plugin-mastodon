@@ -16,17 +16,23 @@ func tableMastodonListAccount() *plugin.Table {
 			Hydrate:    listListAccounts,
 			KeyColumns: plugin.SingleColumn("list_id"),
 		},
-		Columns: commonAccountColumns(listAccountColumns()),
+		Columns: commonAccountColumns(listAccountColumnsWithFullAccount()),
 	}
 }
 
-func listAccountColumns() []*plugin.Column {
+func listAccountColumnsWithFullAccount() []*plugin.Column {
 	additionalColumns := []*plugin.Column{
 		{
 			Name:        "list_id",
 			Type:        proto.ColumnType_STRING,
 			Description: "List ID for account.",
 			Transform:   transform.FromQual("list_id"),
+		},
+		{
+			Name:        "account",
+			Type:        proto.ColumnType_JSON,
+			Description: "Full account information for the account.",
+			Transform:   transform.FromValue(),
 		},
 	}
 	return append(accountColumns(), additionalColumns...)

@@ -3,7 +3,9 @@ package mastodon
 import (
 	"context"
 
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 func tableMastodonMyFollower() *plugin.Table {
@@ -13,8 +15,20 @@ func tableMastodonMyFollower() *plugin.Table {
 		List: &plugin.ListConfig{
 			Hydrate: listMyFollowers,
 		},
-		Columns: commonAccountColumns(accountColumns()),
+		Columns: commonAccountColumns(accountColumnsWithFullAccount()),
 	}
+}
+
+func accountColumnsWithFullAccount() []*plugin.Column {
+	additionalColumns := []*plugin.Column{
+		{
+			Name:        "account",
+			Type:        proto.ColumnType_JSON,
+			Description: "Full account information for the account.",
+			Transform:   transform.FromValue(),
+		},
+	}
+	return append(additionalColumns, accountColumns()...)
 }
 
 func listMyFollowers(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
