@@ -1,3 +1,13 @@
+## v1.2.0 [2025-05-27]
+
+_Enhancements_
+
+- Added the column `account` to `mastodon_follower`, `mastodon_following`, `mastodon_list_account`, `mastodon_my_follower` and `mastodon_my_following` tables. ([#46](https://github.com/turbot/steampipe-plugin-mastodon/pull/46)) (Thanks to [@judell](https://github.com/judell) for the contribution)
+
+_Dependencies_
+
+- Recompiled plugin with [steampipe-plugin-sdk v5.11.6](https://github.com/turbot/steampipe-plugin-sdk/blob/develop/CHANGELOG.md#v5116-2025-05-22) which improves how errors are handled during query execution. ([#47](https://github.com/turbot/steampipe-plugin-mastodon/pull/47))
+
 ## v1.1.1 [2025-04-18]
 
 _Bug fixes_
