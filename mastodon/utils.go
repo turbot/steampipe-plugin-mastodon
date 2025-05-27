@@ -244,10 +244,18 @@ func fetchAccounts(ctx context.Context, d *plugin.QueryData, timelineType string
 
 	switch timelineType {
 	case TimelineMyFollowing:
-		account, _ := getAccountCurrentUser(ctx, client)
+		account, err := getAccountCurrentUser(ctx, client)
+		if err != nil {
+			logger.Error("fetchAccounts", "getAccountCurrentUser_error", err)
+			return nil, err
+		}
 		accounts, err = client.GetAccountFollowing(ctx, account.ID, pg)
 	case TimelineMyFollower:
-		account, _ := getAccountCurrentUser(ctx, client)
+		account, err := getAccountCurrentUser(ctx, client)
+		if err != nil {
+			logger.Error("fetchAccounts", "getAccountCurrentUser_error", err)
+			return nil, err
+		}
 		accounts, err = client.GetAccountFollowers(ctx, account.ID, pg)
 	case TimelineFollowing:
 		followingAccountId := d.EqualsQualString("following_account_id")
