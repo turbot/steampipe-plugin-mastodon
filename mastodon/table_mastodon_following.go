@@ -16,11 +16,11 @@ func tableMastodonFollowing() *plugin.Table {
 			Hydrate:    listFollowing,
 			KeyColumns: plugin.SingleColumn("following_account_id"),
 		},
-		Columns: commonAccountColumns(followingColumns()),
+		Columns: commonAccountColumns(followingColumnsWithFullAccount()),
 	}
 }
 
-func followingColumns() []*plugin.Column {
+func followingColumnsWithFullAccount() []*plugin.Column {
 	additionalColumns := []*plugin.Column{
 		{
 			Name:        "following_account_id",
@@ -33,6 +33,12 @@ func followingColumns() []*plugin.Column {
 			Type:        proto.ColumnType_STRING,
 			Description: "ID of the follower account.",
 			Transform:   transform.FromField("ID"),
+		},
+		{
+			Name:        "account",
+			Type:        proto.ColumnType_JSON,
+			Description: "Full account information for the account.",
+			Transform:   transform.FromValue(),
 		},
 	}
 	return append(additionalColumns, baseAccountColumns()...)
