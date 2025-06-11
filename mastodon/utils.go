@@ -250,6 +250,10 @@ func fetchAccounts(ctx context.Context, d *plugin.QueryData, timelineType string
 			return nil, err
 		}
 		accounts, err = client.GetAccountFollowing(ctx, account.ID, pg)
+		if err != nil {
+			logger.Error("fetchAccounts", "GetAccountFollowing_error", err)
+			return nil, err
+		}
 	case TimelineMyFollower:
 		account, err := getAccountCurrentUser(ctx, client)
 		if err != nil {
@@ -257,6 +261,10 @@ func fetchAccounts(ctx context.Context, d *plugin.QueryData, timelineType string
 			return nil, err
 		}
 		accounts, err = client.GetAccountFollowers(ctx, account.ID, pg)
+		if err != nil {
+			logger.Error("fetchAccounts", "GetAccountFollowers_error", err)
+			return nil, err
+		}
 	case TimelineFollowing:
 		followingAccountId := d.EqualsQualString("following_account_id")
 		accounts, err = client.GetAccountFollowing(ctx, mastodon.ID(followingAccountId), pg)
