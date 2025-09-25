@@ -96,6 +96,10 @@ func reblogServer(ctx context.Context, input *transform.TransformData) (interfac
 	}
 	re := regexp.MustCompile(`https://(.+)/`)
 	matches := re.FindStringSubmatch(status.Reblog.Account.URL)
+	if len(matches) == 0 {
+		plugin.Logger(ctx).Debug("reblogServer: no match, returning ", "status.Reblog.Account.URL", status.Reblog.Account.URL)
+		return status.Reblog.Account.URL, nil
+	}
 	return matches[1], nil
 }
 
