@@ -1,3 +1,10 @@
+## v1.3.0 [2025-10-13]
+
+_Dependencies_
+
+- Recompiled plugin with Go version `1.24`. ([#50](https://github.com/turbot/steampipe-plugin-mastodon/pull/50))
+- Recompiled plugin with [steampipe-plugin-sdk v5.13.1](https://github.com/turbot/steampipe-plugin-sdk/blob/develop/CHANGELOG.md#v5131-2025-09-25) that addresses critical and high vulnerabilities in dependent packages. ([#53](https://github.com/turbot/steampipe-plugin-mastodon/pull/53))
+
 ## v1.2.0 [2025-05-27]
 
 _Enhancements_
