@@ -4,7 +4,6 @@
 *.dll
 *.so
 *.dylib
-steampipe-plugin-mastodon
 
 # Test binary, built with `go test -c`
 *.test
