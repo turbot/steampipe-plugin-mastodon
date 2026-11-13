@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/mattn/go-mastodon"
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v5/memoize"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v6/memoize"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 )
 
 func commonAccountColumns(c []*plugin.Column) []*plugin.Column {
@@ -60,7 +60,7 @@ func getAccountInfoUncached(ctx context.Context, d *plugin.QueryData, h *plugin.
 
 	var accountInfo *mastodon.Account
 
-	if cachedData, ok := d.ConnectionManager.Cache.Get(cacheKey); ok {
+	if cachedData, ok := d.ConnectionCache.Get(ctx, cacheKey); ok {
 		accountInfo = cachedData.(*mastodon.Account)
 	} else {
 		client, err := connect(ctx, d)
@@ -75,7 +75,7 @@ func getAccountInfoUncached(ctx context.Context, d *plugin.QueryData, h *plugin.
 			return nil, err
 		}
 
-		d.ConnectionManager.Cache.Set(cacheKey, accountInfo)
+		_ = d.ConnectionCache.Set(ctx, cacheKey, accountInfo)
 	}
 
 	return accountInfo, nil

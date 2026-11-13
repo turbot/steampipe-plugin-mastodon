@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/microcosm-cc/bluemonday"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 )
 
 func Plugin(ctx context.Context) *plugin.Plugin {
